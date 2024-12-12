@@ -37,9 +37,17 @@ namespace proyectocountertexdefinitivo.Repositories.repositories
             return true;
         }
 
-        public Task<bool> DeleteProveedor(int id)
+        // Método corregido: Elimina un empleado por su ID
+        public async Task<bool> DeleteProveedor(int id)
         {
-            throw new NotImplementedException();
+            var empleado = await context.PerfilEmpleados.FindAsync(id);
+            if (empleado == null)
+            {
+                return false; // No se encontró el empleado con ese ID
+            }
+            context.PerfilEmpleados.Remove(empleado);
+            await context.SaveChangesAsync();
+            return true; // Se eliminó correctamente
         }
     }
 }

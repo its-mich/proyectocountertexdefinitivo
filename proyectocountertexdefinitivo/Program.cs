@@ -7,8 +7,11 @@ using System.Text;
 using proyectocountertexdefinitivo.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using proyectocountertexdefinitivo.contexto;
+using proyectocountertexdefinitivo;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddExternal(builder.Configuration);
+
 
 // Registro de servicios
 builder.Services.AddDbContext<CounterTexDBContext>(options =>

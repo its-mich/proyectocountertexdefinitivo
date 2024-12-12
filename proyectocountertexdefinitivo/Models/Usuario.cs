@@ -11,8 +11,8 @@ namespace proyectocountertexdefinitivo.Models
 
         // Relaciones
         public ICollection<Satelite> Satelites { get; set; }
-        public string ConfirmarClave { get; internal set; }
-        public object Contraseña { get; internal set; }
-        public ClaimsIdentity? TipoUsuario { get; internal set; }
+        public string ConfirmarClave { get;  set; }
+        public string Contraseña { get; set; }
+        public string TipoUsuario { get; set; }
     }
 }
