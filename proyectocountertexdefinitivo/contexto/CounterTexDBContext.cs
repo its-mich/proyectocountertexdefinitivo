@@ -73,7 +73,7 @@ namespace proyectocountertexdefinitivo.contexto
                 tb.Property(col => col.ChatInterno).HasMaxLength(200);
                 tb.Property(col => col.Proveedor).HasMaxLength(100);
                 tb.Property(col => col.BotonAyuda).HasMaxLength(100);
-                tb.HasOne(col => col.Usuario).WithOne()
+                tb.HasOne(col => col.Usuarios).WithOne()
                   .HasForeignKey<PerfilAdministrador>(col => col.IdUsuario);
             });
             modelBuilder.Entity<PerfilAdministrador>().ToTable("PerfilAdministrador");
@@ -136,9 +136,9 @@ namespace proyectocountertexdefinitivo.contexto
             modelBuilder.Entity<Proveedor>().ToTable("Proveedor");
         }
 
-        internal async Task SaveAsync()
+        public async Task<bool> SaveAsync()
         {
-            throw new NotImplementedException();
+            return await SaveChangesAsync() > 0;
         }
     }
 }

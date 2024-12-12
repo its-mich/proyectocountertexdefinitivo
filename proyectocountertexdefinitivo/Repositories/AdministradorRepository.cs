@@ -37,9 +37,15 @@ namespace proyectocountertexdefinitivo.Repositories.repositories
             return true;
         }
 
-        public Task<bool> DeleteAdministrador(int id)
+        public async Task<bool> DeleteAdministrador(int id)
         {
-            throw new NotImplementedException();
+            var entity = await context.PerfilAdministradores.FindAsync(id);
+            if (entity == null) return false;
+
+            context.PerfilAdministradores.Remove(entity);
+            await context.SaveChangesAsync();
+            return true;
         }
+
     }
 }
