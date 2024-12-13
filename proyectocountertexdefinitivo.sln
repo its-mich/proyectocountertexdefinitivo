@@ -11,7 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentacion", "Documentac
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scrip", "scrip", "{9AC84876-4A4D-4A4B-8B04-6DD49E075F7B}"
 	ProjectSection(SolutionItems) = preProject
-		..\..\..\Downloads\SQLQueryDBCounterTexT.sql = ..\..\..\Downloads\SQLQueryDBCounterTexT.sql
+		..\..\..\Downloads\SQLQueryDBCounterText.sql = ..\..\..\Downloads\SQLQueryDBCounterText.sql
 	EndProjectSection
 EndProject
 Global
