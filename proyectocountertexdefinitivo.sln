@@ -3,7 +3,16 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35327.3
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "proyectocountertexdefinitivo", "proyectocountertexdefinitivo\proyectocountertexdefinitivo.csproj", "{48B92B6A-AA2B-4387-98E2-9DC6816FAA0E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "proyectocountertexdefinitivo", "proyectocountertexdefinitivo\proyectocountertexdefinitivo.csproj", "{48B92B6A-AA2B-4387-98E2-9DC6816FAA0E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "codigo", "codigo", "{9E1FF585-7E34-405A-B255-DD16EBE3A628}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentacion", "Documentacion", "{76C39BF5-A90C-438C-B3BD-45A4019BD7CD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "script", "script", "{5F1E904A-6E26-4828-A5EB-E1447E497734}"
+	ProjectSection(SolutionItems) = preProject
+		proyectocountertexdefinitivo\basededatoscoun\BDcounTertex.txt = proyectocountertexdefinitivo\basededatoscoun\BDcounTertex.txt
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -18,6 +27,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{48B92B6A-AA2B-4387-98E2-9DC6816FAA0E} = {9E1FF585-7E34-405A-B255-DD16EBE3A628}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CEDF479E-F583-4C75-84AB-8B3439C8615E}

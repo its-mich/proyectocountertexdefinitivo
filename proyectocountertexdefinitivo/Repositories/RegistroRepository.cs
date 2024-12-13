@@ -29,16 +29,16 @@ namespace proyectocountertexdefinitivo.Repositories
             await _context.SaveChangesAsync();
             return true;
         }
-        public async Task<bool> DeleteRegistro(Registro registro)
+        public async Task<bool> DeleteRegistro(int id)
         {
-            _context.Registros.Remove(registro);
-            await _context.SaveChangesAsync();
+            var registro = await _context.Registros.FindAsync(id); // Usar 'context' en lugar de '_context'
+            if (registro == null) return false; // Si no existe, devolver 'false'
+
+            _context.Registros.Remove(registro); // Usar 'context'
+            await _context.SaveChangesAsync(); // Corregir 'SaveAsync' por 'SaveChangesAsync'
             return true;
         }
 
-        public Task<bool> DeleteRegistro(int id)
-        {
-            throw new NotImplementedException();
-        }
+
     }
 }

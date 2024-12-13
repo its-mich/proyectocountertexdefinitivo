@@ -7,7 +7,7 @@ namespace proyectocountertexdefinitivo.Repositories.Interfaces
         Task<List<Usuarios>> GetUsuarios();
         Task<bool> PostUsuarios(Usuarios usuarios);
         Task<bool> PutUsuarios(Usuarios usuarios);
-        Task<bool> DeleteUsuarios(Usuarios usuarios);
+     
         Task<bool> DeleteUsuarios(int id);
     }
 }

@@ -1,12 +1,14 @@
 ﻿
 
+using System.ComponentModel.DataAnnotations;
+
 namespace proyectocountertexdefinitivo.Models
 {
     public class PerfilAdministrador
     {
         public int IdAdministrador { get; set; }
-
         public string NombreAdministrador { get; set; }
+
 
       
         public int ProduccionDiaria { get; set; }
@@ -18,13 +20,13 @@ namespace proyectocountertexdefinitivo.Models
         public decimal Gastos { get; set; }
         public decimal MetaPorCorte { get; set; }
         public string ConsultarInformacion { get; set; }
-        public DateTime ControlHorarios { get; set; }
+        public string ControlHorarios { get; set; }
         public string ChatInterno { get; set; }
         public string Proveedor { get; set; }
         public string BotonAyuda { get; set; }
 
-        //Relaciones//
+        ////Relaciones//
         public int IdUsuario { get; set; }
-        public Usuarios Usuarios { get; set; }
+        //public Usuarios Usuario { get; set; }
     }
 }

@@ -12,13 +12,13 @@ namespace proyectocountertexdefinitivo.Models
         public decimal Ganancias{ get; set; }
         public string Operacion { get; set; }
         public decimal PagoOperacion { get; set; }
-        public string TipoMaquina { get; set; }
         public int Inventariomaquinas { get; set; }
-        // Relaciones
 
-        public int IdUsuario { get; set; }
-        public Usuarios Usuario { get; set; }
-        public int IdProveedor { get; set; }
-        public int IdEmpleado { get; set; }
+        public string TipoMaquina { get; set; }
+       // Relaciones
+
+       public int IdUsuario { get; set; }
+        //public Usuarios Usuario { get; set; }
+
     }
 }
