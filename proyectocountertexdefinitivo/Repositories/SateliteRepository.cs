@@ -13,7 +13,7 @@ namespace proyectocountertexdefinitivo.Repositories
         {
             this.context = context;
         }
-        public async Task<List<Satelite>> Getsatelites()
+        public async Task<List<Satelite>> GetSatelite()
         {
             var data = await context.Satelites.ToListAsync();
             return data;
@@ -30,21 +30,20 @@ namespace proyectocountertexdefinitivo.Repositories
             await context.SaveChangesAsync();
             return true;
         }
-        public async Task<bool> DeleteSatelite(Satelite satelite)
+     
+
+
+    
+        public async Task<bool> DeleteSatelite(int id)
         {
-            context.Satelites.Remove(satelite);
-            await context.SaveChangesAsync();
+            var satelite = await context.Satelites.FindAsync(id); // Usar 'context' en lugar de '_context'
+            if (satelite == null) return false; // Si no existe, devolver 'false'
+
+            context.Satelites.Remove(satelite); // Usar 'context'
+            await context.SaveChangesAsync(); // Corregir 'SaveAsync' por 'SaveChangesAsync'
             return true;
         }
 
-        public Task<List<Satelite>> GetSatelites()
-        {
-            throw new NotImplementedException();
-        }
 
-        public Task<bool> DeleteSatelite(int id)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

@@ -18,13 +18,13 @@ namespace proyectocountertexdefinitivo.Controllers
                 _satelite = satelite;
             }
 
-            [HttpGet("GetSatelites")]
+            [HttpGet("GetSatelite")]
             [ProducesResponseType(StatusCodes.Status200OK)]
             [ProducesResponseType(StatusCodes.Status400BadRequest)]
             [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-            public async Task<IActionResult> GetProveedor()
+            public async Task<IActionResult> GeGetSatelite()
             {
-                var response = await _satelite.GetSatelites();
+                var response = await _satelite.GetSatelite();
                 return Ok(response);
             }
 

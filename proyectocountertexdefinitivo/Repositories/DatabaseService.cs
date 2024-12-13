@@ -1,28 +1,29 @@
-﻿using Microsoft.EntityFrameworkCore;
-using proyectocountertexdefinitivo.Models;
-using proyectocountertexdefinitivo.Controllers;
-using System.ComponentModel.DataAnnotations;
+﻿using proyectocountertexdefinitivo.Models;
+using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
-using Microsoft.Win32;
-
-using System;
-
-namespace proyectocountertexdefinitivo.contexto
+namespace proyectocountertexdefinitivo.Repositories
 {
-    public class CounterTexDBContext : DbContext
+    public class DatabaseService : DbContext
     {
-        public CounterTexDBContext(DbContextOptions<CounterTexDBContext> options) : base(options) { }
+        public DatabaseService(DbContextOptions options) : base(options)
+        {
+        }
+        public DbSet<PerfilAdministrador> PerfilAdministrador { get; set; }
+        public DbSet<PerfilEmpleado> PerfilEmpleado { get; set; }
+        public DbSet<Registro> Registro { get; set; }
+        public DbSet<Satelite> Satelite { get; set; }
+        public DbSet<Proveedor> Proveedor { get; set; }
 
-        public DbSet<Usuarios> Usuarios { get; set; }
-        public DbSet<Satelite> Satelites { get; set; }
-        public DbSet<PerfilAdministrador> PerfilAdministradores { get; set; }
-        public DbSet<PerfilEmpleado> PerfilEmpleados { get; set; }
-        public DbSet<Proveedor> Proveedores { get; set; }
-        public DbSet<Registro> Registros { get; set; }
-        public DbSet<Tokens> Tokens { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            EntityConfuguration(modelBuilder);
+        }
+
+        private void EntityConfuguration(ModelBuilder modelBuilder)
+        {
 
             //Configuración Entidad Usuario
             modelBuilder.Entity<Usuarios>(tb =>
@@ -32,7 +33,7 @@ namespace proyectocountertexdefinitivo.contexto
                 tb.Property(col => col.NombreUsuario).IsRequired().HasMaxLength(50);
                 tb.Property(col => col.Correo).HasMaxLength(50);
                 tb.Property(col => col.Clave).HasMaxLength(50);
-
+           
             });
             modelBuilder.Entity<Usuarios>().ToTable("Usuarios");
 
@@ -48,8 +49,7 @@ namespace proyectocountertexdefinitivo.contexto
                 tb.Property(col => col.PagoOperacion).IsRequired();
                 tb.Property(col => col.Inventariomaquinas).IsRequired();
                 tb.Property(col => col.TipoMaquina).HasMaxLength(50);
-              
-                //modelBuilder.Entity<Usuarios>().Property(u => u.IdUsuario).HasColumnName("Sa");
+             
             });
             modelBuilder.Entity<Satelite>().ToTable("Satelite");
 
@@ -72,7 +72,7 @@ namespace proyectocountertexdefinitivo.contexto
                 tb.Property(col => col.ChatInterno).HasMaxLength(200);
                 tb.Property(col => col.Proveedor).HasMaxLength(100);
                 tb.Property(col => col.BotonAyuda).HasMaxLength(100);
-     
+           
             });
             modelBuilder.Entity<PerfilAdministrador>().ToTable("PerfilAdministrador");
 
@@ -134,9 +134,12 @@ namespace proyectocountertexdefinitivo.contexto
             modelBuilder.Entity<Proveedor>().ToTable("Proveedor");
         }
 
-        public async Task<bool> SaveAsync()
-        {
-            return await SaveChangesAsync() > 0;
-        }
+
+
+            public async Task<bool> SaveAsync()
+            {
+                return await SaveChangesAsync() > 0;
+            }
+        
     }
 }

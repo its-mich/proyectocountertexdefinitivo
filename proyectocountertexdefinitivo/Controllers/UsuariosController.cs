@@ -7,7 +7,7 @@ namespace proyectocountertexdefinitivo.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+ 
     public class Usuarioscontroller : ControllerBase
     {
         private readonly IUsuarios _usuarios;
