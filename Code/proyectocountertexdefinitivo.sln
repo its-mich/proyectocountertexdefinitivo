@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35327.3
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "proyectocountertexdefinitivo", "proyectocountertexdefinitivo\proyectocountertexdefinitivo.csproj", "{48B92B6A-AA2B-4387-98E2-9DC6816FAA0E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "codigo", "codigo", "{9E1FF585-7E34-405A-B255-DD16EBE3A628}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentacion", "Documentacion", "{76C39BF5-A90C-438C-B3BD-45A4019BD7CD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Script", "Script", "{47247B9A-79E0-406F-A8C1-32C9D294B438}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\Downloads\SQLQueryDBCounterText.txt = ..\..\..\Downloads\SQLQueryDBCounterText.txt
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{48B92B6A-AA2B-4387-98E2-9DC6816FAA0E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48B92B6A-AA2B-4387-98E2-9DC6816FAA0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48B92B6A-AA2B-4387-98E2-9DC6816FAA0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48B92B6A-AA2B-4387-98E2-9DC6816FAA0E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{48B92B6A-AA2B-4387-98E2-9DC6816FAA0E} = {9E1FF585-7E34-405A-B255-DD16EBE3A628}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CEDF479E-F583-4C75-84AB-8B3439C8615E}
+	EndGlobalSection
+EndGlobal
