@@ -2,18 +2,22 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace proyectocountertexdefinitivo.Models
 {
-    public class Tokens
+    public class Token
     {
-        public int Id { get; set; }
-        public int UsuarioId { get; set; }
-        public Usuarios Usuario { get; set; }
+        [Key]
+        public int IdToken { get; set; }
+
+        [Required]
         public string TokenValue { get; set; }
-        public DateTime Expira { get; set; }
+
+        public DateTime FechaCreacion { get; set; }
     }
+
 }
