@@ -9,7 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "codigo", "codigo", "{9E1FF5
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentacion", "Documentacion", "{76C39BF5-A90C-438C-B3BD-45A4019BD7CD}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ScriptSQL", "ScriptSQL", "{9AC84876-4A4D-4A4B-8B04-6DD49E075F7B}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Script", "Script", "{47247B9A-79E0-406F-A8C1-32C9D294B438}"
 	ProjectSection(SolutionItems) = preProject
 		..\..\..\Downloads\SQLQueryDBCounterText.txt = ..\..\..\Downloads\SQLQueryDBCounterText.txt
 	EndProjectSection
