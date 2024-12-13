@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "JGrXh6mnGvU=",
+  "dgSpecHash": "p+t0H7epG0A=",
   "success": true,
-  "projectFilePath": "C:\\Users\\danie\\source\\repos\\proyectocountertexdefinitivo3535\\Codigo\\proyectocountertexdefinitivo.csproj",
+  "projectFilePath": "C:\\Users\\danie\\source\\repos\\proyectocountertexdefinitivo34\\Codigo\\proyectocountertexdefinitivo.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\danie\\.nuget\\packages\\azure.core\\1.35.0\\azure.core.1.35.0.nupkg.sha512",
     "C:\\Users\\danie\\.nuget\\packages\\azure.identity\\1.10.3\\azure.identity.1.10.3.nupkg.sha512",
