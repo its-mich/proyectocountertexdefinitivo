@@ -12,6 +12,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "script", "script", "{5F1E904A-6E26-4828-A5EB-E1447E497734}"
 	ProjectSection(SolutionItems) = preProject
 		..\..\..\Documents\bddefinitivo(1).txt = ..\..\..\Documents\bddefinitivo(1).txt
+		..\..\..\Documents\SQL Server Management Studio\SQLQueryDBcounterTex.sql = ..\..\..\Documents\SQL Server Management Studio\SQLQueryDBcounterTex.sql
 	EndProjectSection
 EndProject
 Global
