@@ -30,7 +30,7 @@ namespace proyectocountertexdefinitivo.Controllers
         [HttpPost("PostUsuarios")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> PostUsuarios([FromBody] Usuarios usuarios)
+        public async Task<IActionResult> PostUsuarios([FromBody] Usuario usuarios)
         {
             try
             {
@@ -70,7 +70,7 @@ namespace proyectocountertexdefinitivo.Controllers
         [HttpPut("PutUsuarios")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> PutUsuarios([FromBody] Usuarios usuarios)
+        public async Task<IActionResult> PutUsuarios([FromBody] Usuario usuarios)
         {
             try
             {

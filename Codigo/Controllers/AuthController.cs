@@ -1,10 +1,8 @@
-﻿using proyectocountertexdefinitivo.Models;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using proyectocountertexdefinitivo.contexto;
 
 namespace proyectocountertexdefinitivo.Controllers
 {
@@ -13,9 +11,9 @@ namespace proyectocountertexdefinitivo.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IConfiguration _configuration;
-        private readonly CounterTexDBContext _context;
+        private readonly CountertexDbContext _context;
 
-        public AuthController(IConfiguration configuration, CounterTexDBContext context)
+        public AuthController(IConfiguration configuration, CountertexDbContext context)
         {
             _configuration = configuration;
             _context = context;
