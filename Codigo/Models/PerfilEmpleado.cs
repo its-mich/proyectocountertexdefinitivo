@@ -5,22 +5,13 @@ namespace proyectocountertexdefinitivo.Models
 {
     public class PerfilEmpleado
     {
+        [Key]
         public int IdEmpleado { get; set; }
-        public decimal ProduccionDiaria { get; set; }
-        public string TipoPrenda { get; set; }
-        public string TipoOperacion { get; set; }
-        public int CantidadOperacion { get; set; }
-        public decimal ValorOperacion { get; set; }
-        public string ConsultarInformacion { get; set; }
-        public DateTime ControlHorarios { get; set; }
-        public DateTime HoraEntrada { get; set; }
-        public DateTime HoraSalida { get; set; }
-        public decimal MetaPorCorte { get; set; }
-        public string BotonAyuda { get; set; }
-        public string Estadisticas { get; set; }
-        public string Observaciones { get; set; }
 
+        [ForeignKey("Usuario")]
         public int IdUsuario { get; set; }
-        public Usuarios Usuario { get; set; }
+
+        public virtual Usuario Usuario { get; set; }
+        public virtual ICollection<OperacionEmpleado> OperacionesRealizadas { get; set; }
     }
 }

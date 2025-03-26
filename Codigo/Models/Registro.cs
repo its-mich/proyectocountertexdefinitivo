@@ -2,19 +2,28 @@
 
 namespace proyectocountertexdefinitivo.Models
 {
+
     public class Registro
     {
+        [Key]
         public int IdRegistro { get; set; }
 
-  
+        [Required, MaxLength(100)]
         public string Nombres { get; set; }
+
+        [Required, MaxLength(100)]
         public string Apellidos { get; set; }
-        public string Documento { get; set; } 
+
+        [Required, MaxLength(50)]
+        public string Documento { get; set; }
+
+        [Required, EmailAddress, MaxLength(100)]
         public string Correo { get; set; }
+
+        [Required, MaxLength(100)]
         public string Contraseña { get; set; }
-        public string ConfirmarContraseña { get; set; }
 
         public DateTime FechaRegistro { get; set; }
-
     }
+
 }
