@@ -8,8 +8,8 @@ namespace proyectocountertexdefinitivo.Repositories.repositories
 {
     public class ProveedorRepository : IProvedor
     {
-        private readonly CounterTexDBContext context;
-        public ProveedorRepository(CounterTexDBContext context)
+        private readonly CountertexDbContext context;
+        public ProveedorRepository(CountertexDbContext context)
         {
             this.context = context;
         }

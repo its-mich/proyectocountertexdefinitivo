@@ -8,8 +8,8 @@ namespace proyectocountertexdefinitivo.Repositories
 {
     public class SateliteRepository : ISatelite
     {
-        private readonly CounterTexDBContext context;
-        public SateliteRepository(CounterTexDBContext context)
+        private readonly CountertexDbContext context;
+        public SateliteRepository(CountertexDbContext context)
         {
             this.context = context;
         }

@@ -8,9 +8,9 @@ namespace proyectocountertexdefinitivo.Repositories.repositories
 {
     public class EmpleadoRepository : IEmpleado
     {
-        private readonly CounterTexDBContext context;
+        private readonly CountertexDbContext context;
 
-        public EmpleadoRepository(CounterTexDBContext context)
+        public EmpleadoRepository(CountertexDbContext context)
         {
             this.context = context;
         }

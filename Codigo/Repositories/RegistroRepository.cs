@@ -7,8 +7,8 @@ namespace proyectocountertexdefinitivo.Repositories
 {
     public class RegistroRepository : IRegistro
     {
-        private readonly CounterTexDBContext _context;
-        public RegistroRepository(CounterTexDBContext context)
+        private readonly CountertexDbContext _context;
+        public RegistroRepository(CountertexDbContext context)
         {
             this._context = context;
         }

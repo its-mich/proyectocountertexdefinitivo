@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using proyectocountertexdefinitivo.contexto;
 using proyectocountertexdefinitivo.Models;
 using proyectocountertexdefinitivo.Repositories.Interfaces;
 
@@ -7,23 +6,23 @@ namespace proyectocountertexdefinitivo.Repositories
 {
     public class UsuarioRepository : IUsuarios
     {
-        private readonly CounterTexDBContext context;
-        public UsuarioRepository(CounterTexDBContext context)
+        private readonly CountertexDbContext context;
+        public UsuarioRepository(CountertexDbContext context)
         {
             this.context = context;
         }
-        public async Task<List<Usuarios>> GetUsuarios()
+        public async Task<List<Usuario>> GetUsuarios()
         {
             var data = await context.Usuarios.ToListAsync();
             return data;
         }
-        public async Task<bool> PostUsuarios(Usuarios usuario)
+        public async Task<bool> PostUsuarios(Usuario usuario)
         {
             await context.Usuarios.AddAsync(usuario);
             await context.SaveChangesAsync();
             return true;
         }
-        public async Task<bool> PutUsuarios(Usuarios usuario)
+        public async Task<bool> PutUsuarios(Usuario usuario)
         {
             context.Usuarios.Update(usuario);
             await context.SaveChangesAsync();

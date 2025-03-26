@@ -8,8 +8,8 @@ namespace proyectocountertexdefinitivo.Repositories.repositories
 {
     public class AdministradorRepository :IAdministrador
     {
-        private readonly CounterTexDBContext context;
-        public AdministradorRepository(CounterTexDBContext context)
+        private readonly CountertexDbContext context;
+        public AdministradorRepository(CountertexDbContext context)
         {
             this.context = context;
         }
