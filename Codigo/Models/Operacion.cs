@@ -11,6 +11,6 @@ namespace proyectocountertexdefinitivo.Models
         [Required, MaxLength(100)]
         public string Nombre { get; set; }
 
-        public virtual ICollection<OperacionEmpleado> OperacionesEmpleados { get; set; }
+        public virtual ICollection<OperacionesEmpleado> OperacionEmpleados { get; set; }
     }
 }

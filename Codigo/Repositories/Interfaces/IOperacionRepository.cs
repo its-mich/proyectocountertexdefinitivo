@@ -3,13 +3,13 @@ using proyectocountertexdefinitivo.Models;
 
 namespace proyectocountertexdefinitivo.Repositories.Interfaces
 {
-    public interface IOperacionRepository
-    {
-        Task AddAsync(Operacion operacion);
-        Task<bool> DeleteAsync(int id);
-        Task<IEnumerable<Operacion>> GetAllAsync();
-        Task<ActionResult<Operacion>> GetByIdAsync(int id);
-        Task UpdateAsync(Operacion operacion);
+    //public interface IOperacionRepository
+    //{
+    //    Task AddAsync(Operacion operacion);
+    //    Task<bool> DeleteAsync(int id);
+    //    Task<IEnumerable<Operacion>> GetAllAsync();
+    //    Task<ActionResult<Operacion>> GetByIdAsync(int id);
+    //    Task UpdateAsync(Operacion operacion);
 
         public interface IOperacionRepository
         {
@@ -19,5 +19,5 @@ namespace proyectocountertexdefinitivo.Repositories.Interfaces
             Task<bool> UpdateAsync(Operacion operacion);
             Task<bool> DeleteAsync(int id);
         }
-    }
+    //}
 }

@@ -3,8 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace proyectocountertexdefinitivo.Models
 {
-    public class OperacionEmpleado
+    public class OperacionesEmpleado
     {
+        public int Id { get; set; }
         [Key]
         public int IdOperacionEmpleado { get; set; }
 

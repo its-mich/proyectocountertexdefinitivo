@@ -14,7 +14,7 @@ builder.Services.AddExternal(builder.Configuration);
 
 
 // Registro de servicios
-builder.Services.AddDbContext<CounterTexDBContext>(options =>
+builder.Services.AddDbContext<CountertexDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Registro de la interfaz y su implementación

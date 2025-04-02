@@ -4,8 +4,7 @@ using proyectocountertexdefinitivo.Repositories.Interfaces;
 
 namespace proyectocountertexdefinitivo.Controllers
 {
-    public class OperacionEmpleadoController : Controller
-    {
+  
         [Route("api/[controller]")]
         [ApiController]
         public class OperacionEmpleadoController : ControllerBase
@@ -18,10 +17,10 @@ namespace proyectocountertexdefinitivo.Controllers
             }
 
             [HttpGet]
-            public async Task<IEnumerable<OperacionEmpleado>> Get() => await _repository.GetAllAsync();
+            public async Task<IEnumerable<OperacionesEmpleado>> Get() => await _repository.GetAllAsync();
 
             [HttpGet("{id}")]
-            public async Task<ActionResult<OperacionEmpleado>> Get(int id)
+            public async Task<ActionResult<OperacionesEmpleado>> Get(int id)
             {
                 var entity = await _repository.GetByIdAsync(id);
                 if (entity == null) return NotFound();
@@ -29,14 +28,14 @@ namespace proyectocountertexdefinitivo.Controllers
             }
 
             [HttpPost]
-            public async Task<IActionResult> Post(OperacionEmpleado operacionEmpleado)
+            public async Task<IActionResult> Post(OperacionesEmpleado operacionEmpleado)
             {
                 await _repository.AddAsync(operacionEmpleado);
                 return CreatedAtAction(nameof(Get), new { id = operacionEmpleado.IdOperacionEmpleado }, operacionEmpleado);
             }
 
             [HttpPut("{id}")]
-            public async Task<IActionResult> Put(int id, OperacionEmpleado operacionEmpleado)
+            public async Task<IActionResult> Put(int id, OperacionesEmpleado operacionEmpleado)
             {
                 if (id != operacionEmpleado.IdOperacionEmpleado) return BadRequest();
                 await _repository.UpdateAsync(operacionEmpleado);
@@ -51,5 +50,5 @@ namespace proyectocountertexdefinitivo.Controllers
                 return NoContent();
             }
         }
-    }
+    
 }

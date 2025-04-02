@@ -4,16 +4,15 @@ using proyectocountertexdefinitivo.Repositories.Interfaces;
 
 namespace proyectocountertexdefinitivo.Controllers
 {
-    public class OperacionController : Controller
-    {
+   
 
         [Route("api/[controller]")]
         [ApiController]
-        public class OperacionController : ControllerBase
+        public class OperacionesController : ControllerBase
         {
             private readonly IOperacionRepository _repository;
 
-            public OperacionController(IOperacionRepository repository)
+            public OperacionesController(IOperacionRepository repository)
             {
                 _repository = repository;
             }
@@ -52,6 +51,6 @@ namespace proyectocountertexdefinitivo.Controllers
                 return NoContent();
             }
         }
-    }
+    
 }
 

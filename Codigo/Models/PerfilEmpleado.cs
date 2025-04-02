@@ -12,6 +12,6 @@ namespace proyectocountertexdefinitivo.Models
         public int IdUsuario { get; set; }
 
         public virtual Usuario Usuario { get; set; }
-        public virtual ICollection<OperacionEmpleado> OperacionesRealizadas { get; set; }
+        public virtual ICollection<OperacionesEmpleado> OperacionesRealizadas { get; set; }
     }
 }

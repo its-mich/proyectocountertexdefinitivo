@@ -15,7 +15,7 @@ namespace proyectocountertexdefinitivo
             string connectionString = configuration.GetConnectionString("SQLConnectionStrings");
 
             // Registro del DbContext
-            services.AddDbContext<CounterTexDBContext>(options =>
+            services.AddDbContext<CountertexDbContext>(options =>
                 options.UseSqlServer(connectionString));
 
             // Registro de interfaces y repositorios
@@ -26,6 +26,8 @@ namespace proyectocountertexdefinitivo
             services.AddScoped<IUsuarios, UsuarioRepository>();
             services.AddScoped<ITokens, TokensRepository>();
             services.AddScoped<IProvedor, ProveedorRepository>();
+            services.AddScoped<IOperacionEmpleadoRepository, OperacionEmpleadoRepository>();
+            services.AddScoped<IOperacionRepository, OperacionRepository>();
 
             return services;
         }

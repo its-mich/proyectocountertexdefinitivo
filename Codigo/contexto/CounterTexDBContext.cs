@@ -11,7 +11,7 @@ namespace proyectocountertexdefinitivo.contexto
         public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<Operacion> Operaciones { get; set; }
         public DbSet<PerfilEmpleado> PerfilEmpleados { get; set; }
-        public DbSet<OperacionEmpleado> OperacionesEmpleados { get; set; }
+        public DbSet<OperacionesEmpleado> OperacionesEmpleados { get; set; }
         public DbSet<PerfilAdministrador> PerfilAdministradores { get; set; }
         public DbSet<Proveedor> Proveedores { get; set; }
         public DbSet<Registro> Registros { get; set; }
@@ -21,14 +21,14 @@ namespace proyectocountertexdefinitivo.contexto
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // Configuración de relaciones
-            modelBuilder.Entity<OperacionEmpleado>()
+            modelBuilder.Entity<OperacionesEmpleado>()
                 .HasOne(o => o.Empleado)
                 .WithMany(e => e.OperacionesRealizadas)
                 .HasForeignKey(o => o.IdEmpleado);
 
-            modelBuilder.Entity<OperacionEmpleado>()
+            modelBuilder.Entity<OperacionesEmpleado>()
                 .HasOne(o => o.Operacion)
-                .WithMany(op => op.OperacionesEmpleados)
+                .WithMany(op => op.OperacionEmpleados)
                 .HasForeignKey(o => o.IdOperacion);
 
             modelBuilder.Entity<PerfilEmpleado>()
