@@ -7,40 +7,39 @@ namespace proyectocountertexdefinitivo.Repositories
 {
     public class UsuarioRepository : IUsuarios
     {
-        private readonly CounterTexDBContext context;
+        private readonly CounterTexDBContext _context;
+
         public UsuarioRepository(CounterTexDBContext context)
         {
-            this.context = context;
-        }
-        public async Task<List<Usuarios>> GetUsuarios()
-        {
-            var data = await context.Usuarios.ToListAsync();
-            return data;
-        }
-        public async Task<bool> PostUsuarios(Usuarios usuario)
-        {
-            await context.Usuarios.AddAsync(usuario);
-            await context.SaveChangesAsync();
-            return true;
-        }
-        public async Task<bool> PutUsuarios(Usuarios usuario)
-        {
-            context.Usuarios.Update(usuario);
-            await context.SaveChangesAsync();
-            return true;
-        }
-      
-
-        public async Task<bool> DeleteUsuarios(int id)
-        {
-            var usuario = await context.Usuarios.FindAsync(id); // Usar 'context' en lugar de '_context'
-            if (usuario == null) return false; // Si no existe, devolver 'false'
-
-            context.Usuarios.Remove(usuario); // Usar 'context'
-            await context.SaveChangesAsync(); // Corregir 'SaveAsync' por 'SaveChangesAsync'
-            return true;
+            _context = context;
         }
 
+        public async Task<IEnumerable<Usuario>> GetAllAsync() => await _context.Usuarios.ToListAsync();
 
+        public async Task<Usuario> GetByIdAsync(int id) => await _context.Usuarios.FindAsync(id);
+
+        public async Task<Usuario> CreateAsync(Usuario usuario)
+        {
+            _context.Usuarios.Add(usuario);
+            await _context.SaveChangesAsync();
+            return usuario;
+        }
+
+        public async Task UpdateAsync(Usuario usuario)
+        {
+            _context.Entry(usuario).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteAsync(int id)
+        {
+            var usuario = await _context.Usuarios.FindAsync(id);
+            if (usuario != null)
+            {
+                _context.Usuarios.Remove(usuario);
+                await _context.SaveChangesAsync();
+            }
+        }
     }
+
 }

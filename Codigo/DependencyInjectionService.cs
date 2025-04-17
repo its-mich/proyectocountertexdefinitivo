@@ -1,8 +1,8 @@
 ﻿using proyectocountertexdefinitivo.Repositories;
 using proyectocountertexdefinitivo.Repositories.Interfaces;
-using Microsoft.EntityFrameworkCore;
 using proyectocountertexdefinitivo.Repositories.repositories;
 using proyectocountertexdefinitivo.contexto;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace proyectocountertexdefinitivo
@@ -18,17 +18,18 @@ namespace proyectocountertexdefinitivo
             services.AddDbContext<CounterTexDBContext>(options =>
                 options.UseSqlServer(connectionString));
 
-            // Registro de interfaces y repositorios
-            services.AddScoped<IAdministrador, AdministradorRepository>();
-            services.AddScoped<IEmpleado, EmpleadoRepository>();
-            services.AddScoped<IRegistro, RegistroRepository>();
-            services.AddScoped<ISatelite, SateliteRepository>();
+            // Registro de interfaces y repositorios correctos
             services.AddScoped<IUsuarios, UsuarioRepository>();
-            services.AddScoped<ITokens, TokensRepository>();
-            services.AddScoped<IProvedor, ProveedorRepository>();
+            services.AddScoped<IPrenda, PrendaRepository>();
+            services.AddScoped<IOperacion, OperacionRepository>();
+            services.AddScoped<IProduccion, ProduccionRepository>();
+            services.AddScoped<IProduccionDetalle, ProduccionDetalleRepository>();
+            services.AddScoped<IHorario, HorarioRepository>();
+            services.AddScoped<IMeta, MetaRepository>();
+            services.AddScoped<IMensajesChat, MensajesChatRepository>();
+            services.AddScoped<IContacto, ContactoRepository>();
 
             return services;
         }
     }
-
 }

@@ -30,7 +30,7 @@ namespace proyectocountertexdefinitivo.Controllers
             [HttpPost("PostRegistro")]
             [ProducesResponseType(StatusCodes.Status201Created)]
             [ProducesResponseType(StatusCodes.Status400BadRequest)]
-            public async Task<IActionResult> PostRegistro([FromBody] Registro registro)
+            public async Task<IActionResult> PostRegistro([FromBody] Models.Registros registro)
             {
                 try
                 {
@@ -70,7 +70,7 @@ namespace proyectocountertexdefinitivo.Controllers
         [HttpPut("PutRegistro")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> PutRegistro([FromBody] Registro registro)
+        public async Task<IActionResult> PutRegistro([FromBody] Models.Registros registro)
         {
             try
             {

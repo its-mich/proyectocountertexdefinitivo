@@ -1,11 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using proyectocountertexdefinitivo.Models;
 using proyectocountertexdefinitivo.Controllers;
-using System.ComponentModel.DataAnnotations;
+using proyectocountertexdefinitivo.Models;
+using proyectocountertexdefinitivo.Repositories.Interfaces;
 
-using Microsoft.Win32;
-
-using System;
 
 namespace proyectocountertexdefinitivo.contexto
 {
@@ -13,130 +10,115 @@ namespace proyectocountertexdefinitivo.contexto
     {
         public CounterTexDBContext(DbContextOptions<CounterTexDBContext> options) : base(options) { }
 
-        public DbSet<Usuarios> Usuarios { get; set; }
-        public DbSet<Satelite> Satelites { get; set; }
-        public DbSet<PerfilAdministrador> PerfilAdministradores { get; set; }
-        public DbSet<PerfilEmpleado> PerfilEmpleados { get; set; }
-        public DbSet<Proveedor> Proveedores { get; set; }
-        public DbSet<Registro> Registros { get; set; }
+        public DbSet<Usuario> Usuarios { get; set; }
+        public DbSet<Prenda> Prendas { get; set; }
+        public DbSet<Operacion> Operaciones { get; set; }
+        public DbSet<Produccion> Produccion { get; set; }
+        public DbSet<Registros> ProduccionDetalle { get; set; }
+        public DbSet<Horario> Horarios { get; set; }
+        public DbSet<Meta> Metas { get; set; }
+        public DbSet<MensajeChat> MensajesChat { get; set; }
+        public DbSet<Contacto> Contacto { get; set; }
         public DbSet<Tokens> Tokens { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            //Configuración Entidad Usuario
-            modelBuilder.Entity<Usuarios>(tb =>
+            // Usuarios
+            modelBuilder.Entity<Usuario>(entity =>
             {
-                tb.HasKey(col => col.IdUsuario);
-                tb.Property(col => col.IdUsuario).UseIdentityColumn().ValueGeneratedOnAdd();
-                tb.Property(col => col.NombreUsuario).IsRequired().HasMaxLength(50);
-                tb.Property(col => col.Correo).HasMaxLength(50);
-                tb.Property(col => col.Clave).HasMaxLength(50);
-
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Nombres).HasMaxLength(100).IsRequired();
+                entity.Property(e => e.Apellidos).HasMaxLength(100);
+                entity.Property(e => e.Documento).HasMaxLength(20).IsRequired();
+                entity.HasIndex(e => e.Documento).IsUnique();
+                entity.Property(e => e.Correo).HasMaxLength(100);
+                entity.HasIndex(e => e.Correo).IsUnique();
+                entity.Property(e => e.Contraseña).HasMaxLength(255);
+                entity.Property(e => e.Rol).HasMaxLength(20);
+                entity.Property(e => e.Edad);
+                entity.Property(e => e.Telefono).HasMaxLength(20);
             });
-            modelBuilder.Entity<Usuarios>().ToTable("Usuarios");
 
-            //Configuración Entidad Satélite
-            modelBuilder.Entity<Satelite>(tb =>
+            // Prendas
+            modelBuilder.Entity<Prenda>(entity =>
             {
-                tb.HasKey(col => col.SateliteId);
-                tb.Property(col => col.SateliteId).UseIdentityColumn().ValueGeneratedOnAdd();
-                tb.Property(col => col.Fabricante).IsRequired().HasMaxLength(100);
-                tb.Property(col => col.PagoPrendas).IsRequired();
-                tb.Property(col => col.Ganancias).IsRequired();
-                tb.Property(col => col.Operacion).IsRequired().HasMaxLength(100);
-                tb.Property(col => col.PagoOperacion).IsRequired();
-                tb.Property(col => col.Inventariomaquinas).IsRequired();
-                tb.Property(col => col.TipoMaquina).HasMaxLength(50);
-              
-                //modelBuilder.Entity<Usuarios>().Property(u => u.IdUsuario).HasColumnName("Sa");
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Nombre).HasMaxLength(100).IsRequired();
+                entity.Property(e => e.Genero).HasMaxLength(20);
+                entity.Property(e => e.Color).HasMaxLength(50);
             });
-            modelBuilder.Entity<Satelite>().ToTable("Satelite");
 
-            //Configuración Entidad PerfilAdministrador
-            modelBuilder.Entity<PerfilAdministrador>(tb =>
+            // Operaciones
+            modelBuilder.Entity<Operacion>(entity =>
             {
-                tb.HasKey(col => col.IdAdministrador);
-                tb.Property(col => col.IdAdministrador).UseIdentityColumn().ValueGeneratedOnAdd();
-                tb.Property(col => col.NombreAdministrador).HasMaxLength(100);
-                tb.Property(col => col.ProduccionDiaria).IsRequired();
-                tb.Property(col => col.ProduccionMensual).IsRequired();
-                tb.Property(col => col.ControlPrendas).IsRequired();
-                tb.Property(col => col.Registro).HasMaxLength(100);
-                tb.Property(col => col.Ganancias).IsRequired();
-                tb.Property(col => col.Pagos).IsRequired();
-                tb.Property(col => col.Gastos).IsRequired();
-                tb.Property(col => col.MetaPorCorte).IsRequired();
-                tb.Property(col => col.ConsultarInformacion).IsRequired();
-                tb.Property(col => col.ControlHorarios).IsRequired();
-                tb.Property(col => col.ChatInterno).HasMaxLength(200);
-                tb.Property(col => col.Proveedor).HasMaxLength(100);
-                tb.Property(col => col.BotonAyuda).HasMaxLength(100);
-     
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Nombre).HasMaxLength(100).IsRequired();
+                entity.Property(e => e.ValorUnitario).HasColumnType("decimal(10,2)");
             });
-            modelBuilder.Entity<PerfilAdministrador>().ToTable("PerfilAdministrador");
 
-            //Configuración Entidad PerfilEmpleado
-            modelBuilder.Entity<PerfilEmpleado>(tb =>
+            // Producción
+            modelBuilder.Entity<Produccion>(entity =>
             {
-                tb.HasKey(col => col.IdEmpleado);
-                tb.Property(col => col.IdEmpleado).UseIdentityColumn().ValueGeneratedOnAdd();
-                tb.Property(col => col.ProduccionDiaria).IsRequired();
-                tb.Property(col => col.TipoPrenda).HasMaxLength(100);
-                tb.Property(col => col.TipoOperacion).HasMaxLength(100);
-                tb.Property(col => col.CantidadOperacion).IsRequired();
-                tb.Property(col => col.ValorOperacion).HasColumnType("decimal(18, 2)");
-                tb.Property(col => col.ConsultarInformacion).HasMaxLength(100);
-                tb.Property(col => col.ControlHorarios).IsRequired();
-                tb.Property(col => col.HoraEntrada).IsRequired();
-                tb.Property(col => col.HoraSalida).IsRequired();
-                tb.Property(col => col.MetaPorCorte).IsRequired();
-                tb.Property(col => col.BotonAyuda).HasMaxLength(100);
-                tb.Property(col => col.Estadisticas).HasMaxLength(200);
-                tb.Property(col => col.Observaciones).HasMaxLength(500);
-                tb.HasOne(col => col.Usuario).WithOne()
-                  .HasForeignKey<PerfilEmpleado>(col => col.IdUsuario)
-                  .OnDelete(DeleteBehavior.Cascade); // Comportamiento de eliminación en cascada
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Fecha).HasColumnType("date");
+                entity.Property(e => e.TotalValor).HasColumnType("decimal(10,2)");
+                entity.HasOne<Usuario>().WithMany().HasForeignKey(e => e.UsuarioId);
+                entity.HasOne<Prenda>().WithMany().HasForeignKey(e => e.PrendaId);
             });
-            modelBuilder.Entity<PerfilEmpleado>().ToTable("PerfilEmpleado");
 
-            //Configuración Entidad Registro
-            modelBuilder.Entity<Registro>(tb =>
+            // Producción Detalle
+            modelBuilder.Entity<ProduccionDetalle>(entity =>
             {
-                tb.HasKey(col => col.IdRegistro);
-                tb.Property(col => col.IdRegistro).UseIdentityColumn().ValueGeneratedOnAdd();
-                tb.Property(col => col.Nombres).IsRequired().HasMaxLength(100);
-                tb.Property(col => col.Apellidos).HasMaxLength(100);
-                tb.Property(col => col.Documento).IsRequired();
-                tb.Property(col => col.Correo).HasMaxLength(100);
-                tb.Property(col => col.Contraseña).HasMaxLength(100);
-                tb.Property(col => col.ConfirmarContraseña).HasMaxLength(100);
-                tb.Property(col => col.FechaRegistro).IsRequired();
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Cantidad).IsRequired();
+                entity.HasOne<Produccion>().WithMany().HasForeignKey(e => e.ProduccionId);
+                entity.HasOne<Operacion>().WithMany().HasForeignKey(e => e.OperacionId);
+                entity.Property(e => e.ValorTotal)
+                      .HasColumnType("decimal(10,2)")
+                      .HasComputedColumnSql("[Cantidad] * (SELECT ValorUnitario FROM Operaciones WHERE Operaciones.Id = OperacionId)", stored: true);
             });
-            modelBuilder.Entity<Registro>().ToTable("Registro");
 
-            //Configuración Entidad Proveedor
-            modelBuilder.Entity<Proveedor>(tb =>
+            // Horarios
+            modelBuilder.Entity<Horario>(entity =>
             {
-                tb.HasKey(col => col.IdProveedor);
-                tb.Property(col => col.IdProveedor).UseIdentityColumn().ValueGeneratedOnAdd();
-                tb.Property(col => col.NombreProveedor).IsRequired().HasMaxLength(100);
-                tb.Property(col => col.PrecioPrenda).HasColumnType("decimal(18, 2)");
-                tb.Property(col => col.TipoPrenda).HasMaxLength(100).IsRequired();
-                tb.Property(col => col.Telefono).IsRequired();
-                tb.Property(col => col.NombreProveedor).HasMaxLength(150).IsRequired();
-                tb.Property(col => col.Direccion).HasMaxLength(200);
-                tb.Property(col => col.Ciudad).HasMaxLength(100);
-                tb.Property(col => col.Localidad).HasMaxLength(100);
-                tb.Property(col => col.Barrio).HasMaxLength(100);
-                tb.Property(col => col.CantidadPrendas).IsRequired();
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Fecha).HasColumnType("date");
+                entity.Property(e => e.HoraEntrada).HasColumnType("time");
+                entity.Property(e => e.HoraSalida).HasColumnType("time");
+                entity.HasOne<Usuario>().WithMany().HasForeignKey(e => e.UsuarioId);
             });
-            modelBuilder.Entity<Proveedor>().ToTable("Proveedor");
-        }
 
-        public async Task<bool> SaveAsync()
-        {
-            return await SaveChangesAsync() > 0;
+            // Metas
+            modelBuilder.Entity<Meta>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Fecha).HasColumnType("date");
+                entity.Property(e => e.MetaCorte);
+                entity.Property(e => e.ProduccionReal);
+                entity.HasOne<Usuario>().WithMany().HasForeignKey(e => e.UsuarioId);
+            });
+
+            // Mensajes Chat
+            modelBuilder.Entity<MensajeChat>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.FechaHora).HasColumnType("datetime");
+                entity.Property(e => e.Mensaje);
+                entity.HasOne<Usuario>().WithMany().HasForeignKey(e => e.RemitenteId).OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne<Usuario>().WithMany().HasForeignKey(e => e.DestinatarioId).OnDelete(DeleteBehavior.Restrict);
+            });
+
+            // Contacto
+            modelBuilder.Entity<Contacto>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.NombreCompleto).HasMaxLength(100);
+                entity.Property(e => e.Telefono).HasMaxLength(20);
+                entity.Property(e => e.Correo).HasMaxLength(100);
+                entity.Property(e => e.Observacion);
+            });
         }
     }
 }

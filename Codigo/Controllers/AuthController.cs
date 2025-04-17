@@ -33,7 +33,7 @@ namespace proyectocountertexdefinitivo.Controllers
             var usuario = _context.Usuarios
                 .FirstOrDefault(u => u.Correo == login.Correo);
 
-            if (usuario == null || usuario.Clave != login.Clave)
+            if (usuario == null || usuario.Contraseña != login.Clave)
             {
                 return Unauthorized("Invalid email or password");
             }

@@ -2,89 +2,110 @@
 using proyectocountertexdefinitivo.Models;
 using proyectocountertexdefinitivo.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using proyectocountertexdefinitivo.contexto;
+using Microsoft.EntityFrameworkCore;
 
 namespace proyectocountertexdefinitivo.Controllers
 {
+    //using Microsoft.AspNetCore.Mvc;
+    //using Microsoft.EntityFrameworkCore;
+    //using CounterTex.Models;
+    //using System.Linq;
+    //using System.Threading.Tasks;
+
     [Route("api/[controller]")]
     [ApiController]
- 
-    public class Usuarioscontroller : ControllerBase
+    public class UsuariosController : ControllerBase
     {
-        private readonly IUsuarios _usuarios;
+        private readonly CounterTexDBContext _context;
 
-        public Usuarioscontroller(IUsuarios usuarios)
+        public UsuariosController(CounterTexDBContext context)
         {
-            _usuarios = usuarios;
+            _context = context;
         }
 
-        [HttpGet("GetUsuarios")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> GetUsuarios()
+        // GET: api/Usuarios
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Usuario>>> GetUsuarios()
         {
-            var response = await _usuarios.GetUsuarios();
-            return Ok(response);
+            return await _context.Usuarios.ToListAsync();
         }
 
-        [HttpPost("PostUsuarios")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> PostUsuarios([FromBody] Usuarios usuarios)
+        // GET: api/Usuarios/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Usuario>> GetUsuario(int id)
         {
+            var usuario = await _context.Usuarios.FindAsync(id);
+
+            if (usuario == null)
+            {
+                return NotFound();
+            }
+
+            return usuario;
+        }
+
+        // PUT: api/Usuarios/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutUsuario(int id, Usuario usuario)
+        {
+            if (id != usuario.Id)
+            {
+                return BadRequest();
+            }
+
+            _context.Entry(usuario).State = EntityState.Modified;
+
             try
             {
-                var response = await _usuarios.PostUsuarios(usuarios);
-                if (response == true)
-                    return Ok("bienvenido ingresaste correctamente");
-                else
-                    return BadRequest(response);
+                await _context.SaveChangesAsync();
             }
-            catch (Exception ex)
+            catch (DbUpdateConcurrencyException)
             {
-                return BadRequest(ex.Message);
+                if (!UsuarioExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
             }
+
+            return NoContent();
         }
 
-
-        [HttpDelete("DeleteUsuarios/{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> DeleteUsuarios(int id)
+        // POST: api/Usuarios
+        [HttpPost]
+        public async Task<ActionResult<Usuario>> PostUsuario(Usuario usuario)
         {
-            try
-            {
-                var response = await _usuarios.DeleteUsuarios
-                    (id);
-                if (response == true)
-                    return Ok("Perfil eliminado correctamente");
-                else
-                    return BadRequest("Error al eliminar el perfil");
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            _context.Usuarios.Add(usuario);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetUsuario", new { id = usuario.Id }, usuario);
         }
 
-        [HttpPut("PutUsuarios")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> PutUsuarios([FromBody] Usuarios usuarios)
+        // DELETE: api/Usuarios/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteUsuario(int id)
         {
-            try
+            var usuario = await _context.Usuarios.FindAsync(id);
+            if (usuario == null)
             {
-                var response = await _usuarios.PutUsuarios(usuarios);
-                if (response == true)
-                    return Ok("Perfil actualizado correctamente");
-                else
-                    return BadRequest("Error al actualizar el perfil");
+                return NotFound();
             }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+
+            _context.Usuarios.Remove(usuario);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        private bool UsuarioExists(int id)
+        {
+            return _context.Usuarios.Any(e => e.Id == id);
         }
     }
+
 }
 
