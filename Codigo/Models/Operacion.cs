@@ -15,7 +15,7 @@ namespace proyectocountertexdefinitivo.Models
         [Column(TypeName = "decimal(10,2)")]
         public decimal ValorUnitario { get; set; }
 
-        public ICollection<Registros> ProduccionDetalles { get; set; }
+        public ICollection<Usuario> ProduccionDetalles { get; set; }
     }
 
 }

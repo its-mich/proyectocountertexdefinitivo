@@ -5,8 +5,7 @@ using proyectocountertexdefinitivo.Models;
 
 namespace proyectocountertexdefinitivo.Controllers
 {
-    public class Metas : Controller
-    {
+  
         [Route("api/[controller]")]
         [ApiController]
         public class MetasController : ControllerBase
@@ -62,5 +61,5 @@ namespace proyectocountertexdefinitivo.Controllers
             }
         }
 
-    }
+    
 }

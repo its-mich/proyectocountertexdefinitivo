@@ -15,11 +15,11 @@ namespace proyectocountertexdefinitivo.Repositories.repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<Registros>> GetAllAsync() => await _context.ProduccionDetalle.ToListAsync();
+        public async Task<IEnumerable<ProduccionDetalle>> GetAllAsync() => await _context.ProduccionDetalle.ToListAsync();
 
-        public async Task<Registros> GetByIdAsync(int id) => await _context.ProduccionDetalle.FindAsync(id);
+        public async Task<ProduccionDetalle> GetByIdAsync(int id) => await _context.ProduccionDetalle.FindAsync(id);
 
-        public async Task<Registros> CreateAsync(Registros detalle)
+        public async Task<ProduccionDetalle> CreateAsync(ProduccionDetalle detalle)
         {
             _context.ProduccionDetalle.Add(detalle);
             await _context.SaveChangesAsync();

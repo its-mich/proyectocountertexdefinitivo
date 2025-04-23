@@ -14,18 +14,36 @@ namespace proyectocountertexdefinitivo.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<MensajeChat>> GetAllAsync() => await _context.MensajesChat.ToListAsync();
+        public async Task<IEnumerable<MensajeChat>> ObtenerTodosAsync()
+        {
+            return await _context.MensajesChat.ToListAsync();
+        }
 
-        public async Task<MensajeChat> GetByIdAsync(int id) => await _context.MensajesChat.FindAsync(id);
+        public async Task<MensajeChat> ObtenerPorIdAsync(int id)
+        {
+            return await _context.MensajesChat.FindAsync(id);
+        }
 
-        public async Task<MensajeChat> CreateAsync(MensajeChat mensaje)
+        public async Task<IEnumerable<MensajeChat>> ObtenerPorUsuarioAsync(int usuarioId)
+        {
+            return await _context.MensajesChat
+                .Where(m => m.RemitenteId == usuarioId)
+                .ToListAsync();
+        }
+
+        public async Task AgregarAsync(MensajeChat mensaje)
         {
             _context.MensajesChat.Add(mensaje);
             await _context.SaveChangesAsync();
-            return mensaje;
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task ActualizarAsync(MensajeChat mensaje)
+        {
+            _context.MensajesChat.Update(mensaje);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task EliminarAsync(int id)
         {
             var mensaje = await _context.MensajesChat.FindAsync(id);
             if (mensaje != null)
@@ -35,5 +53,4 @@ namespace proyectocountertexdefinitivo.Repositories
             }
         }
     }
-
 }

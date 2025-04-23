@@ -1,144 +1,214 @@
-CREATE DATABASE DBCounterTex
-use DBCounterTex
--- Creación de la tabla Usuario
-CREATE TABLE Usuario (
-    IdUsuario INT IDENTITY(1,1) PRIMARY KEY,
-    NombreUsuario NVARCHAR(50),
-    Correo NVARCHAR(50),
-    Clave NVARCHAR(50)
-);
+-- Crear base de datos
+CREATE DATABASE CounterTexDB;
+GO
 
--- Creación de la tabla Satelite
-CREATE TABLE Satelite (
-    SateliteId INT IDENTITY(1,1) PRIMARY KEY,
-    Fabricante NVARCHAR(100),
-    PagoPrendas DECIMAL(18, 2) ,
-    Ganancias DECIMAL(18, 2),
-    Operacion NVARCHAR(100),
-    PagoOperacion DECIMAL(18, 2),
-    Inventariomaquinas INT ,
-    TipoMaquina NVARCHAR(50),
-    IdUsuario INT,
-    FOREIGN KEY (IdUsuario) REFERENCES Usuario(IdUsuario)
-);
+USE CounterTexDB;
+GO
 
--- Creación de la tabla PerfilAdministrador
-CREATE TABLE PerfilAdministrador (
-    IdAdministrador INT IDENTITY(1,1) PRIMARY KEY,
-    NombreAdministrador NVARCHAR(100),
-    ProduccionDiaria int,
-    ProduccionMensual int,
-    ControlPrendas int,
-    Registro NVARCHAR(100),
-    Ganancias DECIMAL(18, 2) ,
-    Pagos DECIMAL(18, 2) ,
-    Gastos DECIMAL(18, 2) ,
-    MetaPorCorte DECIMAL(18, 2),
-    ConsultarInformacion nvarchar(200	) ,
-    ControlHorarios datetime ,
-    ChatInterno NVARCHAR(200),
-    Proveedor NVARCHAR(100),
-    BotonAyuda NVARCHAR(100),
-    IdUsuario INT,
-    FOREIGN KEY (IdUsuario) REFERENCES Usuario(IdUsuario)
-);
-
--- Creación de la tabla PerfilEmpleado
-CREATE TABLE PerfilEmpleado (
-    IdEmpleado INT IDENTITY(1,1) PRIMARY KEY,
-    ProduccionDiaria DECIMAL(18, 2) ,
-    TipoPrenda NVARCHAR(100),
-    TipoOperacion NVARCHAR(100),
-    CantidadOperacion INT ,
-    ValorOperacion DECIMAL(18, 2),
-    ConsultarInformacion NVARCHAR(100),
-    ControlHorarios Datetime,
-    HoraEntrada DATETIME ,
-    HoraSalida DATETIME ,
-    MetaPorCorte DECIMAL(18, 2) ,
-    BotonAyuda NVARCHAR(100),
-    Estadisticas NVARCHAR(200),
-    Observaciones NVARCHAR(500),
-    IdUsuario INT,
-    FOREIGN KEY (IdUsuario) REFERENCES Usuario(IdUsuario)
-);
-
--- Creación de la tabla Registro
-CREATE TABLE Registro (
-    IdRegistro INT IDENTITY(1,1) PRIMARY KEY,
-    Nombres NVARCHAR(100) ,
+-- Tabla: Usuarios
+CREATE TABLE Usuarios (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    Nombres NVARCHAR(100) NOT NULL,
     Apellidos NVARCHAR(100),
-    Documento NVARCHAR(50) ,
+    Documento NVARCHAR(20) NOT NULL UNIQUE,
+    Correo NVARCHAR(100) UNIQUE,
+    Contraseña NVARCHAR(255),
+    Rol NVARCHAR(20),
+    Edad INT,
+    Telefono NVARCHAR(20)
+);
+
+-- Tabla: Prendas
+CREATE TABLE Prendas (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    Nombre NVARCHAR(100) NOT NULL,
+    Genero NVARCHAR(20),
+    Color NVARCHAR(50)
+);
+
+-- Tabla: Operaciones
+CREATE TABLE Operaciones (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    Nombre NVARCHAR(100) NOT NULL,
+    ValorUnitario DECIMAL(10,2)
+);
+
+CREATE TABLE Produccion (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    Fecha DATE,
+    TotalValor DECIMAL(10,2),
+    UsuarioId INT NOT NULL,
+    PrendaId INT NOT NULL,
+    CONSTRAINT FK_Produccion_Usuario FOREIGN KEY (UsuarioId) REFERENCES Usuarios(Id),
+    CONSTRAINT FK_Produccion_Prenda FOREIGN KEY (PrendaId) REFERENCES Prendas(Id)
+);
+
+
+-- Tabla: ProduccionDetalle
+CREATE TABLE ProduccionDetalle (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    Cantidad INT NOT NULL,
+    ProduccionId INT NOT NULL,
+    OperacionId INT NOT NULL,
+    ValorTotal DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (ProduccionId) REFERENCES Produccion(Id),
+    FOREIGN KEY (OperacionId) REFERENCES Operaciones(Id)
+);
+
+
+-- Tabla: Horarios
+CREATE TABLE Horarios (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    Fecha DATE,
+    HoraEntrada TIME,
+    HoraSalida TIME,
+    UsuarioId INT FOREIGN KEY REFERENCES Usuarios(Id)
+);
+
+-- Tabla: Metas
+CREATE TABLE Metas (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    Fecha DATE,
+    MetaCorte INT,
+    ProduccionReal INT,
+    UsuarioId INT FOREIGN KEY REFERENCES Usuarios(Id)
+);
+
+-- Tabla: MensajesChat
+CREATE TABLE MensajesChat (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    FechaHora DATETIME,
+    Mensaje NVARCHAR(MAX),
+    RemitenteId INT NOT NULL,
+    DestinatarioId INT NOT NULL,
+    CONSTRAINT FK_Remitente FOREIGN KEY (RemitenteId) REFERENCES Usuarios(Id) ON DELETE NO ACTION,
+    CONSTRAINT FK_Destinatario FOREIGN KEY (DestinatarioId) REFERENCES Usuarios(Id) ON DELETE NO ACTION
+);
+
+-- Tabla: Contacto
+CREATE TABLE Contacto (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    NombreCompleto NVARCHAR(100),
+    Telefono NVARCHAR(20),
     Correo NVARCHAR(100),
-    Contraseña NVARCHAR(100),
-    ConfirmarContraseña NVARCHAR(100),
-    FechaRegistro DATETIME 
+    Observacion NVARCHAR(MAX)
 );
 
--- Creación de la tabla Proveedor
-CREATE TABLE Proveedor (
-    IdProveedor INT IDENTITY(1,1) PRIMARY KEY,
-    NombreProveedor NVARCHAR(150),
-    PrecioPrenda DECIMAL(18, 2),
-    TipoPrenda NVARCHAR(100),
-    Telefono NVARCHAR(50),
-    Direccion NVARCHAR(200),
-    Ciudad NVARCHAR(100),
-    Localidad NVARCHAR(100),
-    Barrio NVARCHAR(100),
-    CantidadPrendas INT
-);
+-- INSERTS ---------------------------
 
--- Creación de la tabla Tokens (Si es necesaria para el sistema)
-CREATE TABLE Tokens (
-    IdToken INT IDENTITY(1,1) PRIMARY KEY,
-    Token NVARCHAR(255) ,
-    FechaCreacion DATETIME 
-);
+-- Usuarios
+INSERT INTO Usuarios (Nombres, Apellidos, Documento, Correo, Contraseña, Rol, Edad, Telefono)
+VALUES 
+('Laura', 'Pérez', '12345678', 'laura.perez@example.com', '1234hashed', 'Administrador', 30, '3101234567'),
+('Carlos', 'Martínez', '87654321', 'carlos.martinez@example.com', 'abcdhashed', 'Operario', 25, '3129876543');
 
+-- Prendas
+INSERT INTO Prendas (Nombre, Genero, Color)
+VALUES 
+('Camisa Clásica', 'Unisex', 'Blanco'),
+('Pantalón Slim', 'Masculino', 'Azul');
 
-select * from Registro
+-- Operaciones
+INSERT INTO Operaciones (Nombre, ValorUnitario)
+VALUES 
+('Corte', 500.00),
+('Costura', 700.00),
+('Revisión', 300.00);
 
+-- Produccion
+INSERT INTO Produccion (Fecha, TotalValor, UsuarioId, PrendaId)
+VALUES 
+('2025-04-19', 3500.00, 2, 1),
+('2025-04-19', 2100.00, 2, 2);
 
+-- ProduccionDetalle
+INSERT INTO ProduccionDetalle (Cantidad, ProduccionId, OperacionId, ValorTotal)
+VALUES 
+(5, 1, 1, 500.000),
+(3, 1, 2, 600.000),
+(2, 2, 3, 900.000);
 
--- Inserción de datos en la tabla Usuario
-INSERT INTO Usuario (NombreUsuario, Correo, Clave)
-VALUES
-('admin', 'admin@example.com', 'password123'),
-('empleado1', 'empleado1@example.com', 'password456'),
-('empleado2', 'empleado2@example.com', 'password789');
+-- Horarios
+INSERT INTO Horarios (Fecha, HoraEntrada, HoraSalida, UsuarioId)
+VALUES 
+('2025-04-19', '07:00', '15:00', 2),
+('2025-04-18', '08:00', '16:00', 2);
 
--- Inserción de datos en la tabla Satelite
-INSERT INTO Satelite (Fabricante, PagoPrendas, Ganancias, Operacion, PagoOperacion, Inventariomaquinas, TipoMaquina, IdUsuario)
-VALUES
-('FabricanteA', 5000.00, 12000.00, 'Corte', 2000.00, 10, 'Cortadora', 1),
-('FabricanteB', 3000.00, 8000.00, 'Costura', 1500.00, 8, 'Recta', 2),
-('FabricanteC', 4000.00, 10000.00, 'Plancha', 1800.00, 5, 'Planchadora', 3);
+-- Metas
+INSERT INTO Metas (Fecha, MetaCorte, ProduccionReal, UsuarioId)
+VALUES 
+('2025-04-19', 50, 45, 2),
+('2025-04-18', 60, 62, 2);
 
--- Inserción de datos en la tabla PerfilAdministrador
-INSERT INTO PerfilAdministrador (NombreAdministrador, ProduccionDiaria, ProduccionMensual, ControlPrendas, Registro, Ganancias, Pagos, Gastos, MetaPorCorte, ConsultarInformacion, ControlHorarios, ChatInterno, Proveedor, BotonAyuda, IdUsuario)
-VALUES
-('Administrador1', 1000.00, 30000.00, 1, 'Registro1', 15000.00, 5000.00, 2000.00, 500.00, 1, 1, 'Chat Soporte', 'ProveedorA', 'Boton Ayuda 1', 1),
-('Administrador2', 800.00, 24000.00, 0, 'Registro2', 12000.00, 4000.00, 1000.00, 400.00, 1, 1, 'Chat Interno', 'ProveedorB', 'Boton Ayuda 2', 2);
+-- MensajesChat
+INSERT INTO MensajesChat (FechaHora, Mensaje, RemitenteId, DestinatarioId)
+VALUES 
+(GETDATE(), 'Hola, ¿cómo va la producción?', 1, 2),
+(GETDATE(), 'Todo en orden, ya casi terminamos.', 2, 1);
 
--- Inserción de datos en la tabla PerfilEmpleado
-INSERT INTO PerfilEmpleado (ProduccionDiaria, TipoPrenda, TipoOperacion, CantidadOperacion, ValorOperacion, ConsultarInformacion, ControlHorarios, HoraEntrada, HoraSalida, MetaPorCorte, BotonAyuda, Estadisticas, Observaciones, IdUsuario)
-VALUES
-(500.00, 'Camiseta', 'Corte', 50, 10.00, 'Información disponible', 1, '2024-12-10 08:00:00', '2024-12-10 17:00:00', 100.00, 'Botón 1', 'Estadísticas básicas', 'Ninguna', 2),
-(400.00, 'Pantalón', 'Costura', 40, 15.00, 'Información parcial', 1, '2024-12-10 09:00:00', '2024-12-10 18:00:00', 90.00, 'Botón 2', 'Estadísticas avanzadas', 'Revisión requerida', 3);
+-- Contacto
+INSERT INTO Contacto (NombreCompleto, Telefono, Correo, Observacion)
+VALUES 
+('Andrés López', '3001234567', 'andres.lopez@correo.com', 'Posible proveedor de insumos.'),
+('María Torres', '3017654321', 'maria.torres@correo.com', 'Contacto para nuevos diseños.');
 
--- Inserción de datos en la tabla Registro
-INSERT INTO Registro (Nombres, Apellidos, Documento, Correo, Contraseña, ConfirmarContraseña, FechaRegistro)
-VALUES
-('Juan', 'Pérez', '12345678', 'juan.perez@example.com', 'clave123', 'clave123', '2024-12-09 10:00:00'),
-('María', 'López', '87654321', 'maria.lopez@example.com', 'clave456', 'clave456', '2024-12-08 11:00:00'),
-('Pedro', 'Gómez', '56789012', 'pedro.gomez@example.com', 'clave789', 'clave789', '2024-12-07 12:00:00');
-
--- Inserción de datos en la tabla Proveedor
-INSERT INTO Proveedor (NombreProveedor, PrecioPrenda, TipoPrenda, Telefono, Direccion, Ciudad, Localidad, Barrio, CantidadPrendas)
-VALUES
-('Proveedor1', 25.50, 'Camiseta', '555-1234', 'Calle Falsa 123', 'Ciudad A', 'Localidad X', 'Barrio Alpha', 1000),
-('Proveedor2', 30.75, 'Pantalón', '555-5678', 'Avenida Siempreviva 742', 'Ciudad B', 'Localidad Y', 'Barrio Beta', 800),
-('Proveedor3', 20.00, 'Short', '555-9012', 'Plaza Mayor 45', 'Ciudad C', 'Localidad Z', 'Barrio Gamma', 600);
+ALTER TABLE Usuarios ADD OperacionId INT;
+ALTER TABLE Usuarios
+ADD CONSTRAINT FK_Usuario_Operacion FOREIGN KEY (OperacionId) REFERENCES Operaciones(Id);
 
 
+ALTER TABLE Metas ADD FechaHora DATETIME;
+ALTER TABLE Metas ADD Mensaje NVARCHAR(500);
+ALTER TABLE Metas ADD RemitenteId INT;
+ALTER TABLE Metas ADD DestinatarioId INT;
+
+ALTER TABLE Metas ADD CONSTRAINT FK_Meta_Remitente FOREIGN KEY (RemitenteId) REFERENCES Usuarios(Id);
+ALTER TABLE Metas ADD CONSTRAINT FK_Meta_Destinatario FOREIGN KEY (DestinatarioId) REFERENCES Usuarios(Id);
+
+
+ALTER TABLE ProduccionDetalle DROP COLUMN ValorTotal;
+ALTER TABLE ProduccionDetalle ADD ValorTotal AS (Cantidad * (SELECT ValorUnitario FROM Operaciones WHERE Operaciones.Id = OperacionId)) PERSISTED;
+
+
+ALTER TABLE ProduccionDetalle DROP COLUMN ValorTotal;
+ALTER TABLE ProduccionDetalle ADD ValorTotal DECIMAL(10, 2) NULL;
+
+
+ALTER TABLE Operaciones
+ADD CONSTRAINT DF_ValorUnitario DEFAULT 0.00 FOR ValorUnitario;
+
+
+ALTER TABLE Usuarios
+ALTER COLUMN OperacionId INT NULL;
+
+SELECT * FROM Usuarios WHERE OperacionId IS NULL;
+
+SELECT * FROM Operaciones WHERE ValorUnitario IS NULL;
+
+
+SELECT COLUMN_NAME, DATA_TYPE
+FROM INFORMATION_SCHEMA.COLUMNS
+WHERE TABLE_NAME = 'Usuarios';
+
+ALTER TABLE Usuarios
+ALTER COLUMN Id INT;
+
+
+SELECT COLUMN_NAME, DATA_TYPE
+FROM INFORMATION_SCHEMA.COLUMNS
+WHERE TABLE_NAME = 'Usuarios';
+
+-- Cambiar columna OperacionId a INT (nullable)
+ALTER TABLE Usuarios
+ALTER COLUMN OperacionId INT;
+
+-- Cambiar Edad a INT (nullable)
+ALTER TABLE Usuarios
+ALTER COLUMN Edad INT;
+
+select * from Usuarios;
+
+
+UPDATE Usuarios
+SET Rol = 'Empleado'
+WHERE Correo = 'carlos.martinez@example.com';

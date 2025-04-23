@@ -32,7 +32,7 @@ namespace proyectocountertexdefinitivo.Controllers
                 {
                     return NotFound();
                 }
-
+                  
                 return contacto;
             }
 
