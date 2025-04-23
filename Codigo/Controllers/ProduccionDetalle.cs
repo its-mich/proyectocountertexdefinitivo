@@ -19,13 +19,13 @@ namespace  proyectocountertexdefinitivo.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Registros>>> GetProduccionDetalles()
+        public async Task<ActionResult<IEnumerable<ProduccionDetalle>>> GetProduccionDetalles()
         {
             return await _context.ProduccionDetalle.ToListAsync();
         }
 
         [HttpPost]
-        public async Task<ActionResult<Registros>> PostProduccionDetalle(Registros produccionDetalle)
+        public async Task<ActionResult<ProduccionDetalle>> PostProduccionDetalle(ProduccionDetalle produccionDetalle)
         {
             _context.ProduccionDetalle.Add(produccionDetalle);
             await _context.SaveChangesAsync();

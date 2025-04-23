@@ -1,31 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using proyectocountertexdefinitivo.Controllers;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace proyectocountertexdefinitivo.Models
 {
+
+    [Table("Produccion")]  // Especifica explícitamente el nombre de la tabla
     public class Produccion
     {
-        //[Key]
-        //public int Id { get; set; }
-
-        //[Required]
-        //public int ProduccionId { get; set; }
-
-        //[ForeignKey("ProduccionId")]
-        //public  Produccion Producciones { get; set; }
-
-        //[Required]
-        //public int OperacionId { get; set; }
-
-        //[ForeignKey("OperacionId")]
-        //public Operacion Operacion { get; set; }
-
-        //public int Cantidad { get; set; }
-
-        //[NotMapped]
-        //public decimal ValorTotal => Cantidad * (Operacion?.ValorUnitario ?? 0);
-
+        [Key]
         public int Id { get; set; }
 
         [Column(TypeName = "date")]
@@ -34,12 +16,19 @@ namespace proyectocountertexdefinitivo.Models
         [Column(TypeName = "decimal(10,2)")]
         public decimal TotalValor { get; set; }
 
+        // Clave foránea para Usuario
         public int UsuarioId { get; set; }
+
+        [ForeignKey("UsuarioId")]   
         public Usuario Usuario { get; set; }
 
+        // Clave foránea para Prenda
         public int PrendaId { get; set; }
+
+        [ForeignKey("PrendaId")]
         public Prenda Prenda { get; set; }
+
+        // Relación: Una producción tiene muchos detalles
+        public ICollection<ProduccionDetalle> ProduccionDetalles { get; set; }
     }
-
-
 }

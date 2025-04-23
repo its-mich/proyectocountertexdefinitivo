@@ -13,8 +13,8 @@ namespace proyectocountertexdefinitivo.contexto
         public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<Prenda> Prendas { get; set; }
         public DbSet<Operacion> Operaciones { get; set; }
-        public DbSet<Produccion> Produccion { get; set; }
-        public DbSet<Registros> ProduccionDetalle { get; set; }
+        public DbSet<Produccion> Producciones { get; set; }
+        public DbSet<ProduccionDetalle> ProduccionDetalle { get; set; }
         public DbSet<Horario> Horarios { get; set; }
         public DbSet<Meta> Metas { get; set; }
         public DbSet<MensajeChat> MensajesChat { get; set; }
@@ -61,11 +61,15 @@ namespace proyectocountertexdefinitivo.contexto
             // Producción
             modelBuilder.Entity<Produccion>(entity =>
             {
-                entity.HasKey(e => e.Id);
-                entity.Property(e => e.Fecha).HasColumnType("date");
-                entity.Property(e => e.TotalValor).HasColumnType("decimal(10,2)");
-                entity.HasOne<Usuario>().WithMany().HasForeignKey(e => e.UsuarioId);
-                entity.HasOne<Prenda>().WithMany().HasForeignKey(e => e.PrendaId);
+                modelBuilder.Entity<Produccion>()
+               .HasOne(p => p.Usuario)
+               .WithMany(u => u.Producciones)
+               .HasForeignKey(p => p.UsuarioId);
+
+                modelBuilder.Entity<Produccion>()
+                    .HasOne(p => p.Prenda)
+                    .WithMany(pr => pr.Producciones)
+                    .HasForeignKey(p => p.PrendaId);
             });
 
             // Producción Detalle
@@ -104,10 +108,20 @@ namespace proyectocountertexdefinitivo.contexto
             modelBuilder.Entity<MensajeChat>(entity =>
             {
                 entity.HasKey(e => e.Id);
+
                 entity.Property(e => e.FechaHora).HasColumnType("datetime");
-                entity.Property(e => e.Mensaje);
-                entity.HasOne<Usuario>().WithMany().HasForeignKey(e => e.RemitenteId).OnDelete(DeleteBehavior.Restrict);
-                entity.HasOne<Usuario>().WithMany().HasForeignKey(e => e.DestinatarioId).OnDelete(DeleteBehavior.Restrict);
+
+                entity.Property(e => e.Mensaje).IsRequired();
+
+                entity.HasOne(e => e.Remitente)
+                      .WithMany(u => u.MensajesEnviados)
+                      .HasForeignKey(e => e.RemitenteId)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(e => e.Destinatario)
+                      .WithMany(u => u.MensajesRecibidos)
+                      .HasForeignKey(e => e.DestinatarioId)
+                      .OnDelete(DeleteBehavior.Restrict);
             });
 
             // Contacto

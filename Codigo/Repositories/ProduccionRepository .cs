@@ -16,23 +16,23 @@ namespace proyectocountertexdefinitivo.Repositories.repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<Produccion>> GetAllAsync() => await _context.Produccion.ToListAsync();
+        public async Task<IEnumerable<Produccion>> GetAllAsync() => await _context.Producciones.ToListAsync();
 
-        public async Task<Produccion> GetByIdAsync(int id) => await _context.Produccion.FindAsync(id);
+        public async Task<Produccion> GetByIdAsync(int id) => await _context.Producciones.FindAsync(id);
 
         public async Task<Produccion> CreateAsync(Produccion produccion)
         {
-            _context.Produccion.Add(produccion);
+            _context.Producciones.Add(produccion);
             await _context.SaveChangesAsync();
             return produccion;
-        }
+        }   
 
         public async Task DeleteAsync(int id)
         {
-            var produccion = await _context.Produccion.FindAsync(id);
+            var produccion = await _context.Producciones.FindAsync(id);
             if (produccion != null)
             {
-                _context.Produccion.Remove(produccion);
+                _context.Producciones.Remove(produccion);
                 await _context.SaveChangesAsync();
             }
         }
