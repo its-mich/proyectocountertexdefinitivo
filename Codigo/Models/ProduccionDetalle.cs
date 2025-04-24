@@ -1,29 +1,23 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿    using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
 
-namespace proyectocountertexdefinitivo.Models
-{
-    public class ProduccionDetalle
+    namespace proyectocountertexdefinitivo.Models
     {
-        [Key]
-        public int Id { get; set; }
+        public class ProduccionDetalle
+        {
+            public int Id { get; set; }
 
-        [Required]
-        public int Cantidad { get; set; }
+            public int Cantidad { get; set; }
 
-        [Required]
-        public int ProduccionId { get; set; }
+            public int ProduccionId { get; set; }
 
-        [ForeignKey("ProduccionId")]
-        public Produccion Produccion { get; set; }
+            public Produccion Produccion { get; set; }
 
-        [Required]
-        public int OperacionId { get; set; }
+            public int OperacionId { get; set; }
 
-        [ForeignKey("OperacionId")]
-        public Operacion Operacion { get; set; }
+            public Operacion Operacion { get; set; }
 
-        [Column(TypeName = "decimal(10,2)")]
-        public decimal ValorTotal { get; set; }
+            public decimal ValorTotal { get; set; }
+
+        }
     }
-}

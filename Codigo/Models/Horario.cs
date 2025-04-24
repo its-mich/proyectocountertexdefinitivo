@@ -6,12 +6,10 @@ namespace proyectocountertexdefinitivo.Models
 {
     public class Horario
     {
-        [Key]
         public int Id { get; set; }
 
         public int UsuarioId { get; set; }
 
-        [ForeignKey("UsuarioId")]
         public Usuario Usuario { get; set; }
 
         public DateTime Fecha { get; set; }

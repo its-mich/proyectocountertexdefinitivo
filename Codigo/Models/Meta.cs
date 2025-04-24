@@ -1,52 +1,29 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
 
 namespace proyectocountertexdefinitivo.Models
 {
     public class Meta
     {
+        public int Id { get; set; }
 
-     
-            //[Key]
-            //public int Id { get; set; }
+        public DateTime Fecha { get; set; }
 
-            //public int RemitenteId { get; set; }
+        public int MetaCorte { get; set; }
 
-            //[ForeignKey("RemitenteId")]
-            //public Usuario Remitente { get; set; }
+        public int ProduccionReal { get; set; }
 
-            //public int DestinatarioId { get; set; }
+        public int UsuarioId { get; set; }
+        public Usuario Usuario { get; set; }  // Relación con Usuario (por ejemplo, quien realiza la meta)
 
-            //[ForeignKey("DestinatarioId")]
-            //public Usuario Destinatario { get; set; }
+        public int RemitenteId { get; set; }
+        public Usuario Remitente { get; set; }  // Relación con Remitente (quien envió el mensaje)
 
-            //public DateTime FechaHora { get; set; }
+        public int DestinatarioId { get; set; }
+        public Usuario Destinatario { get; set; }  // Relación con Destinatario (quien recibe el mensaje)
 
-            //[Required]
-            //public string Mensaje { get; set; }
-            //public int MetaCorte { get; set; }
-            //public int ProduccionReal { get; set; }
+        public DateTime FechaHora { get; set; }
 
-            //public int UsuarioId { get; set; }
-            //public Usuario Usuario { get; set; }
-
-            public int Id { get; set; }
-
-            [Column(TypeName = "date")]
-            public DateTime Fecha { get; set; }
-
-            public int MetaCorte { get; set; }
-
-            public int ProduccionReal { get; set; }
-
-            public int UsuarioId { get; set; }
-            public Usuario Usuario { get; set; }    
-
-        
-
-
-
-
+        public string Mensaje { get; set; }
     }
 }
