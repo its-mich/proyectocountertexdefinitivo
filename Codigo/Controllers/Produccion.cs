@@ -10,7 +10,7 @@ namespace proyectocountertexdefinitivo.Controllers
     public class ProduccionController : ControllerBase
     {
         private readonly CounterTexDBContext _context;
-
+            
         public ProduccionController(CounterTexDBContext context)
         {
             _context = context;
@@ -80,10 +80,20 @@ namespace proyectocountertexdefinitivo.Controllers
                 return NotFound();
             }
 
+            // Eliminar primero los detalles relacionados
+            var detalles = await _context.ProduccionDetalle
+                                         .Where(d => d.ProduccionId == id)
+                                         .ToListAsync();
+
+            _context.ProduccionDetalle.RemoveRange(detalles);
+
+            // Ahora sí, eliminar la producción
             _context.Producciones.Remove(produccion);
+
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
+
     }
 }

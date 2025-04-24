@@ -2,10 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using proyectocountertexdefinitivo.contexto;
 using proyectocountertexdefinitivo.Models;
-using proyectocountertexdefinitivo.Repositories.Interfaces;
 
-namespace  proyectocountertexdefinitivo.Controllers
-
+namespace proyectocountertexdefinitivo.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -33,6 +31,26 @@ namespace  proyectocountertexdefinitivo.Controllers
             return CreatedAtAction("GetProduccionDetalle", new { id = produccionDetalle.Id }, produccionDetalle);
         }
 
+        // ✅ Método nuevo que calcula ValorTotal antes de guardar
+        [HttpPost("crear-con-calculo")]
+        public async Task<ActionResult<ProduccionDetalle>> CrearDetalleConValorTotal(ProduccionDetalle detalle)
+        {
+            var operacion = await _context.Operaciones
+                .FirstOrDefaultAsync(o => o.Id == detalle.OperacionId);
+
+            if (operacion == null)
+            {
+                return BadRequest("Operación no encontrada.");
+            }
+
+            detalle.ValorTotal = detalle.Cantidad * operacion.ValorUnitario.Value;
+
+            _context.ProduccionDetalle.Add(detalle);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetProduccionDetalles), new { id = detalle.Id }, detalle);
+        }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduccionDetalle(int id)
         {
@@ -48,12 +66,4 @@ namespace  proyectocountertexdefinitivo.Controllers
             return NoContent();
         }
     }
-
-
 }
-
-
-
-
-
-

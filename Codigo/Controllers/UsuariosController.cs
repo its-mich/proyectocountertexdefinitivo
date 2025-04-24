@@ -28,21 +28,19 @@ namespace proyectocountertexdefinitivo.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Usuario>>> GetUsuarios()
         {
-            return await _context.Usuarios.ToListAsync();
-        }
+            var usuarios = await _context.Usuarios.ToListAsync();
 
-        // GET: api/Usuarios/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Usuario>> GetUsuario(int id)
-        {
-            var usuario = await _context.Usuarios.FindAsync(id);
-
-            if (usuario == null)
+            // Agregar logs para verificar valores nulos
+            foreach (var usuario in usuarios)
             {
-                return NotFound();
+                if (usuario.OperacionId == null)
+                {
+                    // Log o impresión para detectar valores nulos
+                    Console.WriteLine($"Usuario con ID {usuario.Id} tiene OperacionId nulo.");
+                }
             }
 
-            return usuario;
+            return usuarios;
         }
 
         // PUT: api/Usuarios/5
