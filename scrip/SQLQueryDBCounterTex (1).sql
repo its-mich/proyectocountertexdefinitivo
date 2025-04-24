@@ -122,11 +122,11 @@ VALUES
 ('2025-04-19', 2100.00, 2, 2);
 
 -- ProduccionDetalle
-INSERT INTO ProduccionDetalle (Cantidad, ProduccionId, OperacionId, ValorTotal)
+INSERT INTO ProduccionDetalle (Cantidad, ProduccionId, OperacionId)
 VALUES 
-(5, 1, 1, 500.000),
-(3, 1, 2, 600.000),
-(2, 2, 3, 900.000);
+(5, 1, 1),
+(3, 1, 2),
+(2, 2, 3);
 
 -- Horarios
 INSERT INTO Horarios (Fecha, HoraEntrada, HoraSalida, UsuarioId)
@@ -151,64 +151,3 @@ INSERT INTO Contacto (NombreCompleto, Telefono, Correo, Observacion)
 VALUES 
 ('Andrés López', '3001234567', 'andres.lopez@correo.com', 'Posible proveedor de insumos.'),
 ('María Torres', '3017654321', 'maria.torres@correo.com', 'Contacto para nuevos diseños.');
-
-ALTER TABLE Usuarios ADD OperacionId INT;
-ALTER TABLE Usuarios
-ADD CONSTRAINT FK_Usuario_Operacion FOREIGN KEY (OperacionId) REFERENCES Operaciones(Id);
-
-
-ALTER TABLE Metas ADD FechaHora DATETIME;
-ALTER TABLE Metas ADD Mensaje NVARCHAR(500);
-ALTER TABLE Metas ADD RemitenteId INT;
-ALTER TABLE Metas ADD DestinatarioId INT;
-
-ALTER TABLE Metas ADD CONSTRAINT FK_Meta_Remitente FOREIGN KEY (RemitenteId) REFERENCES Usuarios(Id);
-ALTER TABLE Metas ADD CONSTRAINT FK_Meta_Destinatario FOREIGN KEY (DestinatarioId) REFERENCES Usuarios(Id);
-
-
-ALTER TABLE ProduccionDetalle DROP COLUMN ValorTotal;
-ALTER TABLE ProduccionDetalle ADD ValorTotal AS (Cantidad * (SELECT ValorUnitario FROM Operaciones WHERE Operaciones.Id = OperacionId)) PERSISTED;
-
-
-ALTER TABLE ProduccionDetalle DROP COLUMN ValorTotal;
-ALTER TABLE ProduccionDetalle ADD ValorTotal DECIMAL(10, 2) NULL;
-
-
-ALTER TABLE Operaciones
-ADD CONSTRAINT DF_ValorUnitario DEFAULT 0.00 FOR ValorUnitario;
-
-
-ALTER TABLE Usuarios
-ALTER COLUMN OperacionId INT NULL;
-
-SELECT * FROM Usuarios WHERE OperacionId IS NULL;
-
-SELECT * FROM Operaciones WHERE ValorUnitario IS NULL;
-
-
-SELECT COLUMN_NAME, DATA_TYPE
-FROM INFORMATION_SCHEMA.COLUMNS
-WHERE TABLE_NAME = 'Usuarios';
-
-ALTER TABLE Usuarios
-ALTER COLUMN Id INT;
-
-
-SELECT COLUMN_NAME, DATA_TYPE
-FROM INFORMATION_SCHEMA.COLUMNS
-WHERE TABLE_NAME = 'Usuarios';
-
--- Cambiar columna OperacionId a INT (nullable)
-ALTER TABLE Usuarios
-ALTER COLUMN OperacionId INT;
-
--- Cambiar Edad a INT (nullable)
-ALTER TABLE Usuarios
-ALTER COLUMN Edad INT;
-
-select * from Usuarios;
-
-
-UPDATE Usuarios
-SET Rol = 'Empleado'
-WHERE Correo = 'carlos.martinez@example.com';
