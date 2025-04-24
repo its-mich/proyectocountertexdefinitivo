@@ -4,10 +4,10 @@ namespace proyectocountertexdefinitivo.Repositories.Interfaces
 {
     public interface IUsuarios
     {
-        Task<List<Usuarios>> GetUsuarios();
-        Task<bool> PostUsuarios(Usuarios usuarios);
-        Task<bool> PutUsuarios(Usuarios usuarios);
-     
-        Task<bool> DeleteUsuarios(int id);
+        Task<IEnumerable<Usuario>> GetAllAsync();
+        Task<Usuario> GetByIdAsync(int id);
+        Task<Usuario> CreateAsync(Usuario usuario);
+        Task UpdateAsync(Usuario usuario);
+        Task DeleteAsync(int id);
     }
 }

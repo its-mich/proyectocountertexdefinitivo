@@ -27,19 +27,19 @@ namespace proyectocountertexdefinitivo.Repositories.Interfaces
             public async Task<bool> PostTokens(Tokens tokens)
             {
                 await context.Tokens.AddAsync(tokens);
-                await context.SaveAsync();
+                await context.SaveChangesAsync();
                 return true;
             }
             public async Task<bool> PutTokens(Tokens tokens)
             {
                 context.Tokens.Update(tokens);
-                await context.SaveAsync();
+                await context.SaveChangesAsync();
                 return true;
             }
             public async Task<bool> DeleteTokens(Tokens tokens)
             {
                 context.Tokens.Remove(tokens);
-                await context.SaveAsync();
+                await context.SaveChangesAsync();
                 return true;
             }
         }

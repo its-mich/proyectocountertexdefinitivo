@@ -8,6 +8,7 @@ using proyectocountertexdefinitivo.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using proyectocountertexdefinitivo.contexto;
 using proyectocountertexdefinitivo;
+using proyectocountertexdefinitivo.Repositories.repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddExternal(builder.Configuration);
@@ -18,7 +19,7 @@ builder.Services.AddDbContext<CounterTexDBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Registro de la interfaz y su implementación
-builder.Services.AddScoped<IRegistro, RegistroRepository>();
+builder.Services.AddScoped<Usuario, Usuario>();
 
 
 builder.Services.AddControllers();
