@@ -8,17 +8,17 @@ namespace proyectocountertexdefinitivo.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class OperacionesController : ControllerBase
+    public class OperacionController : ControllerBase
     {
         private readonly CounterTexDBContext _context;
 
-        public OperacionesController(CounterTexDBContext context)
+        public OperacionController(CounterTexDBContext context)
         {
             _context = context;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Operacion>>> GetOperaciones()
+        public async Task<ActionResult<IEnumerable<Operacion>>> GetOperacion()
         {
             return await _context.Operaciones.ToListAsync();
         }
@@ -37,41 +37,36 @@ namespace proyectocountertexdefinitivo.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutOperacion(int id, Operacion operacion)
+        public async Task<IActionResult> PutOperacion(int id, OperacionUpdateDTO dto)
         {
-            if (id != operacion.Id)
-            {
+            if (id != dto.Id)
                 return BadRequest();
-            }
 
-            _context.Entry(operacion).State = EntityState.Modified;
+            var operacion = await _context.Operaciones.FindAsync(id);
+            if (operacion == null)
+                return NotFound();
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!OperacionExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            operacion.Nombre = dto.Nombre;
+            operacion.ValorUnitario = dto.ValorUnitario;
+
+            await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
         [HttpPost]
-        public async Task<ActionResult<Operacion>> PostOperacion(Operacion operacion)
+        public async Task<IActionResult> PostOperacion(OperacionCreateDTO dto)
         {
+            var operacion = new Operacion
+            {
+                Nombre = dto.Nombre,
+                ValorUnitario = dto.ValorUnitario
+            };
+
             _context.Operaciones.Add(operacion);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetOperacion", new { id = operacion.Id }, operacion);
+            return CreatedAtAction(nameof(GetOperacion), new { id = operacion.Id }, operacion);
         }
 
         [HttpDelete("{id}")]
