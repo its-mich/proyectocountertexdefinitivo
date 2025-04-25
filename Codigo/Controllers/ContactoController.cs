@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using proyectocountertexdefinitivo.contexto;
 using proyectocountertexdefinitivo.Models;
@@ -16,7 +17,7 @@ namespace proyectocountertexdefinitivo.Controllers
             {
                 _context = context;
             }
-
+            
             [HttpGet]
             public async Task<ActionResult<IEnumerable<Contacto>>> GetContactos()
             {
