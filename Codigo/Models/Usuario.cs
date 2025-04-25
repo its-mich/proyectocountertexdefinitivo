@@ -11,6 +11,7 @@ namespace proyectocountertexdefinitivo.Models
 
         public string Apellidos { get; set; }
 
+        [Required]
         public string Documento { get; set; }
 
         public string Correo { get; set; }

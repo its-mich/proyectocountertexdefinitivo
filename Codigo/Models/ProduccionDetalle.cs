@@ -17,7 +17,7 @@
 
             public Operacion Operacion { get; set; }
 
-            public decimal ValorTotal { get; set; }
+            public decimal? ValorTotal { get; set; }
 
         }
     }

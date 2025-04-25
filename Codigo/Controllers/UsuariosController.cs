@@ -26,61 +26,107 @@ namespace proyectocountertexdefinitivo.Controllers
 
         // GET: api/Usuarios
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Usuario>>> GetUsuarios()
+        public async Task<ActionResult<IEnumerable<UsuarioCreateDTO>>> GetUsuarios()
         {
-            var usuarios = await _context.Usuarios.ToListAsync();
-
-            // Agregar logs para verificar valores nulos
-            foreach (var usuario in usuarios)
-            {
-                if (usuario.OperacionId == null)
+            var usuarios = await _context.Usuarios
+                .Select(u => new UsuarioCreateDTO
                 {
-                    // Log o impresión para detectar valores nulos
-                    Console.WriteLine($"Usuario con ID {usuario.Id} tiene OperacionId nulo.");
-                }
-            }
+                    Nombres = u.Nombres,
+                    Apellidos = u.Apellidos,
+                    Documento = u.Documento,
+                    Correo = u.Correo,
+                    Contraseña = u.Contraseña,
+                    Rol = u.Rol,
+                    OperacionId = u.OperacionId,
+                    Edad = u.Edad,
+                    Telefono = u.Telefono
+                }).ToListAsync();
 
             return usuarios;
         }
 
+        // GET: api/Usuarios/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<UsuarioCreateDTO>> GetUsuario(int id)
+        {
+            var usuario = await _context.Usuarios.FindAsync(id);
+
+            if (usuario == null)
+            {
+                return NotFound();
+            }
+
+            var usuarioDTO = new UsuarioCreateDTO
+            {
+                Nombres = usuario.Nombres,
+                Apellidos = usuario.Apellidos,
+                Documento = usuario.Documento,
+                Correo = usuario.Correo,
+                Contraseña = usuario.Contraseña,
+                Rol = usuario.Rol,
+                OperacionId = usuario.OperacionId,
+                Edad = usuario.Edad,
+                Telefono = usuario.Telefono
+            };
+
+            return usuarioDTO;
+        }
+
         // PUT: api/Usuarios/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUsuario(int id, Usuario usuario)
+        public async Task<IActionResult> PutUsuario(int id, UsuarioCreateDTO usuarioDTO)
         {
-            if (id != usuario.Id)
+            var usuario = await _context.Usuarios.FindAsync(id);
+            if (usuario == null)
             {
-                return BadRequest();
+                return NotFound();
             }
 
-            _context.Entry(usuario).State = EntityState.Modified;
+            usuario.Nombres = usuarioDTO.Nombres;
+            usuario.Apellidos = usuarioDTO.Apellidos;
+            usuario.Documento = usuarioDTO.Documento;
+            usuario.Correo = usuarioDTO.Correo;
+            usuario.Contraseña = usuarioDTO.Contraseña;
+            usuario.Rol = usuarioDTO.Rol;
+            usuario.OperacionId = usuarioDTO.OperacionId;
+            usuario.Edad = usuarioDTO.Edad;
+            usuario.Telefono = usuarioDTO.Telefono;
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!UsuarioExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
         // POST: api/Usuarios
         [HttpPost]
-        public async Task<ActionResult<Usuario>> PostUsuario(Usuario usuario)
+        public async Task<ActionResult<UsuarioCreateDTO>> PostUsuario(UsuarioCreateDTO usuarioDTO)
         {
+            // Verificar si ya existe un correo igual
+            var correoExistente = await _context.Usuarios
+                .AnyAsync(u => u.Correo == usuarioDTO.Correo);
+
+            if (correoExistente)
+            {
+                return BadRequest(new { mensaje = "El correo ya está registrado." });
+            }
+
+            var usuario = new Usuario
+            {
+                Nombres = usuarioDTO.Nombres,
+                Apellidos = usuarioDTO.Apellidos,
+                Documento = usuarioDTO.Documento,
+                Correo = usuarioDTO.Correo,
+                Contraseña = usuarioDTO.Contraseña,
+                Rol = usuarioDTO.Rol,
+                OperacionId = usuarioDTO.OperacionId,
+                Edad = usuarioDTO.Edad,
+                Telefono = usuarioDTO.Telefono
+            };
+
             _context.Usuarios.Add(usuario);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetUsuario", new { id = usuario.Id }, usuario);
+            return CreatedAtAction(nameof(GetUsuario), new { id = usuario.Id }, usuarioDTO);
         }
 
         // DELETE: api/Usuarios/5
@@ -104,6 +150,4 @@ namespace proyectocountertexdefinitivo.Controllers
             return _context.Usuarios.Any(e => e.Id == id);
         }
     }
-
 }
-

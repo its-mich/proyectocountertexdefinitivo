@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("proyectocountertexdefinitivo")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8d211a220d27d5b9a65a1502e4767af258f05aeb")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9f28c17aa31d8e1e0bd944b572f2b9d1a4fae679")]
 [assembly: System.Reflection.AssemblyProductAttribute("proyectocountertexdefinitivo")]
 [assembly: System.Reflection.AssemblyTitleAttribute("proyectocountertexdefinitivo")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
