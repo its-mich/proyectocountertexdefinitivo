@@ -3,7 +3,6 @@ using proyectocountertexdefinitivo.Controllers;
 using proyectocountertexdefinitivo.Models;
 using proyectocountertexdefinitivo.Repositories.Interfaces;
 
-
 namespace proyectocountertexdefinitivo.contexto
 {
     public class CounterTexDBContext : DbContext
@@ -19,7 +18,6 @@ namespace proyectocountertexdefinitivo.contexto
         public DbSet<Meta> Metas { get; set; }
         public DbSet<MensajeChat> MensajesChat { get; set; }
         public DbSet<Contacto> Contacto { get; set; }
-        public DbSet<Tokens> Tokens { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -30,22 +28,21 @@ namespace proyectocountertexdefinitivo.contexto
             {
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Nombres).HasMaxLength(100).IsRequired();
-                entity.Property(e => e.Apellidos).HasMaxLength(100);
+                entity.Property(e => e.Apellidos).HasMaxLength(100).IsRequired();
                 entity.Property(e => e.Documento).HasMaxLength(20).IsRequired();
                 entity.HasIndex(e => e.Documento).IsUnique();
-                entity.Property(e => e.Correo).HasMaxLength(100);
+                entity.Property(e => e.Correo).HasMaxLength(100).IsRequired();
                 entity.HasIndex(e => e.Correo).IsUnique();
-                entity.Property(e => e.Contraseña).HasMaxLength(255);
+                entity.Property(e => e.Contraseña).HasMaxLength(255).IsRequired();
                 entity.Property(e => e.Rol).HasMaxLength(20);
                 entity.Property(e => e.Edad);
                 entity.Property(e => e.Telefono).HasMaxLength(20);
-                entity.Property(e => e.OperacionId); // Definir longitud para el string en la base de datos
+                entity.Property(e => e.OperacionId);
 
-                // Relación con Operación (Asegurarse de que la columna OperacionId esté bien definida)
                 entity.HasOne(e => e.Operacion)
-                      .WithMany(o => o.Usuarios) // Relación inversa, los usuarios están relacionados con una operación
+                      .WithMany(o => o.Usuarios)
                       .HasForeignKey(e => e.OperacionId)
-                      .OnDelete(DeleteBehavior.Restrict); // O el comportamiento de eliminación que prefieras
+                      .OnDelete(DeleteBehavior.Restrict);
             });
 
             // Prendas
@@ -62,7 +59,7 @@ namespace proyectocountertexdefinitivo.contexto
             {
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Nombre).HasMaxLength(100).IsRequired();
-                entity.Property(e => e.ValorUnitario).HasColumnType("decimal(10,2)");
+                entity.Property(e => e.ValorUnitario).HasColumnType("decimal(10,2)").IsRequired();
             });
 
             // Producción
@@ -70,43 +67,37 @@ namespace proyectocountertexdefinitivo.contexto
             {
                 entity.HasKey(e => e.Id);
 
-                // Relación con Usuario
                 entity.HasOne(p => p.Usuario)
                       .WithMany(u => u.Producciones)
                       .HasForeignKey(p => p.UsuarioId)
-                      .OnDelete(DeleteBehavior.Cascade);  // O el comportamiento que desees
+                      .OnDelete(DeleteBehavior.Cascade);
 
-                // Relación con Prenda
                 entity.HasOne(p => p.Prenda)
                       .WithMany(pr => pr.Producciones)
                       .HasForeignKey(p => p.PrendaId)
-                      .OnDelete(DeleteBehavior.Restrict);  // O el comportamiento que desees
+                      .OnDelete(DeleteBehavior.Restrict);
             });
 
             // Producción Detalle
             modelBuilder.Entity<ProduccionDetalle>(entity =>
             {
                 entity.HasKey(e => e.Id);
-                entity.Property(e => e.Cantidad).IsRequired();
+                entity.Property(e => e.Cantidad);
 
-                // Relación con Producción
                 entity.HasOne(e => e.Produccion)
                       .WithMany(p => p.ProduccionDetalles)
                       .HasForeignKey(e => e.ProduccionId)
                       .OnDelete(DeleteBehavior.Cascade);
 
-                // Relación con Operación
                 entity.HasOne(e => e.Operacion)
-                      .WithMany(o => o.ProduccionDetalles)  // Relación con la colección correcta
+                      .WithMany(o => o.ProduccionDetalles)
                       .HasForeignKey(e => e.OperacionId)
                       .OnDelete(DeleteBehavior.Restrict);
 
-                // Cálculo de ValorTotal (decimales, computado)
                 entity.Property(e => e.ValorTotal)
                       .HasColumnType("decimal(10,2)")
                       .HasComputedColumnSql("[Cantidad] * (SELECT ValorUnitario FROM Operaciones WHERE Operaciones.Id = OperacionId)", stored: true);
             });
-
 
             // Horarios
             modelBuilder.Entity<Horario>(entity =>
@@ -128,23 +119,20 @@ namespace proyectocountertexdefinitivo.contexto
                 entity.Property(e => e.ProduccionReal);
 
                 entity.Property(e => e.FechaHora).HasColumnType("datetime");
-                entity.Property(e => e.Mensaje).HasMaxLength(500);  // Ajusta según necesites
+                entity.Property(e => e.Mensaje).HasMaxLength(500);
 
-                // Relación con Usuario (UsuarioId)
                 entity.HasOne(e => e.Usuario)
-                      .WithMany() // Si no necesitas la navegación inversa
+                      .WithMany()
                       .HasForeignKey(e => e.UsuarioId)
                       .OnDelete(DeleteBehavior.Restrict);
 
-                // Relación con Remitente
                 entity.HasOne(e => e.Remitente)
-                      .WithMany()  // No se necesita navegación inversa, pero si se necesita, puedes agregar una colección en Usuario
+                      .WithMany()
                       .HasForeignKey(e => e.RemitenteId)
                       .OnDelete(DeleteBehavior.Restrict);
 
-                // Relación con Destinatario
                 entity.HasOne(e => e.Destinatario)
-                      .WithMany()  // Similar, no es necesario una colección en Usuario si no la quieres
+                      .WithMany()
                       .HasForeignKey(e => e.DestinatarioId)
                       .OnDelete(DeleteBehavior.Restrict);
             });
@@ -167,6 +155,19 @@ namespace proyectocountertexdefinitivo.contexto
                       .WithMany(u => u.MensajesRecibidos)
                       .HasForeignKey(e => e.DestinatarioId)
                       .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            // Token (No es persistido en la base de datos)
+            modelBuilder.Entity<Token>(entity =>
+            {
+                entity.HasNoKey(); // Esto asegura que no tenga clave primaria ni se mapee a una tabla
+
+                entity.Property(e => e.TokenValue)
+                      .HasMaxLength(255)
+                      .IsRequired();
+
+                entity.Property(e => e.Rol)
+                      .HasMaxLength(50);
             });
 
             // Contacto

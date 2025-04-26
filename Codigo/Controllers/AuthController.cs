@@ -5,6 +5,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using proyectocountertexdefinitivo.contexto;
+using Microsoft.AspNetCore.Authorization;
 
 namespace proyectocountertexdefinitivo.Controllers
 {
@@ -29,7 +30,7 @@ namespace proyectocountertexdefinitivo.Controllers
                 return BadRequest("Invalid client request");
             }
 
-            // Verificar si el usuario existe en la base de datos
+            // Buscar al usuario
             var usuario = _context.Usuarios
                 .FirstOrDefault(u => u.Correo == login.Correo);
 
@@ -38,27 +39,36 @@ namespace proyectocountertexdefinitivo.Controllers
                 return Unauthorized("Invalid email or password");
             }
 
-            // Generación del token JWT
+            // Clave secreta y credenciales
             var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
+
+            // Agregar claim del rol
+            var claims = new List<Claim>
+    {
+        new Claim(ClaimTypes.Name, usuario.Correo),
+        new Claim(ClaimTypes.Role, usuario.Rol ?? "SinRol")  // por si acaso viene nulo
+    };
 
             var tokenOptions = new JwtSecurityToken(
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Audience"],
-                claims: new List<Claim>
-                {
-                    new Claim(ClaimTypes.Name, usuario.Correo),  // Usamos el correo como nombre de usuario
-                 
-                },
+                claims: claims,
                 expires: DateTime.Now.AddMinutes(30),
                 signingCredentials: signinCredentials
             );
 
             var tokenString = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
-            return Ok(new { Token = tokenString });
+
+            // ⬅️ Aquí va la respuesta completa
+            return Ok(new
+            {
+                Token = tokenString,
+                Rol = usuario.Rol
+            });
         }
 
-        
+
     }
 
 

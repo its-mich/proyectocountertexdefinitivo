@@ -5,8 +5,7 @@ using proyectocountertexdefinitivo.Models;
 
 namespace proyectocountertexdefinitivo.Controllers
 {
-    public class MensajesChat : Controller
-    {
+
         [Route("api/[controller]")]
         [ApiController]
         public class MensajesChatController : ControllerBase
@@ -63,4 +62,3 @@ namespace proyectocountertexdefinitivo.Controllers
         }
 
     }
-}
