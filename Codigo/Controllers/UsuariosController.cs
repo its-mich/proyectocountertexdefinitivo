@@ -36,10 +36,6 @@ namespace proyectocountertexdefinitivo.Controllers
                     Documento = u.Documento,
                     Correo = u.Correo,
                     Contraseña = u.Contraseña,
-                    Rol = u.Rol,
-                    OperacionId = u.OperacionId,
-                    Edad = u.Edad,
-                    Telefono = u.Telefono
                 }).ToListAsync();
 
             return usuarios;
@@ -63,10 +59,6 @@ namespace proyectocountertexdefinitivo.Controllers
                 Documento = usuario.Documento,
                 Correo = usuario.Correo,
                 Contraseña = usuario.Contraseña,
-                Rol = usuario.Rol,
-                OperacionId = usuario.OperacionId,
-                Edad = usuario.Edad,
-                Telefono = usuario.Telefono
             };
 
             return usuarioDTO;
@@ -87,11 +79,6 @@ namespace proyectocountertexdefinitivo.Controllers
             usuario.Documento = usuarioDTO.Documento;
             usuario.Correo = usuarioDTO.Correo;
             usuario.Contraseña = usuarioDTO.Contraseña;
-            usuario.Rol = usuarioDTO.Rol;
-            usuario.OperacionId = usuarioDTO.OperacionId;
-            usuario.Edad = usuarioDTO.Edad;
-            usuario.Telefono = usuarioDTO.Telefono;
-
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -117,10 +104,7 @@ namespace proyectocountertexdefinitivo.Controllers
                 Documento = usuarioDTO.Documento,
                 Correo = usuarioDTO.Correo,
                 Contraseña = usuarioDTO.Contraseña,
-                Rol = usuarioDTO.Rol,
-                OperacionId = usuarioDTO.OperacionId,
-                Edad = usuarioDTO.Edad,
-                Telefono = usuarioDTO.Telefono
+                Rol = "Empleado" // por defecto, o como desees
             };
 
             _context.Usuarios.Add(usuario);

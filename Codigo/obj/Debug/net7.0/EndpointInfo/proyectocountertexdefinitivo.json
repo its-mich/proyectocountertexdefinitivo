@@ -196,7 +196,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Horario"
+                    "$ref": "#/components/schemas/HorarioDTO"
                   }
                 }
               },
@@ -204,7 +204,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Horario"
+                    "$ref": "#/components/schemas/HorarioDTO"
                   }
                 }
               },
@@ -212,7 +212,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Horario"
+                    "$ref": "#/components/schemas/HorarioDTO"
                   }
                 }
               }
@@ -228,17 +228,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Horario"
+                "$ref": "#/components/schemas/HorarioDTO"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/Horario"
+                "$ref": "#/components/schemas/HorarioDTO"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/Horario"
+                "$ref": "#/components/schemas/HorarioDTO"
               }
             }
           }
@@ -249,17 +249,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/Horario"
+                  "$ref": "#/components/schemas/HorarioDTO"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Horario"
+                  "$ref": "#/components/schemas/HorarioDTO"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Horario"
+                  "$ref": "#/components/schemas/HorarioDTO"
                 }
               }
             }
@@ -290,24 +290,24 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/Horario"
+                  "$ref": "#/components/schemas/HorarioDTO"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Horario"
+                  "$ref": "#/components/schemas/HorarioDTO"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Horario"
+                  "$ref": "#/components/schemas/HorarioDTO"
                 }
               }
             }
           }
         }
       },
-      "delete": {
+      "put": {
         "tags": [
           "Horarios"
         ],
@@ -320,6 +320,68 @@
             "schema": {
               "type": "integer",
               "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HorarioDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HorarioDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/HorarioDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Horarios/{empleadoId}/{fecha}/{tipo}": {
+      "delete": {
+        "tags": [
+          "Horarios"
+        ],
+        "parameters": [
+          {
+            "name": "empleadoId",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "fecha",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "tipo",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
             }
           }
         ],
@@ -1506,26 +1568,49 @@
       "Horario": {
         "type": "object",
         "properties": {
-          "id": {
+          "empleadoId": {
             "type": "integer",
             "format": "int32"
           },
-          "usuarioId": {
-            "type": "integer",
-            "format": "int32"
+          "tipo": {
+            "type": "string",
+            "nullable": true
           },
-          "usuario": {
-            "$ref": "#/components/schemas/Usuario"
+          "hora": {
+            "$ref": "#/components/schemas/TimeSpan"
           },
           "fecha": {
             "type": "string",
             "format": "date-time"
           },
-          "horaEntrada": {
+          "observaciones": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "HorarioDTO": {
+        "type": "object",
+        "properties": {
+          "empleadoId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "tipo": {
+            "type": "string",
+            "nullable": true
+          },
+          "hora": {
             "$ref": "#/components/schemas/TimeSpan"
           },
-          "horaSalida": {
-            "$ref": "#/components/schemas/TimeSpan"
+          "fecha": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "observaciones": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -1794,7 +1879,7 @@
         "additionalProperties": false
       },
       "TimeSpan": {
-        "type": "object",
+        "type": "string",
         "properties": {
           "ticks": {
             "type": "integer",
@@ -1871,7 +1956,9 @@
             "readOnly": true
           }
         },
-        "additionalProperties": false
+        "additionalProperties": false,
+        "format": "time-span",
+        "example": "14:30:00"
       },
       "Usuario": {
         "required": [
@@ -1982,24 +2069,6 @@
             "nullable": true
           },
           "contraseña": {
-            "type": "string",
-            "nullable": true
-          },
-          "rol": {
-            "type": "string",
-            "nullable": true
-          },
-          "operacionId": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "edad": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "telefono": {
             "type": "string",
             "nullable": true
           }
