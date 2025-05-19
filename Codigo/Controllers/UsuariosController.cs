@@ -36,6 +36,8 @@ namespace proyectocountertexdefinitivo.Controllers
                     Documento = u.Documento,
                     Correo = u.Correo,
                     Contraseña = u.Contraseña,
+                    Rol = u.Rol,
+                    Id = u.Id,
                 }).ToListAsync();
 
             return usuarios;
@@ -59,6 +61,8 @@ namespace proyectocountertexdefinitivo.Controllers
                 Documento = usuario.Documento,
                 Correo = usuario.Correo,
                 Contraseña = usuario.Contraseña,
+                Rol = usuario.Rol,
+                Id = usuario.Id,
             };
 
             return usuarioDTO;
@@ -79,6 +83,8 @@ namespace proyectocountertexdefinitivo.Controllers
             usuario.Documento = usuarioDTO.Documento;
             usuario.Correo = usuarioDTO.Correo;
             usuario.Contraseña = usuarioDTO.Contraseña;
+            usuario.Rol = usuarioDTO.Rol;
+            usuario.Id = id;
             await _context.SaveChangesAsync();
 
             return NoContent();

@@ -2052,6 +2052,10 @@
       "UsuarioCreateDTO": {
         "type": "object",
         "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
           "nombres": {
             "type": "string",
             "nullable": true
@@ -2061,6 +2065,10 @@
             "nullable": true
           },
           "documento": {
+            "type": "string",
+            "nullable": true
+          },
+          "rol": {
             "type": "string",
             "nullable": true
           },

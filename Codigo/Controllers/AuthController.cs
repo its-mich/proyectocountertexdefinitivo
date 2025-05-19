@@ -64,7 +64,10 @@ namespace proyectocountertexdefinitivo.Controllers
             return Ok(new
             {
                 Token = tokenString,
-                Rol = usuario.Rol
+                Rol = usuario.Rol,
+                Id = usuario.Id,
+                Nombres = usuario.Nombres,
+                Apellidos = usuario.Apellidos
             });
         }
 
