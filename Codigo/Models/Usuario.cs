@@ -10,7 +10,7 @@ namespace proyectocountertexdefinitivo.Models
         public string Nombre { get; set; }
 
         [Required]
-        public string Documento { get; set; }
+        public string? Documento { get; set; }
 
         public string Correo { get; set; }
 
@@ -22,7 +22,7 @@ namespace proyectocountertexdefinitivo.Models
 
         public int? Edad { get; set; }
 
-        public string Telefono { get; set; }
+        public string? Telefono { get; set; }
 
         public Operacion? Operacion { get; set; }
 

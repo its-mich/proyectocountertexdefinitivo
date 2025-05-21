@@ -110,7 +110,13 @@
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
-    "Parameters": [],
+    "Parameters": [
+      {
+        "Name": "fecha",
+        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=7.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      }
+    ],
     "ReturnTypes": [
       {
         "Type": "System.Collections.Generic.IEnumerable\u00601[[proyectocountertexdefinitivo.Models.HorarioDTO, proyectocountertexdefinitivo, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
@@ -616,7 +622,7 @@
     "Parameters": [],
     "ReturnTypes": [
       {
-        "Type": "System.Collections.Generic.IEnumerable\u00601[[proyectocountertexdefinitivo.Models.Produccion, proyectocountertexdefinitivo, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[proyectocountertexdefinitivo.Models.ProduccionDto, proyectocountertexdefinitivo, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -816,17 +822,7 @@
         "IsRequired": true
       }
     ],
-    "ReturnTypes": [
-      {
-        "Type": "proyectocountertexdefinitivo.Models.UsuarioCreateDTO",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
+    "ReturnTypes": []
   },
   {
     "ContainingType": "proyectocountertexdefinitivo.Controllers.UsuariosController",
@@ -889,6 +885,16 @@
         "IsRequired": true
       }
     ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "proyectocountertexdefinitivo.Controllers.MantenimientoController",
+    "Method": "EncriptarContrase\u00F1as",
+    "RelativePath": "EncriptarContrase\u00F1as",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
     "ReturnTypes": []
   }
 ]

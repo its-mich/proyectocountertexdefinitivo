@@ -7,8 +7,7 @@ CREATE DATABASE CounterTexDB;
  -- Tabla: Usuarios
  CREATE TABLE Usuarios (
      Id INT PRIMARY KEY IDENTITY(1,1),
-     Nombres NVARCHAR(100) NOT NULL,
-     Apellidos NVARCHAR(100),
+     Nombre NVARCHAR(100) NOT NULL,
      Documento NVARCHAR(20) NOT NULL UNIQUE,
      Correo NVARCHAR(100) UNIQUE,
      Contraseña NVARCHAR(255),
@@ -96,10 +95,10 @@ CREATE DATABASE CounterTexDB;
  -- INSERTS ---------------------------
  
  -- Usuarios
- INSERT INTO Usuarios (Nombres, Apellidos, Documento, Correo, Contraseña, Rol, Edad, Telefono)
+ INSERT INTO Usuarios (Nombre, Documento, Correo, Contraseña, Rol, Edad, Telefono)
  VALUES 
- ('Laura', 'Pérez', '12345678', 'laura.perez@example.com', '1234hashed', 'Administrador', 30, '3101234567'),
- ('Carlos', 'Martínez', '87654321', 'carlos.martinez@example.com', 'abcdhashed', 'Operario', 25, '3129876543');
+ ('Laura Pérez', '12345678', 'laura.perez@example.com', '1234hashed', 'Administrador', 30, '3101234567'),
+ ('Carlos Martínez', '87654321', 'carlos.martinez@example.com', 'abcdhashed', 'Operario', 25, '3129876543');
  
  -- Prendas
  INSERT INTO Prendas (Nombre, Genero, Color)
@@ -118,7 +117,14 @@ CREATE DATABASE CounterTexDB;
  INSERT INTO Produccion (Fecha, TotalValor, UsuarioId, PrendaId)
  VALUES 
  ('2025-04-19', 3500.00, 2, 1),
- ('2025-04-19', 2100.00, 2, 2);
+ ('2025-04-19', 2100.00, 2, 2),
+ ('2025-04-18', 4200.00, 2, 1),
+ ('2025-04-18', 2800.00, 2, 2),
+ ('2025-12-10', 5000.00, 1, 1),
+ ('2025-12-10', 3000.00, 1, 2),
+ ('2025-12-09', 4000.00, 1, 1),
+ ('2025-12-09', 3500.00, 2, 1),
+('2025-09-05', 8100.00, 1, 2);
  
  -- ProduccionDetalle
  INSERT INTO ProduccionDetalle (Cantidad, ProduccionId, OperacionId, ValorTotal)

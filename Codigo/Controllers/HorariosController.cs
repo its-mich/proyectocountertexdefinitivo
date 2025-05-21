@@ -19,9 +19,17 @@ namespace proyectocountertexdefinitivo.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<HorarioDTO>>> GetHorarios()
+        public async Task<ActionResult<IEnumerable<HorarioDTO>>> GetHorarios([FromQuery] DateTime? fecha)
         {
-            var horarios = await _context.Horarios.ToListAsync();
+            var query = _context.Horarios.AsQueryable();
+
+            if (fecha.HasValue)
+            {
+                var fechaSinHora = fecha.Value.Date;
+                query = query.Where(h => h.Fecha.Date == fechaSinHora);
+            }
+
+            var horarios = await query.ToListAsync();
 
             var horariosDto = horarios.Select(h => new HorarioDTO
             {

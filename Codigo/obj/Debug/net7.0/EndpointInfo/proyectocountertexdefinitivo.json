@@ -188,6 +188,17 @@
         "tags": [
           "Horarios"
         ],
+        "parameters": [
+          {
+            "name": "fecha",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -384,6 +395,18 @@
               "type": "string"
             }
           }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/EncriptarContraseñas": {
+      "post": {
+        "tags": [
+          "Mantenimiento"
         ],
         "responses": {
           "200": {
@@ -1058,7 +1081,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Produccion"
+                    "$ref": "#/components/schemas/ProduccionDto"
                   }
                 }
               },
@@ -1066,7 +1089,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Produccion"
+                    "$ref": "#/components/schemas/ProduccionDto"
                   }
                 }
               },
@@ -1074,7 +1097,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Produccion"
+                    "$ref": "#/components/schemas/ProduccionDto"
                   }
                 }
               }
@@ -1410,24 +1433,7 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/UsuarioCreateDTO"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UsuarioCreateDTO"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UsuarioCreateDTO"
-                }
-              }
-            }
+            "description": "Success"
           }
         }
       }
@@ -1878,6 +1884,32 @@
         },
         "additionalProperties": false
       },
+      "ProduccionDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "fecha": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "usuario": {
+            "type": "string",
+            "nullable": true
+          },
+          "prenda": {
+            "type": "string",
+            "nullable": true
+          },
+          "total": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
       "TimeSpan": {
         "type": "string",
         "properties": {
@@ -1970,11 +2002,7 @@
             "type": "integer",
             "format": "int32"
           },
-          "nombres": {
-            "type": "string",
-            "nullable": true
-          },
-          "apellidos": {
+          "nombre": {
             "type": "string",
             "nullable": true
           },
@@ -2050,34 +2078,53 @@
         "additionalProperties": false
       },
       "UsuarioCreateDTO": {
+        "required": [
+          "contraseña",
+          "correo",
+          "documento",
+          "nombre",
+          "rol"
+        ],
         "type": "object",
         "properties": {
           "id": {
             "type": "integer",
             "format": "int32"
           },
-          "nombres": {
-            "type": "string",
-            "nullable": true
-          },
-          "apellidos": {
-            "type": "string",
-            "nullable": true
+          "nombre": {
+            "minLength": 1,
+            "type": "string"
           },
           "documento": {
-            "type": "string",
-            "nullable": true
+            "minLength": 1,
+            "type": "string"
           },
           "rol": {
-            "type": "string",
-            "nullable": true
+            "minLength": 1,
+            "type": "string"
           },
           "correo": {
+            "minLength": 1,
             "type": "string",
-            "nullable": true
+            "format": "email"
           },
           "contraseña": {
-            "type": "string",
+            "minLength": 1,
+            "type": "string"
+          },
+          "edad": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "telefono": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "operacionId": {
+            "type": "integer",
+            "format": "int32",
             "nullable": true
           }
         },
