@@ -34,7 +34,7 @@ namespace proyectocountertexdefinitivo.Controllers
             var usuario = _context.Usuarios
                 .FirstOrDefault(u => u.Correo == login.Correo);
 
-            if (usuario == null || usuario.Contraseña != login.Clave)
+            if (usuario == null || !BCrypt.Net.BCrypt.Verify(login.Clave, usuario.Contraseña))
             {
                 return Unauthorized("Invalid email or password");
             }
@@ -66,8 +66,7 @@ namespace proyectocountertexdefinitivo.Controllers
                 Token = tokenString,
                 Rol = usuario.Rol,
                 Id = usuario.Id,
-                Nombres = usuario.Nombres,
-                Apellidos = usuario.Apellidos
+                Nombres = usuario.Nombre
             });
         }
 

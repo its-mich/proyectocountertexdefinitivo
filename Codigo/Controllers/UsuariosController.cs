@@ -31,9 +31,7 @@ namespace proyectocountertexdefinitivo.Controllers
             var usuarios = await _context.Usuarios
                 .Select(u => new UsuarioCreateDTO
                 {
-                    Nombres = u.Nombres,
-                    Apellidos = u.Apellidos,
-                    Documento = u.Documento,
+                    Nombre = u.Nombre,
                     Correo = u.Correo,
                     Contraseña = u.Contraseña,
                     Rol = u.Rol,
@@ -56,16 +54,15 @@ namespace proyectocountertexdefinitivo.Controllers
 
             var usuarioDTO = new UsuarioCreateDTO
             {
-                Nombres = usuario.Nombres,
-                Apellidos = usuario.Apellidos,
-                Documento = usuario.Documento,
+                Nombre = usuario.Nombre,
                 Correo = usuario.Correo,
+                Documento = usuario.Documento,
                 Contraseña = usuario.Contraseña,
                 Rol = usuario.Rol,
                 Id = usuario.Id,
             };
 
-            return usuarioDTO;
+            return Ok(usuarioDTO);
         }
 
         // PUT: api/Usuarios/5
@@ -78,8 +75,7 @@ namespace proyectocountertexdefinitivo.Controllers
                 return NotFound();
             }
 
-            usuario.Nombres = usuarioDTO.Nombres;
-            usuario.Apellidos = usuarioDTO.Apellidos;
+            usuario.Nombre = usuarioDTO.Nombre;
             usuario.Documento = usuarioDTO.Documento;
             usuario.Correo = usuarioDTO.Correo;
             usuario.Contraseña = usuarioDTO.Contraseña;
@@ -92,8 +88,13 @@ namespace proyectocountertexdefinitivo.Controllers
 
         // POST: api/Usuarios
         [HttpPost]
-        public async Task<ActionResult<UsuarioCreateDTO>> PostUsuario(UsuarioCreateDTO usuarioDTO)
+        public async Task<ActionResult> PostUsuario(UsuarioCreateDTO usuarioDTO)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             // Verificar si ya existe un correo igual
             var correoExistente = await _context.Usuarios
                 .AnyAsync(u => u.Correo == usuarioDTO.Correo);
@@ -103,24 +104,38 @@ namespace proyectocountertexdefinitivo.Controllers
                 return BadRequest(new { mensaje = "El correo ya está registrado." });
             }
 
+            var documentoExistente = await _context.Usuarios
+                .AnyAsync(u => u.Documento == usuarioDTO.Documento);
+
+            if (documentoExistente)
+            {
+                return BadRequest(new { mensaje = "El documento ya está registrado." });
+            }
+
             var usuario = new Usuario
             {
-                Nombres = usuarioDTO.Nombres,
-                Apellidos = usuarioDTO.Apellidos,
+                Nombre = usuarioDTO.Nombre,
                 Documento = usuarioDTO.Documento,
                 Correo = usuarioDTO.Correo,
-                Contraseña = usuarioDTO.Contraseña,
-                Rol = "Empleado" // por defecto, o como desees
+                Contraseña = BCrypt.Net.BCrypt.HashPassword(usuarioDTO.Contraseña),
+                Rol = usuarioDTO.Rol
             };
 
             _context.Usuarios.Add(usuario);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetUsuario), new { id = usuario.Id }, usuarioDTO);
+            return CreatedAtAction(nameof(GetUsuario), new { id = usuario.Id }, new
+            {
+                usuario.Id,
+                usuario.Nombre,
+                usuario.Documento,
+                usuario.Correo,
+                usuario.Rol
+            });
         }
 
-        // DELETE: api/Usuarios/5
-        [HttpDelete("{id}")]
+            // DELETE: api/Usuarios/5
+            [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUsuario(int id)
         {
             var usuario = await _context.Usuarios.FindAsync(id);

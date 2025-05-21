@@ -616,7 +616,7 @@
     "Parameters": [],
     "ReturnTypes": [
       {
-        "Type": "System.Collections.Generic.IEnumerable\u00601[[proyectocountertexdefinitivo.Models.Produccion, proyectocountertexdefinitivo, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[proyectocountertexdefinitivo.Models.ProduccionDto, proyectocountertexdefinitivo, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -816,17 +816,7 @@
         "IsRequired": true
       }
     ],
-    "ReturnTypes": [
-      {
-        "Type": "proyectocountertexdefinitivo.Models.UsuarioCreateDTO",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
+    "ReturnTypes": []
   },
   {
     "ContainingType": "proyectocountertexdefinitivo.Controllers.UsuariosController",

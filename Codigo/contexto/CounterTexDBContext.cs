@@ -27,8 +27,7 @@ namespace proyectocountertexdefinitivo.contexto
             modelBuilder.Entity<Usuario>(entity =>
             {
                 entity.HasKey(e => e.Id);
-                entity.Property(e => e.Nombres).HasMaxLength(100).IsRequired();
-                entity.Property(e => e.Apellidos).HasMaxLength(100).IsRequired();
+                entity.Property(e => e.Nombre).HasMaxLength(100).IsRequired();
                 entity.Property(e => e.Documento).HasMaxLength(20).IsRequired();
                 entity.HasIndex(e => e.Documento).IsUnique();
                 entity.Property(e => e.Correo).HasMaxLength(100).IsRequired();
