@@ -10,16 +10,29 @@ namespace proyectocountertexdefinitivo.Controllers
     public class ProduccionController : ControllerBase
     {
         private readonly CounterTexDBContext _context;
-            
+
         public ProduccionController(CounterTexDBContext context)
         {
             _context = context;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Produccion>>> GetProduccion()
+        public async Task<ActionResult<IEnumerable<ProduccionDto>>> GetProduccion()
         {
-            return await _context.Producciones.ToListAsync();
+            var producciones = await _context.Producciones
+                .Include(p => p.Usuario)
+                .Include(p => p.Prenda)
+                .Select(p => new ProduccionDto
+                {
+                    Id = p.Id,
+                    Fecha = p.Fecha,
+                    Usuario = p.Usuario.Nombre, // o como se llame
+                    Prenda = p.Prenda.Nombre,   // igual aquí
+                    Total = p.ProduccionDetalles.Sum(d => d.Cantidad)
+                })
+                .ToListAsync();
+
+            return Ok(producciones);
         }
 
         [HttpGet("{id}")]

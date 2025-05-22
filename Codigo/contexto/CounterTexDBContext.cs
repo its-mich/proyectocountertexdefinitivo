@@ -27,8 +27,7 @@ namespace proyectocountertexdefinitivo.contexto
             modelBuilder.Entity<Usuario>(entity =>
             {
                 entity.HasKey(e => e.Id);
-                entity.Property(e => e.Nombres).HasMaxLength(100).IsRequired();
-                entity.Property(e => e.Apellidos).HasMaxLength(100).IsRequired();
+                entity.Property(e => e.Nombre).HasMaxLength(100).IsRequired();
                 entity.Property(e => e.Documento).HasMaxLength(20).IsRequired();
                 entity.HasIndex(e => e.Documento).IsUnique();
                 entity.Property(e => e.Correo).HasMaxLength(100).IsRequired();
@@ -102,11 +101,17 @@ namespace proyectocountertexdefinitivo.contexto
             // Horarios
             modelBuilder.Entity<Horario>(entity =>
             {
-                entity.HasKey(e => e.Id);
+                entity.HasKey(e => new { e.EmpleadoId, e.Fecha, e.Tipo });
                 entity.Property(e => e.Fecha).HasColumnType("date");
-                entity.Property(e => e.HoraEntrada).HasColumnType("time");
-                entity.Property(e => e.HoraSalida).HasColumnType("time");
-                entity.HasOne<Usuario>().WithMany().HasForeignKey(e => e.UsuarioId);
+                entity.Property(e => e.Hora).HasColumnType("time");
+                entity.Property(e => e.Tipo).HasColumnType("string");
+                entity.Property(e => e.Observaciones).HasColumnType("nvarchar(255)");
+
+                // Relación con Usuario (EmpleadoId como FK)
+                entity.HasOne(h => h.Usuario)    // desde Horario hacia Usuario
+      .WithMany(u => u.Horarios) // desde Usuario hacia muchos Horarios
+      .HasForeignKey(h => h.EmpleadoId)
+      .OnDelete(DeleteBehavior.Restrict);
             });
 
             // Metas

@@ -1,5 +1,6 @@
 using proyectocountertexdefinitivo.Repositories;
 using proyectocountertexdefinitivo.Models;
+using proyectocountertexdefinitivo.Converters;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -22,11 +23,21 @@ builder.Services.AddDbContext<CounterTexDBContext>(options =>
 builder.Services.AddScoped<Usuario, Usuario>();
 
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+.AddJsonOptions(options =>
+ {
+     options.JsonSerializerOptions.Converters.Add(new TimeSpanConverter());
+ });
+// Agregar el convertidor también para MVC para que Swagger lo reconozca
+builder.Services.Configure<Microsoft.AspNetCore.Mvc.JsonOptions>(options =>
+{
+    options.JsonSerializerOptions.Converters.Add(new TimeSpanConverter());
+});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "MicroServiceProyectoCounterTex", Version = "v1" });
+    c.SchemaFilter<proyectocountertexdefinitivo.Converters.TimeSpanSchemaFilter>();
     c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
     {
         Description = @"JWT Authorization header using the Bearer scheme <br /> <br />

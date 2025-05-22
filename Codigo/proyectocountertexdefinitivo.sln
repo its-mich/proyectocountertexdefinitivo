@@ -5,7 +5,7 @@ VisualStudioVersion = 17.11.35208.52
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "proyectocountertexdefinitivo", "proyectocountertexdefinitivo.csproj", "{ABED6F40-63D7-475C-855D-39EF383A1E63}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sCRIP", "sCRIP", "{59A5ED6C-E299-466B-ACC4-E9327AD87B7E}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Script", "Script", "{59A5ED6C-E299-466B-ACC4-E9327AD87B7E}"
 	ProjectSection(SolutionItems) = preProject
 		..\scrip\SQLQueryDBCounterTex (1).sql = ..\scrip\SQLQueryDBCounterTex (1).sql
 	EndProjectSection
