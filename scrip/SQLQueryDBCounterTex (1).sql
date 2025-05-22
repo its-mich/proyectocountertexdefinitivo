@@ -56,12 +56,13 @@ CREATE DATABASE CounterTexDB;
  
  -- Tabla: Horarios
  CREATE TABLE Horarios (
-     Id INT PRIMARY KEY IDENTITY(1,1),
-     Fecha DATE,
-     HoraEntrada TIME,
-     HoraSalida TIME,
-     UsuarioId INT FOREIGN KEY REFERENCES Usuarios(Id)
- );
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    EmpleadoId INT FOREIGN KEY REFERENCES Usuarios(Id),
+    Tipo VARCHAR(20),
+    Hora TIME,
+    Fecha DATE,
+    Observaciones VARCHAR(255)
+);
  
  -- Tabla: Metas
  CREATE TABLE Metas (
@@ -134,10 +135,13 @@ CREATE DATABASE CounterTexDB;
  (2, 2, 3, 900.000);
  
  -- Horarios
- INSERT INTO Horarios (Fecha, HoraEntrada, HoraSalida, UsuarioId)
- VALUES 
- ('2025-04-19', '07:00', '15:00', 2),
- ('2025-04-18', '08:00', '16:00', 2);
+ INSERT INTO Horarios (EmpleadoId, Tipo, Hora, Fecha, Observaciones)
+VALUES 
+(1, 'entrada', '07:00:00', '2025-05-15', 'Llega puntual'),
+(1, 'salida',  '15:00:00', '2025-05-15', 'Salida normal'),
+(1, 'descanso','11:00:00', '2025-05-15', 'Pausa para almuerzo'),
+(2, 'entrada', '08:00:00', '2025-05-15', 'Llegó un poco tarde'),
+(2, 'salida',  '16:00:00', '2025-05-15', 'Salida después de hora');
  
  -- Metas
  INSERT INTO Metas (Fecha, MetaCorte, ProduccionReal, UsuarioId)
