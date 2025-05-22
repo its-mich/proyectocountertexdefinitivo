@@ -886,15 +886,5 @@
       }
     ],
     "ReturnTypes": []
-  },
-  {
-    "ContainingType": "proyectocountertexdefinitivo.Controllers.MantenimientoController",
-    "Method": "EncriptarContrase\u00F1as",
-    "RelativePath": "EncriptarContrase\u00F1as",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [],
-    "ReturnTypes": []
   }
 ]

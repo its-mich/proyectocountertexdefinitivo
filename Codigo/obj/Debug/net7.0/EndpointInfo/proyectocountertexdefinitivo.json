@@ -403,18 +403,6 @@
         }
       }
     },
-    "/EncriptarContraseñas": {
-      "post": {
-        "tags": [
-          "Mantenimiento"
-        ],
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
     "/api/MensajesChat": {
       "get": {
         "tags": [

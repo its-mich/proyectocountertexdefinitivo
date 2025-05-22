@@ -189,6 +189,6 @@ GO
 -- Contacto
 INSERT INTO Contacto (NombreCompleto, Telefono, Correo, Observacion)
 VALUES 
-('Andrés López', '3001234567', 'andres.lopez@correo.com', 'Posible proveedor de insumos.'),
-('María Torres', '3017654321', 'maria.torres@correo.com', 'Contacto para nuevos diseños.');
+('Andres López', '3001234567', 'andres.lopez@correo.com', 'Posible proveedor de insumos.'),
+('Maria Torres', '3017654321', 'maria.torres@correo.com', 'Contacto para nuevos diseños.');
 GO
