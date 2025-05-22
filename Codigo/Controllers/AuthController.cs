@@ -30,36 +30,24 @@ namespace proyectocountertexdefinitivo.Controllers
                 return BadRequest("Invalid client request");
             }
 
-            var usuario = _context.Usuarios.FirstOrDefault(u => u.Correo == login.Correo);
+            // Buscar al usuario
+            var usuario = _context.Usuarios
+                .FirstOrDefault(u => u.Correo == login.Correo);
 
-            if (usuario == null)
+            if (usuario == null || !BCrypt.Net.BCrypt.Verify(login.Clave, usuario.Contraseña))
+            {
                 return Unauthorized("Invalid email or password");
-
-            bool esValido = false;
-
-            // Intentar validar como hash BCrypt
-            if (!string.IsNullOrEmpty(usuario.Contraseña) && BCrypt.Net.BCrypt.Verify(login.Clave, usuario.Contraseña))
-            {
-                esValido = true;
-            }
-            else if (usuario.Contraseña == login.Clave)
-            {
-                // Validar texto plano y actualizar a encriptado
-                esValido = true;
-                usuario.Contraseña = BCrypt.Net.BCrypt.HashPassword(login.Clave);
-                _context.SaveChanges(); // ⚠️ Actualiza la contraseña a encriptada
             }
 
-            if (!esValido)
-                return Unauthorized("Invalid email or password");
-
+            // Clave secreta y credenciales
             var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
 
+            // Agregar claim del rol
             var claims = new List<Claim>
     {
         new Claim(ClaimTypes.Name, usuario.Correo),
-        new Claim(ClaimTypes.Role, usuario.Rol ?? "SinRol")
+        new Claim(ClaimTypes.Role, usuario.Rol ?? "SinRol")  // por si acaso viene nulo
     };
 
             var tokenOptions = new JwtSecurityToken(
