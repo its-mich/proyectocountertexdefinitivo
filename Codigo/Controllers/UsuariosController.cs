@@ -110,6 +110,18 @@ namespace proyectocountertexdefinitivo.Controllers
                 return BadRequest(new { mensaje = "El correo ya está registrado." });
             }
 
+            // Verificar que la Operación exista si se proporciona un OperacionId
+            if (usuarioDTO.OperacionId.HasValue)
+            {
+                var operacionExiste = await _context.Operaciones
+                    .AnyAsync(o => o.Id == usuarioDTO.OperacionId.Value);
+
+                if (!operacionExiste)
+                {
+                    return BadRequest(new { mensaje = "La operación especificada no existe." });
+                }
+            }
+
             var usuario = new Usuario
             {
                 Nombres = usuarioDTO.Nombres,
@@ -120,14 +132,17 @@ namespace proyectocountertexdefinitivo.Controllers
                 Rol = usuarioDTO.Rol,
                 OperacionId = usuarioDTO.OperacionId,
                 Edad = usuarioDTO.Edad,
-                Telefono = usuarioDTO.Telefono
+                Telefono = usuarioDTO.Telefono,
+                CodigoVerificacion = usuarioDTO.CodigoVerificacion,
+                CodigoExpira = usuarioDTO.CodigoExpira
             };
 
             _context.Usuarios.Add(usuario);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetUsuario), new { id = usuario.Id }, usuarioDTO);
+            return CreatedAtAction("GetUsuario", new { id = usuario.Id }, usuarioDTO);
         }
+
 
         // DELETE: api/Usuarios/5
         [HttpDelete("{id}")]

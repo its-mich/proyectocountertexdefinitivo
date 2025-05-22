@@ -15,6 +15,7 @@ CREATE DATABASE CounterTexDB;
      Rol NVARCHAR(20),
      Edad INT,
      Telefono NVARCHAR(20)
+
  );
  
  -- Tabla: Prendas
@@ -122,14 +123,12 @@ CREATE DATABASE CounterTexDB;
  
  -- ProduccionDetalle
  INSERT INTO ProduccionDetalle (Cantidad, ProduccionId, OperacionId, ValorTotal)
- INSERT INTO ProduccionDetalle (Cantidad, ProduccionId, OperacionId)
+
  VALUES 
  (5, 1, 1, 500.000),
  (3, 1, 2, 600.000),
  (2, 2, 3, 900.000);
- (5, 1, 1),
- (3, 1, 2),
- (2, 2, 3);
+
  
  -- Horarios
  INSERT INTO Horarios (Fecha, HoraEntrada, HoraSalida, UsuarioId)
@@ -212,7 +211,7 @@ CREATE DATABASE CounterTexDB;
  select * from Usuarios;
  
  
- UPDATE Usuarios
- SET Rol = 'Empleado'
- WHERE Correo = 'carlos.martinez@example.com';
- ('María Torres', '3017654321', 'maria.torres@correo.com', 'Contacto para nuevos diseños.');
+ --UPDATE Usuarios
+ --SET Rol = 'Empleado'
+ --WHERE Correo = 'carlos.martinez@example.com';
+ --('María Torres', '3017654321', 'maria.torres@correo.com', 'Contacto para nuevos diseños.');

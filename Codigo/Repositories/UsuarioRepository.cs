@@ -40,6 +40,32 @@ namespace proyectocountertexdefinitivo.Repositories
                 await _context.SaveChangesAsync();
             }
         }
+
+
+        // Obtener un usuario por correo
+        public async Task<Usuario> GetUsuarioByCorreoAsync(string correo)
+        {
+            return await _context.Usuarios.FirstOrDefaultAsync(u => u.Correo == correo);
+        }
+
+        // Obtener un usuario por el Codigo de Verificacion recuperación
+        public async Task<Usuario> GetUsuarioByCodigoAsync(string codigo)
+        {
+            return await _context.Usuarios.FirstOrDefaultAsync(u => u.CodigoVerificacion == codigo);
+        }
+
+        // Actualizar un usuario
+        public async Task<bool> UpdateUsuarioAsync(Usuario usuario)
+        {
+            _context.Usuarios.Update(usuario);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+
+
     }
+
+
 
 }

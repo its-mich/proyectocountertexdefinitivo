@@ -39,10 +39,13 @@ namespace proyectocountertexdefinitivo.contexto
                 entity.Property(e => e.Telefono).HasMaxLength(20);
                 entity.Property(e => e.OperacionId);
 
+
                 entity.HasOne(e => e.Operacion)
                       .WithMany(o => o.Usuarios)
                       .HasForeignKey(e => e.OperacionId)
                       .OnDelete(DeleteBehavior.Restrict);
+                modelBuilder.Entity<Usuario>().Property(u => u.CodigoVerificacion).HasColumnName("CodigoRecuperacion");
+                modelBuilder.Entity<Usuario>().Property(u => u.CodigoExpira).HasColumnName("CodigoExpira");
             });
 
             // Prendas

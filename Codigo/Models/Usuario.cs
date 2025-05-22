@@ -26,13 +26,18 @@ namespace proyectocountertexdefinitivo.Models
 
         public string Telefono { get; set; }
 
-        public Operacion? Operacion { get; set; }
+        public Operacion Operacion { get; set; }
 
         public ICollection<Produccion> Producciones { get; set; }
         public ICollection<Horario> Horarios { get; set; }
         public ICollection<Meta> Metas { get; set; }
         public ICollection<MensajeChat> MensajesEnviados { get; set; }
         public ICollection<MensajeChat> MensajesRecibidos { get; set; }
+
+        public string? CodigoVerificacion { get; set; }
+        public DateTime? CodigoExpira { get; set; }
+
+
     }
 
 }
