@@ -1,4 +1,4 @@
-using proyectocountertexdefinitivo.Repositories;
+﻿using proyectocountertexdefinitivo.Repositories;
 using proyectocountertexdefinitivo.Models;
 using proyectocountertexdefinitivo.Converters;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -12,48 +12,55 @@ using proyectocountertexdefinitivo;
 using proyectocountertexdefinitivo.Repositories.repositories;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// 🔌 Agregar servicios externos
 builder.Services.AddExternal(builder.Configuration);
 
-
-// Registro de servicios
+// 🔌 Configurar DbContext con cadena de conexión
 builder.Services.AddDbContext<CounterTexDBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Registro de la interfaz y su implementaci�n
+// 🧩 Inyección de dependencias
 builder.Services.AddScoped<Usuario, Usuario>();
 
-
+// 🔁 Conversión para TimeSpan en JSON (POST/GET desde Swagger)
 builder.Services.AddControllers()
-.AddJsonOptions(options =>
- {
-     options.JsonSerializerOptions.Converters.Add(new TimeSpanConverter());
- });
-// Agregar el convertidor tambi�n para MVC para que Swagger lo reconozca
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new TimeSpanConverter());
+    });
+
+// 🔁 También aplica para MVC (Swagger lo requiere)
 builder.Services.Configure<Microsoft.AspNetCore.Mvc.JsonOptions>(options =>
 {
     options.JsonSerializerOptions.Converters.Add(new TimeSpanConverter());
 });
+
+// 🛡️ Swagger y Autenticación JWT
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "MicroServiceProyectoCounterTex", Version = "v1" });
-    c.SchemaFilter<proyectocountertexdefinitivo.Converters.TimeSpanSchemaFilter>();
-    c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "MicroServiceProyectoCounterTex", Version = "v1" });
+    c.SchemaFilter<TimeSpanSchemaFilter>();
+
+    // 🔐 Configuración del esquema JWT para Swagger
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        Description = @"JWT Authorization header using the Bearer scheme <br /> <br />
-                        Enter Bearer [space] and then your token in the text input bellow <br /> <br />
-                        Example: 'Bearer 123456abcdefg' <br /> <br />.",
+        Description = @"JWT Authorization header usando el esquema Bearer.  
+                        <br />Escribe 'Bearer' [espacio] y luego tu token.<br />
+                        Ejemplo: 'Bearer 123456abcdefg'",
         Name = "Authorization",
-        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
-        Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
         Scheme = "Bearer"
     });
-    c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement()
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
-            new OpenApiSecurityScheme()
+            new OpenApiSecurityScheme
             {
-                Reference = new OpenApiReference()
+                Reference = new OpenApiReference
                 {
                     Type = ReferenceType.SecurityScheme,
                     Id = "Bearer"
@@ -66,25 +73,32 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
+
+// 🌐 Configurar CORS
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowSpecificOrigin",
-        builder => builder
-            .AllowAnyOrigin()  // Permitir cualquier origen
-            .AllowAnyMethod()  // Permitir cualquier m�todo HTTP
-            .AllowAnyHeader()); // Permitir cualquier cabecera
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy
+            .AllowAnyOrigin()   // o usa .WithOrigins("https://localhost:port") para restringir
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
 });
+
+// 🔐 Configuración de JWT Authentication
 var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"]);
-builder.Services.AddAuthentication(x =>
+
+builder.Services.AddAuthentication(options =>
 {
-    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 })
-.AddJwtBearer(x =>
+.AddJwtBearer(options =>
 {
-    x.RequireHttpsMetadata = false;
-    x.SaveToken = true;
-    x.TokenValidationParameters = new TokenValidationParameters
+    options.RequireHttpsMetadata = false;
+    options.SaveToken = true;
+    options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
         ValidateAudience = true,
@@ -95,23 +109,26 @@ builder.Services.AddAuthentication(x =>
         IssuerSigningKey = new SymmetricSecurityKey(key)
     };
 });
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+
+// 🧪 Middleware de desarrollo
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.UseCors("AllowSpecificOrigin");
+// ✅ Middleware CORS debe estar antes de Autenticación
+app.UseCors("AllowAll");
 
+// 🔐 Middlewares
 app.UseHttpsRedirection();
-
 app.UseAuthentication();
 app.UseAuthorization();
 
+// 🎯 Mapear controladores
 app.MapControllers();
 
 app.Run();
-

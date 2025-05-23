@@ -188,17 +188,6 @@
         "tags": [
           "Horarios"
         ],
-        "parameters": [
-          {
-            "name": "fecha",
-            "in": "query",
-            "style": "form",
-            "schema": {
-              "type": "string",
-              "format": "date-time"
-            }
-          }
-        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -297,28 +286,11 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/HorarioDTO"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HorarioDTO"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HorarioDTO"
-                }
-              }
-            }
+            "description": "Success"
           }
         }
       },
-      "put": {
+      "delete": {
         "tags": [
           "Horarios"
         ],
@@ -331,68 +303,6 @@
             "schema": {
               "type": "integer",
               "format": "int32"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/HorarioDTO"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/HorarioDTO"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/HorarioDTO"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
-    "/api/Horarios/{empleadoId}/{fecha}/{tipo}": {
-      "delete": {
-        "tags": [
-          "Horarios"
-        ],
-        "parameters": [
-          {
-            "name": "empleadoId",
-            "in": "path",
-            "required": true,
-            "style": "simple",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          },
-          {
-            "name": "fecha",
-            "in": "path",
-            "required": true,
-            "style": "simple",
-            "schema": {
-              "type": "string",
-              "format": "date-time"
-            }
-          },
-          {
-            "name": "tipo",
-            "in": "path",
-            "required": true,
-            "style": "simple",
-            "schema": {
-              "type": "string"
             }
           }
         ],
@@ -1562,6 +1472,10 @@
       "Horario": {
         "type": "object",
         "properties": {
+          "horarioId": {
+            "type": "integer",
+            "format": "int32"
+          },
           "empleadoId": {
             "type": "integer",
             "format": "int32"
@@ -1580,6 +1494,9 @@
           "observaciones": {
             "type": "string",
             "nullable": true
+          },
+          "usuario": {
+            "$ref": "#/components/schemas/Usuario"
           }
         },
         "additionalProperties": false
@@ -1591,16 +1508,20 @@
             "type": "integer",
             "format": "int32"
           },
+          "nombreEmpleado": {
+            "type": "string",
+            "nullable": true
+          },
+          "fecha": {
+            "type": "string",
+            "format": "date-time"
+          },
           "tipo": {
             "type": "string",
             "nullable": true
           },
           "hora": {
             "$ref": "#/components/schemas/TimeSpan"
-          },
-          "fecha": {
-            "type": "string",
-            "format": "date-time"
           },
           "observaciones": {
             "type": "string",
@@ -2122,7 +2043,7 @@
     "securitySchemes": {
       "Bearer": {
         "type": "apiKey",
-        "description": "JWT Authorization header using the Bearer scheme <br /> <br />\r\n                        Enter Bearer [space] and then your token in the text input bellow <br /> <br />\r\n                        Example: 'Bearer 123456abcdefg' <br /> <br />.",
+        "description": "JWT Authorization header usando el esquema Bearer.  \r\n                        <br />Escribe 'Bearer' [espacio] y luego tu token.<br />\r\n                        Ejemplo: 'Bearer 123456abcdefg'",
         "name": "Authorization",
         "in": "header"
       }

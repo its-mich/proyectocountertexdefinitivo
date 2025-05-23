@@ -1,8 +1,8 @@
 -- Crear la base de datos
-CREATE DATABASE CounterTexDB;
+CREATE DATABASE CounterTexDatabase;
 GO
 
-USE CounterTexDB;
+USE CounterTexDatabase;
 GO
 
 -- Tabla: Usuarios
@@ -66,13 +66,16 @@ CREATE TABLE ProduccionDetalle (
 GO
 
 -- Tabla: Horarios
-CREATE TABLE Horarios (
-    Id INT PRIMARY KEY IDENTITY(1,1),
-    EmpleadoId INT FOREIGN KEY REFERENCES Usuarios(Id),
-    Tipo VARCHAR(20),
-    Hora TIME,
-    Fecha DATE,
-    Observaciones VARCHAR(255)
+CREATE TABLE Horarios
+(
+    HorarioId INT IDENTITY(1,1) NOT NULL PRIMARY KEY,  -- Clave primaria autoincremental
+    EmpleadoId INT NOT NULL,                           -- FK hacia Usuarios.Id
+    Tipo NVARCHAR(50) NOT NULL,
+    Hora TIME NOT NULL,
+    Fecha DATE NOT NULL,
+    Observaciones NVARCHAR(MAX) NULL,
+
+    CONSTRAINT FK_Horarios_Usuarios FOREIGN KEY (EmpleadoId) REFERENCES Usuarios(Id)
 );
 GO
 
@@ -119,10 +122,11 @@ GO
 -- ===========================
 
 -- Usuarios
-INSERT INTO Usuarios (Nombre, Documento, Correo, Contraseña, Rol, Edad, Telefono)
+INSERT INTO Usuarios (Nombre, Documento, Correo, Contraseña, Rol, Edad, Telefono, OperacionId)
 VALUES 
-('Laura Pérez', '12345678', 'laura.perez@example.com', '1234hashed', 'Administrador', 30, '3101234567'),
-('Carlos Martínez', '87654321', 'carlos.martinez@example.com', 'abcdhashed', 'Empleado', 25, '3129876543');
+('Juan Pérez', '123456789', 'juan.perez@example.com', 'hashed_password_1', 'Empleado', 30, '3001234567', NULL),
+('María Gómez', '987654321', 'maria.gomez@example.com', 'hashed_password_2', 'Administrador', 40, '3007654321', NULL),
+('Carlos López', '456789123', 'carlos.lopez@example.com', 'hashed_password_3', 'Empleado', 25, '3005551234', NULL);
 GO
 
 -- Prendas
@@ -164,12 +168,12 @@ GO
 
 -- Horarios
 INSERT INTO Horarios (EmpleadoId, Tipo, Hora, Fecha, Observaciones)
-VALUES 
-(1, 'entrada', '07:00:00', '2025-05-15', 'Llega puntual'),
-(1, 'salida',  '15:00:00', '2025-05-15', 'Salida normal'),
-(1, 'descanso','11:00:00', '2025-05-15', 'Pausa para almuerzo'),
-(2, 'entrada', '08:00:00', '2025-05-15', 'Llegó un poco tarde'),
-(2, 'salida',  '16:00:00', '2025-05-15', 'Salida después de hora');
+VALUES
+(1, 'entrada', '08:00:00', '2025-05-22', 'Llegada puntual'),
+(1, 'salida', '17:00:00', '2025-05-22', 'Salida normal'),
+(2, 'entrada', '09:00:00', '2025-05-22', 'Llegada tarde'),
+(3, 'entrada', '08:30:00', '2025-05-22', 'Llegada puntual'),
+(3, 'descanso', '12:00:00', '2025-05-22', 'Descanso almuerzo');
 GO
 
 -- Metas

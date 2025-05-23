@@ -7,13 +7,15 @@ namespace proyectocountertexdefinitivo.Models
 {
     public class Horario
     {
+        [Key]
+        public int HorarioId { get; set; }  // nuevo campo ID único
+
         public int EmpleadoId { get; set; }
         public string Tipo { get; set; } // entrada, salida, descanso
         public TimeSpan Hora { get; set; }
         public DateTime Fecha { get; set; }
         public string Observaciones { get; set; }
 
-        [JsonIgnore]
         public Usuario Usuario { get; set; }
     }
 
