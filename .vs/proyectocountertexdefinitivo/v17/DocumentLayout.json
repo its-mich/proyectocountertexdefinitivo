@@ -1,11 +1,7 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\danie\\source\\repos\\proyectocountertexdefinitivo4\\",
-  "Documents": [
-    {
-      "AbsoluteMoniker": "D:0:0:{47247B9A-79E0-406F-A8C1-32C9D294B438}|Script{47247B9A-79E0-406F-A8C1-32C9D294B438}|C:\\Users\\danie\\Downloads\\SQLQueryDBCounterText.txt||{8B382828-6202-11D1-8870-0000F87579D2}"
-    }
-  ],
+  "WorkspaceRootPath": "C:\\Users\\Administrador\\Desktop\\ProyectoCounterTex\\BACKEND\\proyectocountertexdefinitivo\\",
+  "Documents": [],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
@@ -13,11 +9,27 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 3,
+          "SelectedChildIndex": -1,
           "Children": [
             {
               "$type": "Bookmark",
-              "Name": "ST:128:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+              "Name": "ST:129:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:130:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{13b12e3e-c1b4-4539-9371-4fe9a0d523fc}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
             },
             {
               "$type": "Bookmark",
@@ -26,19 +38,6 @@
             {
               "$type": "Bookmark",
               "Name": "ST:130:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "SQLQueryDBCounterText.txt",
-              "DocumentMoniker": "C:\\Users\\danie\\Downloads\\SQLQueryDBCounterText.txt",
-              "RelativeDocumentMoniker": "..\\..\\..\\Downloads\\SQLQueryDBCounterText.txt",
-              "ToolTip": "C:\\Users\\danie\\Downloads\\SQLQueryDBCounterText.txt",
-              "RelativeToolTip": "..\\..\\..\\Downloads\\SQLQueryDBCounterText.txt",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAJUAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003109|",
-              "WhenOpened": "2024-12-13T15:52:49.857Z",
-              "EditorCaption": ""
             }
           ]
         }
