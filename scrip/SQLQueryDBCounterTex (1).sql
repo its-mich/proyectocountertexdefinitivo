@@ -126,7 +126,7 @@ INSERT INTO Usuarios (Nombre, Documento, Correo, Contraseña, Rol, Edad, Telefon
 VALUES 
 ('Juan Pérez', '123456789', 'juan.perez@example.com', 'hashed_password_1', 'Empleado', 30, '3001234567', NULL),
 ('María Gómez', '987654321', 'maria.gomez@example.com', 'hashed_password_2', 'Administrador', 40, '3007654321', NULL),
-('Carlos López', '456789123', 'carlos.lopez@example.com', 'hashed_password_3', 'Empleado', 25, '3005551234', NULL);
+('Carlos López', '456789123', 'carlos.lopez@example.com', 'hashed_password_3', 'Proveedor', 25, '3005551234', NULL);
 GO
 
 -- Prendas
