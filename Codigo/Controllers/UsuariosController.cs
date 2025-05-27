@@ -1,30 +1,32 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using proyectocountertexdefinitivo.Models;
-using proyectocountertexdefinitivo.Repositories.Interfaces;
-using Microsoft.AspNetCore.Authorization;
 using proyectocountertexdefinitivo.contexto;
 using Microsoft.EntityFrameworkCore;
 
 namespace proyectocountertexdefinitivo.Controllers
 {
-    //using Microsoft.AspNetCore.Mvc;
-    //using Microsoft.EntityFrameworkCore;
-    //using CounterTex.Models;
-    //using System.Linq;
-    //using System.Threading.Tasks;
-
+    /// <summary>
+    /// Controlador para gestionar usuarios.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class UsuariosController : ControllerBase
     {
         private readonly CounterTexDBContext _context;
 
+        /// <summary>
+        /// Constructor que recibe el contexto de la base de datos.
+        /// </summary>
+        /// <param name="context">Contexto de base de datos.</param>
         public UsuariosController(CounterTexDBContext context)
         {
             _context = context;
         }
 
-        // GET: api/Usuarios
+        /// <summary>
+        /// Obtiene todos los usuarios en formato DTO.
+        /// </summary>
+        /// <returns>Lista de usuarios.</returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UsuarioCreateDTO>>> GetUsuarios()
         {
@@ -41,7 +43,11 @@ namespace proyectocountertexdefinitivo.Controllers
             return usuarios;
         }
 
-        // GET: api/Usuarios/5
+        /// <summary>
+        /// Obtiene un usuario por su ID.
+        /// </summary>
+        /// <param name="id">ID del usuario.</param>
+        /// <returns>Usuario en formato DTO.</returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<UsuarioCreateDTO>> GetUsuario(int id)
         {
@@ -65,7 +71,12 @@ namespace proyectocountertexdefinitivo.Controllers
             return Ok(usuarioDTO);
         }
 
-        // PUT: api/Usuarios/5
+        /// <summary>
+        /// Actualiza un usuario existente.
+        /// </summary>
+        /// <param name="id">ID del usuario a actualizar.</param>
+        /// <param name="usuarioDTO">Datos actualizados del usuario.</param>
+        /// <returns>NoContent si la actualización es exitosa.</returns>
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUsuario(int id, UsuarioCreateDTO usuarioDTO)
         {
@@ -81,12 +92,17 @@ namespace proyectocountertexdefinitivo.Controllers
             usuario.Contraseña = usuarioDTO.Contraseña;
             usuario.Rol = usuarioDTO.Rol;
             usuario.Id = id;
+
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        // POST: api/Usuarios
+        /// <summary>
+        /// Crea un nuevo usuario, validando correo y documento únicos, y cifrando la contraseña.
+        /// </summary>
+        /// <param name="usuarioDTO">Datos del usuario a crear.</param>
+        /// <returns>Usuario creado con sus datos públicos.</returns>
         [HttpPost]
         public async Task<ActionResult> PostUsuario(UsuarioCreateDTO usuarioDTO)
         {
@@ -95,18 +111,13 @@ namespace proyectocountertexdefinitivo.Controllers
                 return BadRequest(ModelState);
             }
 
-            // Verificar si ya existe un correo igual
-            var correoExistente = await _context.Usuarios
-                .AnyAsync(u => u.Correo == usuarioDTO.Correo);
-
+            var correoExistente = await _context.Usuarios.AnyAsync(u => u.Correo == usuarioDTO.Correo);
             if (correoExistente)
             {
                 return BadRequest(new { mensaje = "El correo ya está registrado." });
             }
 
-            var documentoExistente = await _context.Usuarios
-                .AnyAsync(u => u.Documento == usuarioDTO.Documento);
-
+            var documentoExistente = await _context.Usuarios.AnyAsync(u => u.Documento == usuarioDTO.Documento);
             if (documentoExistente)
             {
                 return BadRequest(new { mensaje = "El documento ya está registrado." });
@@ -134,8 +145,12 @@ namespace proyectocountertexdefinitivo.Controllers
             });
         }
 
-            // DELETE: api/Usuarios/5
-            [HttpDelete("{id}")]
+        /// <summary>
+        /// Elimina un usuario por ID.
+        /// </summary>
+        /// <param name="id">ID del usuario a eliminar.</param>
+        /// <returns>NoContent si la eliminación es exitosa.</returns>
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUsuario(int id)
         {
             var usuario = await _context.Usuarios.FindAsync(id);
@@ -150,6 +165,11 @@ namespace proyectocountertexdefinitivo.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Verifica si un usuario existe por ID.
+        /// </summary>
+        /// <param name="id">ID del usuario.</param>
+        /// <returns>True si existe, False si no.</returns>
         private bool UsuarioExists(int id)
         {
             return _context.Usuarios.Any(e => e.Id == id);
