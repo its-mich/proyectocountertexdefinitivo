@@ -1,83 +1,35 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using proyectocountertexdefinitivo.contexto;
 
 namespace proyectocountertexdefinitivo.Controllers
 {
     public class MantenimientoController : Controller
     {
-        // GET: MantenimientoController
-        public ActionResult Index()
-        {
-            return View();
-        }
+        //private readonly CounterTexDBContext _context;
 
-        // GET: MantenimientoController/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
+        //public MantenimientoController(CounterTexDBContext context)
+        //{
+        //    _context = context;
+        //}
 
-        // GET: MantenimientoController/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
+        //// ⚠️ Este método debe ejecutarse solo una vez para encriptar contraseñas antiguas
+        //[HttpPost("EncriptarContraseñas")]
+        //public IActionResult EncriptarContraseñas()
+        //{
+        //    var usuarios = _context.Usuarios.ToList();
 
-        // POST: MantenimientoController/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
+        //    foreach (var user in usuarios)
+        //    {
+        //        if (!string.IsNullOrEmpty(user.Contraseña) && !user.Contraseña.StartsWith("$2")) // No está encriptada
+        //        {
+        //            user.Contraseña = BCrypt.Net.BCrypt.HashPassword(user.Contraseña);
+        //        }
+        //    }
 
-        // GET: MantenimientoController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
+        //    _context.SaveChanges();
 
-        // POST: MantenimientoController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: MantenimientoController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: MantenimientoController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
+        //    return Ok("Contraseñas actualizadas correctamente.");
+        //}
     }
 }
