@@ -27,26 +27,13 @@ namespace proyectocountertexdefinitivo.Controllers
         {
             if (login == null || string.IsNullOrEmpty(login.Correo) || string.IsNullOrEmpty(login.Clave))
             {
-                return BadRequest("Invalid client request");
+                return BadRequest("Petición inválida");
             }
 
             var usuario = _context.Usuarios.FirstOrDefault(u => u.Correo == login.Correo);
 
             if (usuario == null)
-                return Unauthorized("Invalid email or password");
-
-            bool esValido = false;
-
-            if (usuario == null || !BCrypt.Net.BCrypt.Verify(login.Clave, usuario.Contraseña))
-            {
-                // Validar texto plano y actualizar a encriptado
-                esValido = true;
-                usuario.Contraseña = BCrypt.Net.BCrypt.HashPassword(login.Clave);
-                _context.SaveChanges(); // ⚠️ Actualiza la contraseña a encriptada
-            }
-
-            if (!esValido)
-                return Unauthorized("Invalid email or password");
+                return Unauthorized("Correo o contraseña incorrectos");
 
             var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
