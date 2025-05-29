@@ -6,24 +6,34 @@ using proyectocountertexdefinitivo.Repositories.Interfaces;
 
 namespace proyectocountertexdefinitivo.Controllers
 {
-
+    /// <summary>
+    /// Controlador que gestiona la asignación y consulta de horarios de los empleados.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class HorariosController : ControllerBase
     {
         private readonly CounterTexDBContext _context;
 
+        /// <summary>
+        /// Constructor que recibe el contexto de base de datos.
+        /// </summary>
+        /// <param name="context">Contexto de la base de datos de CounterTex.</param>
         public HorariosController(CounterTexDBContext context)
         {
             _context = context;
         }
 
-        // GET: api/Horarios
+        /// <summary>
+        /// Obtiene la lista de todos los horarios registrados.
+        /// </summary>
+        /// <returns>Una lista de objetos <see cref="HorarioDTO"/> con información del horario y empleado.</returns>
+        /// <response code="200">Lista obtenida correctamente.</response>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<HorarioDTO>>> GetHorarios()
         {
             var horarios = await _context.Horarios
-                .Include(h => h.Usuario) // Asegura que incluya los datos del usuario relacionado
+                .Include(h => h.Usuario)
                 .Select(h => new HorarioDTO
                 {
                     EmpleadoId = h.EmpleadoId,
@@ -38,7 +48,13 @@ namespace proyectocountertexdefinitivo.Controllers
             return Ok(horarios);
         }
 
-        // GET: api/Horarios/5
+        /// <summary>
+        /// Obtiene los detalles de un horario específico por su ID.
+        /// </summary>
+        /// <param name="id">Identificador del horario.</param>
+        /// <returns>Un objeto <see cref="HorarioDTO"/> si existe, de lo contrario, <see cref="NotFound"/>.</returns>
+        /// <response code="200">Horario encontrado.</response>
+        /// <response code="404">Horario no encontrado.</response>
         [HttpGet("{id}")]
         public async Task<IActionResult> GetHorarioPorId(int id)
         {
@@ -62,30 +78,29 @@ namespace proyectocountertexdefinitivo.Controllers
             return Ok(horarioDto);
         }
 
-        // POST: api/Horarios
+        /// <summary>
+        /// Crea un nuevo registro de horario para un empleado.
+        /// </summary>
+        /// <param name="horarioDto">Objeto <see cref="HorarioDTO"/> con la información del horario.</param>
+        /// <returns>El horario creado.</returns>
+        /// <response code="201">Horario creado correctamente.</response>
+        /// <response code="404">Usuario no encontrado.</response>
+        /// <response code="409">Ya existe un horario para esa fecha, tipo y empleado.</response>
         [HttpPost]
         public async Task<ActionResult<HorarioDTO>> PostHorario(HorarioDTO horarioDto)
         {
-            // 1. Verificar que el empleado exista
             var usuario = await _context.Usuarios.FindAsync(horarioDto.EmpleadoId);
             if (usuario == null)
-            {
                 return NotFound($"No se encontró un usuario con ID {horarioDto.EmpleadoId}.");
-            }
 
-            // 2. Validar si ya existe el horario con la clave compuesta
             var horarioExistente = await _context.Horarios.FirstOrDefaultAsync(h =>
-            h.EmpleadoId == horarioDto.EmpleadoId &&
-            h.Fecha.Date == horarioDto.Fecha.Date &&
-            h.Tipo.ToLower() == horarioDto.Tipo.ToLower()
-);
+                h.EmpleadoId == horarioDto.EmpleadoId &&
+                h.Fecha.Date == horarioDto.Fecha.Date &&
+                h.Tipo.ToLower() == horarioDto.Tipo.ToLower());
 
             if (horarioExistente != null)
-            {
                 return Conflict("Ya existe un horario para ese empleado, fecha y tipo.");
-            }
 
-            // 3. Mapear DTO a entidad Horario
             var horario = new Horario
             {
                 EmpleadoId = horarioDto.EmpleadoId,
@@ -98,7 +113,6 @@ namespace proyectocountertexdefinitivo.Controllers
             _context.Horarios.Add(horario);
             await _context.SaveChangesAsync();
 
-            // 4. Devolver DTO de confirmación (puedes incluir nombre si quieres)
             var resultado = new HorarioDTO
             {
                 EmpleadoId = horario.EmpleadoId,
@@ -112,7 +126,13 @@ namespace proyectocountertexdefinitivo.Controllers
             return CreatedAtAction(nameof(GetHorarios), new { id = horario.EmpleadoId }, resultado);
         }
 
-        // DELETE: api/Horarios/5
+        /// <summary>
+        /// Elimina un horario existente por su ID.
+        /// </summary>
+        /// <param name="id">Identificador del horario.</param>
+        /// <returns>Respuesta 204 si se eliminó correctamente o 404 si no se encontró.</returns>
+        /// <response code="204">Horario eliminado correctamente.</response>
+        /// <response code="404">Horario no encontrado.</response>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteHorario(int id)
         {
@@ -125,9 +145,4 @@ namespace proyectocountertexdefinitivo.Controllers
             return NoContent();
         }
     }
-
 }
-
-
-
-

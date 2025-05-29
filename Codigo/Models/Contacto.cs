@@ -1,21 +1,33 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
-
-namespace proyectocountertexdefinitivo.Models
+﻿namespace proyectocountertexdefinitivo.Models
 {
+    /// <summary>
+    /// Representa un contacto con información básica de contacto y observaciones.
+    /// </summary>
     public class Contacto
     {
-       
-            public int Id { get; set; }
+        /// <summary>
+        /// Identificador único del contacto.
+        /// </summary>
+        public int Id { get; set; }
 
-            public string NombreCompleto { get; set; }
+        /// <summary>
+        /// Nombre completo de la persona de contacto.
+        /// </summary>
+        public string NombreCompleto { get; set; }
 
-            public string Telefono { get; set; }
+        /// <summary>
+        /// Número telefónico del contacto.
+        /// </summary>
+        public string Telefono { get; set; }
 
-            public string Correo { get; set; }
+        /// <summary>
+        /// Correo electrónico del contacto.
+        /// </summary>
+        public string Correo { get; set; }
 
-            public string Observacion { get; set; }
-        
-
+        /// <summary>
+        /// Observaciones adicionales sobre el contacto.
+        /// </summary>
+        public string Observacion { get; set; }
     }
 }
