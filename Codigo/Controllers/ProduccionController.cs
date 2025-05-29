@@ -2,11 +2,13 @@
 using Microsoft.EntityFrameworkCore;
 using proyectocountertexdefinitivo.contexto;
 using proyectocountertexdefinitivo.Models;
+using Microsoft.AspNetCore.Authorization; // Necesario para [AllowAnonymous]
 
 namespace proyectocountertexdefinitivo.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [IgnoreAntiforgeryToken] // <--- ¡AÑADIR ESTO AQUÍ!
     public class ProduccionController : ControllerBase
     {
         private readonly CounterTexDBContext _context;
@@ -26,8 +28,8 @@ namespace proyectocountertexdefinitivo.Controllers
                 {
                     Id = p.Id,
                     Fecha = p.Fecha,
-                    Usuario = p.Usuario.Nombre, // o como se llame
-                    Prenda = p.Prenda.Nombre,   // igual aquí
+                    Usuario = p.Usuario.Nombre,
+                    Prenda = p.Prenda.Nombre,
                     Total = p.ProduccionDetalles.Sum(d => d.Cantidad)
                 })
                 .ToListAsync();
@@ -49,38 +51,71 @@ namespace proyectocountertexdefinitivo.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public async Task<ActionResult<Produccion>> PostProduccion(Produccion produccion)
         {
-            // Validación de los campos requeridos
+            // ... (tu código de validación y guardado actual) ...
             if (produccion.UsuarioId <= 0 || produccion.PrendaId <= 0)
             {
-                return BadRequest("El usuario y la prenda deben ser válidos.");
+                ModelState.AddModelError(nameof(produccion.UsuarioId), "El usuario es obligatorio.");
+                ModelState.AddModelError(nameof(produccion.PrendaId), "La prenda es obligatoria.");
+                return BadRequest(ModelState);
             }
 
-            // Verificar que el Usuario y la Prenda existan
             var usuario = await _context.Usuarios.FindAsync(produccion.UsuarioId);
             var prenda = await _context.Prendas.FindAsync(produccion.PrendaId);
 
-            if (usuario == null || prenda == null)
+            if (usuario == null)
             {
-                return BadRequest("El usuario o la prenda no existen.");
+                ModelState.AddModelError(nameof(produccion.UsuarioId), "El usuario seleccionado no existe.");
+                return BadRequest(ModelState);
+            }
+            if (prenda == null)
+            {
+                ModelState.AddModelError(nameof(produccion.PrendaId), "La prenda seleccionada no existe.");
+                return BadRequest(ModelState);
             }
 
-            // Añadir la producción a la base de datos
+            if (produccion.ProduccionDetalles == null || !produccion.ProduccionDetalles.Any())
+            {
+                ModelState.AddModelError(nameof(produccion.ProduccionDetalles), "Debe agregar al menos un detalle de producción.");
+                return BadRequest(ModelState);
+            }
+
+            int detalleIndex = 0;
+            foreach (var detalle in produccion.ProduccionDetalles)
+            {
+                if (detalle.Cantidad <= 0)
+                {
+                    ModelState.AddModelError($"{nameof(produccion.ProduccionDetalles)}[{detalleIndex}].{nameof(detalle.Cantidad)}", "La cantidad del detalle debe ser mayor que cero.");
+                }
+                if (detalle.OperacionId <= 0)
+                {
+                    ModelState.AddModelError($"{nameof(produccion.ProduccionDetalles)}[{detalleIndex}].{nameof(detalle.OperacionId)}", "La operación del detalle es obligatoria.");
+                }
+                var operacion = await _context.Operaciones.FindAsync(detalle.OperacionId);
+                if (operacion == null)
+                {
+                    ModelState.AddModelError($"{nameof(produccion.ProduccionDetalles)}[{detalleIndex}].{nameof(detalle.OperacionId)}", "La operación seleccionada en el detalle no existe.");
+                }
+                detalleIndex++;
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             _context.Producciones.Add(produccion);
             await _context.SaveChangesAsync();
 
-            // Asegurar que los detalles de producción también se guarden correctamente
             foreach (var detalle in produccion.ProduccionDetalles)
             {
-                detalle.ProduccionId = produccion.Id;  // Asignar el ID de la producción
+                detalle.ProduccionId = produccion.Id;
                 _context.ProduccionDetalle.Add(detalle);
             }
-
-            // Guardar los detalles de producción
             await _context.SaveChangesAsync();
 
-            // Devolver la respuesta con la producción creada
             return CreatedAtAction(nameof(GetProduccion), new { id = produccion.Id }, produccion);
         }
 
@@ -93,20 +128,17 @@ namespace proyectocountertexdefinitivo.Controllers
                 return NotFound();
             }
 
-            // Eliminar primero los detalles relacionados
             var detalles = await _context.ProduccionDetalle
                                          .Where(d => d.ProduccionId == id)
                                          .ToListAsync();
 
             _context.ProduccionDetalle.RemoveRange(detalles);
 
-            // Ahora sí, eliminar la producción
             _context.Producciones.Remove(produccion);
 
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
-
     }
 }
