@@ -1,23 +1,43 @@
-﻿    using System.ComponentModel.DataAnnotations;
-    using System.ComponentModel.DataAnnotations.Schema;
-
-    namespace proyectocountertexdefinitivo.Models
+﻿namespace proyectocountertexdefinitivo.Models
+{
+    /// <summary>
+    /// Representa un detalle específico dentro de una producción, asociado a una operación concreta.
+    /// </summary>
+    public class ProduccionDetalle
     {
-        public class ProduccionDetalle
-        {
-            public int Id { get; set; }
+        /// <summary>
+        /// Identificador único del detalle de producción.
+        /// </summary>
+        public int Id { get; set; }
 
-            public int Cantidad { get; set; }
+        /// <summary>
+        /// Cantidad de unidades relacionadas con esta operación en la producción.
+        /// </summary>
+        public int Cantidad { get; set; }
 
-            public int ProduccionId { get; set; }
+        /// <summary>
+        /// Identificador de la producción a la que pertenece este detalle.
+        /// </summary>
+        public int ProduccionId { get; set; }
 
-            public Produccion Produccion { get; set; }
+        /// <summary>
+        /// Producción asociada a este detalle.
+        /// </summary>
+        public Produccion Produccion { get; set; }
 
-            public int OperacionId { get; set; }
+        /// <summary>
+        /// Identificador de la operación realizada en este detalle.
+        /// </summary>
+        public int OperacionId { get; set; }
 
-            public Operacion Operacion { get; set; }
+        /// <summary>
+        /// Operación asociada a este detalle de producción.
+        /// </summary>
+        public Operacion Operacion { get; set; }
 
-            public decimal? ValorTotal { get; set; }
-
-        }
+        /// <summary>
+        /// Valor total calculado para este detalle (Cantidad * ValorUnitario de la operación).
+        /// </summary>
+        public decimal? ValorTotal { get; set; }
     }
+}

@@ -1,50 +1,118 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using proyectocountertexdefinitivo.Controllers;
 using proyectocountertexdefinitivo.Models;
-using proyectocountertexdefinitivo.Repositories.Interfaces;
 
 namespace proyectocountertexdefinitivo.contexto
 {
+    /// <summary>
+    /// Contexto de base de datos para la aplicación CounterTex.
+    /// Define las entidades y relaciones del modelo de datos.
+    /// </summary>
     public class CounterTexDBContext : DbContext
     {
+        /// <summary>
+        /// Constructor que recibe las opciones de configuración para el contexto.
+        /// </summary>
+        /// <param name="options">Opciones del contexto DbContext.</param>
         public CounterTexDBContext(DbContextOptions<CounterTexDBContext> options) : base(options) { }
 
+        /// <summary>
+        /// DbSet de usuarios.
+        /// </summary>
         public DbSet<Usuario> Usuarios { get; set; }
+
+        /// <summary>
+        /// DbSet de prendas.
+        /// </summary>
         public DbSet<Prenda> Prendas { get; set; }
+
+        /// <summary>
+        /// DbSet de operaciones.
+        /// </summary>
         public DbSet<Operacion> Operaciones { get; set; }
+
+        /// <summary>
+        /// DbSet de producciones.
+        /// </summary>
         public DbSet<Produccion> Producciones { get; set; }
+
+        /// <summary>
+        /// DbSet de detalles de producción.
+        /// </summary>
         public DbSet<ProduccionDetalle> ProduccionDetalle { get; set; }
+
+        /// <summary>
+        /// DbSet de horarios.
+        /// </summary>
         public DbSet<Horario> Horarios { get; set; }
+
+        /// <summary>
+        /// DbSet de metas.
+        /// </summary>
         public DbSet<Meta> Metas { get; set; }
+
+        /// <summary>
+        /// DbSet de mensajes de chat.
+        /// </summary>
         public DbSet<MensajeChat> MensajesChat { get; set; }
+
+        /// <summary>
+        /// DbSet de contactos.
+        /// </summary>
         public DbSet<Contacto> Contacto { get; set; }
 
+        /// <summary>
+        /// Configura las entidades, sus propiedades, relaciones y restricciones.
+        /// </summary>
+        /// <param name="modelBuilder">Constructor del modelo para configurar las entidades.</param>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            // Usuarios
+            // Configuración para la entidad Usuario
             modelBuilder.Entity<Usuario>(entity =>
             {
-                entity.HasKey(e => e.Id);
-                entity.Property(e => e.Nombre).HasMaxLength(100).IsRequired();
-                entity.Property(e => e.Documento).HasMaxLength(20).IsRequired();
-                entity.HasIndex(e => e.Documento).IsUnique();
-                entity.Property(e => e.Correo).HasMaxLength(100).IsRequired();
-                entity.HasIndex(e => e.Correo).IsUnique();
-                entity.Property(e => e.Contraseña).HasMaxLength(255).IsRequired();
-                entity.Property(e => e.Rol).HasMaxLength(20);
+                entity.HasKey(e => e.Id); // Clave primaria
+
+                entity.Property(e => e.Nombre)
+                      .HasMaxLength(100)
+                      .IsRequired();
+
+                entity.Property(e => e.Documento)
+                      .HasMaxLength(20)
+                      .IsRequired();
+
+                entity.HasIndex(e => e.Documento)
+                      .IsUnique(); // Documento único
+
+                entity.Property(e => e.Correo)
+                      .HasMaxLength(100)
+                      .IsRequired();
+
+                entity.HasIndex(e => e.Correo)
+                      .IsUnique(); // Correo único
+
+                entity.Property(e => e.Contraseña)
+                      .HasMaxLength(255)
+                      .IsRequired();
+
+                entity.Property(e => e.Rol)
+                      .HasMaxLength(20);
+
                 entity.Property(e => e.Edad);
-                entity.Property(e => e.Telefono).HasMaxLength(20);
+
+                entity.Property(e => e.Telefono)
+                      .HasMaxLength(20);
+
                 entity.Property(e => e.OperacionId);
 
+                // Relación con Operacion (muchos usuarios pueden estar en una operación)
                 entity.HasOne(e => e.Operacion)
                       .WithMany(o => o.Usuarios)
                       .HasForeignKey(e => e.OperacionId)
                       .OnDelete(DeleteBehavior.Restrict);
             });
 
-            // Prendas
+            // Configuración para la entidad Prenda
             modelBuilder.Entity<Prenda>(entity =>
             {
                 entity.HasKey(e => e.Id);
@@ -53,15 +121,17 @@ namespace proyectocountertexdefinitivo.contexto
                 entity.Property(e => e.Color).HasMaxLength(50);
             });
 
-            // Operaciones
+            // Configuración para la entidad Operacion
             modelBuilder.Entity<Operacion>(entity =>
             {
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Nombre).HasMaxLength(100).IsRequired();
-                entity.Property(e => e.ValorUnitario).HasColumnType("decimal(10,2)").IsRequired();
+                entity.Property(e => e.ValorUnitario)
+                      .HasColumnType("decimal(10,2)")
+                      .IsRequired();
             });
 
-            // Producción
+            // Configuración para Produccion y sus relaciones
             modelBuilder.Entity<Produccion>(entity =>
             {
                 entity.HasKey(e => e.Id);
@@ -77,7 +147,7 @@ namespace proyectocountertexdefinitivo.contexto
                       .OnDelete(DeleteBehavior.Restrict);
             });
 
-            // Producción Detalle
+            // Configuración para ProduccionDetalle con columna calculada
             modelBuilder.Entity<ProduccionDetalle>(entity =>
             {
                 entity.HasKey(e => e.Id);
@@ -93,19 +163,17 @@ namespace proyectocountertexdefinitivo.contexto
                       .HasForeignKey(e => e.OperacionId)
                       .OnDelete(DeleteBehavior.Restrict);
 
+                // ValorTotal = Cantidad * ValorUnitario (calculado en BD)
                 entity.Property(e => e.ValorTotal)
                       .HasColumnType("decimal(10,2)")
                       .HasComputedColumnSql("[Cantidad] * (SELECT ValorUnitario FROM Operaciones WHERE Operaciones.Id = OperacionId)", stored: true);
             });
 
-            // Horarios
+            // Configuración para Horarios
             modelBuilder.Entity<Horario>(entity =>
             {
                 entity.HasKey(e => e.HorarioId);
-
-                entity.Property(e => e.HorarioId)
-                      .ValueGeneratedOnAdd();
-
+                entity.Property(e => e.HorarioId).ValueGeneratedOnAdd();
                 entity.Property(e => e.Fecha).HasColumnType("date");
                 entity.Property(e => e.Hora).HasColumnType("time");
                 entity.Property(e => e.Tipo).IsRequired().HasMaxLength(20);
@@ -117,15 +185,13 @@ namespace proyectocountertexdefinitivo.contexto
                       .OnDelete(DeleteBehavior.Restrict);
             });
 
-            // Metas
+            // Configuración para Metas
             modelBuilder.Entity<Meta>(entity =>
             {
                 entity.HasKey(e => e.Id);
-
                 entity.Property(e => e.Fecha).HasColumnType("date");
                 entity.Property(e => e.MetaCorte);
                 entity.Property(e => e.ProduccionReal);
-
                 entity.Property(e => e.FechaHora).HasColumnType("datetime");
                 entity.Property(e => e.Mensaje).HasMaxLength(500);
 
@@ -145,13 +211,11 @@ namespace proyectocountertexdefinitivo.contexto
                       .OnDelete(DeleteBehavior.Restrict);
             });
 
-            // Mensajes Chat
+            // Configuración para Mensajes Chat
             modelBuilder.Entity<MensajeChat>(entity =>
             {
                 entity.HasKey(e => e.Id);
-
                 entity.Property(e => e.FechaHora).HasColumnType("datetime");
-
                 entity.Property(e => e.Mensaje).IsRequired();
 
                 entity.HasOne(e => e.Remitente)
@@ -165,20 +229,15 @@ namespace proyectocountertexdefinitivo.contexto
                       .OnDelete(DeleteBehavior.Restrict);
             });
 
-            // Token (No es persistido en la base de datos)
+            // Token (no persistido en la base de datos)
             modelBuilder.Entity<Token>(entity =>
             {
-                entity.HasNoKey(); // Esto asegura que no tenga clave primaria ni se mapee a una tabla
-
-                entity.Property(e => e.TokenValue)
-                      .HasMaxLength(255)
-                      .IsRequired();
-
-                entity.Property(e => e.Rol)
-                      .HasMaxLength(50);
+                entity.HasNoKey(); // No tiene clave primaria ni tabla física
+                entity.Property(e => e.TokenValue).HasMaxLength(255).IsRequired();
+                entity.Property(e => e.Rol).HasMaxLength(50);
             });
 
-            // Contacto
+            // Configuración para Contacto
             modelBuilder.Entity<Contacto>(entity =>
             {
                 entity.HasKey(e => e.Id);
