@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.Text;
 using proyectocountertexdefinitivo.contexto;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.IdentityModel.JsonWebTokens;
 
 namespace proyectocountertexdefinitivo.Controllers
 {
@@ -58,20 +59,22 @@ namespace proyectocountertexdefinitivo.Controllers
             var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
 
             var claims = new List<Claim>
+    {
+        new Claim(ClaimTypes.Name, usuario.Correo),
+        new Claim(ClaimTypes.Role, usuario.Rol ?? "SinRol")
+    };
+
+            var tokenDescriptor = new SecurityTokenDescriptor
             {
-                new Claim(ClaimTypes.Name, usuario.Correo),
-                new Claim(ClaimTypes.Role, usuario.Rol ?? "SinRol")
+                Issuer = _configuration["Jwt:Issuer"],
+                Audience = _configuration["Jwt:Audience"],
+                Subject = new ClaimsIdentity(claims),
+                Expires = DateTime.UtcNow.AddMinutes(30),
+                SigningCredentials = signinCredentials
             };
 
-            var tokenOptions = new JwtSecurityToken(
-                issuer: _configuration["Jwt:Issuer"],
-                audience: _configuration["Jwt:Audience"],
-                claims: claims,
-                expires: DateTime.Now.AddMinutes(30),
-                signingCredentials: signinCredentials
-            );
-
-            var tokenString = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
+            var handler = new JsonWebTokenHandler();
+            var tokenString = handler.CreateToken(tokenDescriptor);
 
             return Ok(new
             {
