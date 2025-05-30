@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using proyectocountertexdefinitivo.contexto;
 using Microsoft.EntityFrameworkCore;
 
+
 namespace proyectocountertexdefinitivo.Controllers
 {
     //using Microsoft.AspNetCore.Mvc;

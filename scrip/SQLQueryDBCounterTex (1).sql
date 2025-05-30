@@ -196,3 +196,42 @@ VALUES
 ('Andres López', '3001234567', 'andres.lopez@correo.com', 'Posible proveedor de insumos.'),
 ('Maria Torres', '3017654321', 'maria.torres@correo.com', 'Contacto para nuevos diseños.');
 GO
+
+-- ===========================
+-- PROCEDIMIENTOS ALMACENADOS (sp)
+-- ===========================
+
+CREATE PROCEDURE sp_ProduccionMensual
+    @Anio INT,
+    @Mes INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT 
+        U.Nombre AS NombreUsuario,
+        P.Fecha,
+        SUM(P.TotalValor) AS ProduccionTotal
+    FROM Produccion P
+    INNER JOIN Usuarios U ON U.Id = P.UsuarioId
+    WHERE MONTH(P.Fecha) = @Mes AND YEAR(P.Fecha) = @Anio
+    GROUP BY U.Nombre, P.Fecha
+    ORDER BY P.Fecha;
+END;
+GO
+
+CREATE OR ALTER PROCEDURE sp_ProduccionMensualResumen
+    @Anio INT,
+    @Mes INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT 
+        @Mes AS Mes,
+        @Anio AS Anio,
+        ISNULL(SUM(TotalValor), 0) AS ProduccionTotalMensual
+    FROM Produccion
+    WHERE MONTH(Fecha) = @Mes AND YEAR(Fecha) = @Anio;
+END;
+GO

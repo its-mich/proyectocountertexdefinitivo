@@ -1,6 +1,9 @@
 ﻿namespace proyectocountertexdefinitivo.Models
 {
-    public class ProduccionDto
+    /// <summary>
+    /// DTO para transferir información simplificada de una producción.
+    /// </summary>
+    public class ProduccionDTO
     {
         public int Id { get; set; }
         public DateTime Fecha { get; set; }

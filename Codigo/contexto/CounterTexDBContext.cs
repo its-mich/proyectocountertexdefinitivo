@@ -12,13 +12,33 @@ namespace proyectocountertexdefinitivo.contexto
         public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<Prenda> Prendas { get; set; }
         public DbSet<Operacion> Operaciones { get; set; }
+
+        /// <summary>
+        /// DbSet de producciones.
+        /// </summary>
         public DbSet<Produccion> Producciones { get; set; }
+
+        /// <summary>
+        /// DbSet de detalles de producción.
+        /// </summary>
+        public DbSet<ProduccionDetalle> ProduccionDetalles { get; set; }
+
+        /// <summary>
+        /// DbSet de horarios.
+        /// </summary>
         public DbSet<ProduccionDetalle> ProduccionDetalle { get; set; }
         public DbSet<Horario> Horarios { get; set; }
         public DbSet<Meta> Metas { get; set; }
         public DbSet<MensajeChat> MensajesChat { get; set; }
         public DbSet<Contacto> Contacto { get; set; }
 
+        // 👇 Agregado: DbSet para resultados de SP
+        public DbSet<ProduccionMensualResumenDTO> ProduccionMensualResumen { get; set; }
+
+        /// <summary>
+        /// Configura las entidades, sus propiedades, relaciones y restricciones.
+        /// </summary>
+        /// <param name="modelBuilder">Constructor del modelo para configurar las entidades.</param>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -184,6 +204,19 @@ namespace proyectocountertexdefinitivo.contexto
                 entity.Property(e => e.Correo).HasMaxLength(100);
                 entity.Property(e => e.Observacion);
             });
+
+            // 👇 Agregado: Configuración para DTO del procedimiento almacenado
+            modelBuilder.Entity<ProduccionMensualResumenDTO>().HasNoKey().ToView(null);
+        }
+
+        // 👇 Método para llamar al procedimiento
+        public async Task<ProduccionMensualResumenDTO?> ObtenerResumenMensualAsync(int anio, int mes)
+        {
+            return await this.ProduccionMensualResumen
+                .FromSqlRaw("EXEC sp_ProduccionMensualResumen @Anio = {0}, @Mes = {1}", anio, mes)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
         }
     }
+    
 }

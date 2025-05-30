@@ -1,4 +1,6 @@
-﻿
+﻿using System.Text.Json.Serialization;
+
+
 
 using System.ComponentModel.DataAnnotations;
 
@@ -14,6 +16,10 @@ namespace proyectocountertexdefinitivo.Models
 
         public string Color { get; set; }
 
+        /// <summary>
+        /// Colección de producciones asociadas a esta prenda.
+        /// </summary>
+        [JsonIgnore]
         public ICollection<Produccion> Producciones { get; set; }
     }
 

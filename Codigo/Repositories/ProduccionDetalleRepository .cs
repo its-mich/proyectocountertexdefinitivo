@@ -15,23 +15,32 @@ namespace proyectocountertexdefinitivo.Repositories.repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<ProduccionDetalle>> GetAllAsync() => await _context.ProduccionDetalle.ToListAsync();
+        /// <summary>
+        /// Obtiene todos los registros de detalles de producción.
+        /// </summary>
+        /// <returns>Una lista de objetos <see cref="ProduccionDetalle"/>.</returns>
+        public async Task<IEnumerable<ProduccionDetalle>> GetAllAsync() => await _context.ProduccionDetalles.ToListAsync();
 
-        public async Task<ProduccionDetalle> GetByIdAsync(int id) => await _context.ProduccionDetalle.FindAsync(id);
+        /// <summary>
+        /// Obtiene un detalle de producción por su identificador.
+        /// </summary>
+        /// <param name="id">Identificador del detalle de producción.</param>
+        /// <returns>Objeto <see cref="ProduccionDetalle"/> correspondiente o null si no se encuentra.</returns>
+        public async Task<ProduccionDetalle> GetByIdAsync(int id) => await _context.ProduccionDetalles.FindAsync(id);
 
         public async Task<ProduccionDetalle> CreateAsync(ProduccionDetalle detalle)
         {
-            _context.ProduccionDetalle.Add(detalle);
+            _context.ProduccionDetalles.Add(detalle);
             await _context.SaveChangesAsync();
             return detalle;
         }
 
         public async Task DeleteAsync(int id)
         {
-            var detalle = await _context.ProduccionDetalle.FindAsync(id);
+            var detalle = await _context.ProduccionDetalles.FindAsync(id);
             if (detalle != null)
             {
-                _context.ProduccionDetalle.Remove(detalle);
+                _context.ProduccionDetalles.Remove(detalle);
                 await _context.SaveChangesAsync();
             }
         }
