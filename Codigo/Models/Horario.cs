@@ -7,6 +7,7 @@ namespace proyectocountertexdefinitivo.Models
 {
     public class Horario
     {
+        public int HorarioId { get; set; }
         public int EmpleadoId { get; set; }
         public string Tipo { get; set; } // entrada, salida, descanso
         public TimeSpan Hora { get; set; }

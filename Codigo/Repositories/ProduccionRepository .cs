@@ -25,16 +25,18 @@ namespace proyectocountertexdefinitivo.Repositories.repositories
             _context.Producciones.Add(produccion);
             await _context.SaveChangesAsync();
             return produccion;
-        }   
+        }
 
-        public async Task DeleteAsync(int id)
+        public async Task<bool> DeleteAsync(int id)
         {
             var produccion = await _context.Producciones.FindAsync(id);
             if (produccion != null)
             {
                 _context.Producciones.Remove(produccion);
                 await _context.SaveChangesAsync();
+                return true;
             }
+            return false;
         }
         public async Task<object> ObtenerResumenMensual(int anio, int mes)
         {

@@ -13,18 +13,10 @@ namespace proyectocountertexdefinitivo.Models
         /// Identificador único del detalle de producción.
         /// </summary>
         public int Id { get; set; }
-    using System.ComponentModel.DataAnnotations;
-    using System.ComponentModel.DataAnnotations.Schema;
 
-    namespace proyectocountertexdefinitivo.Models
-    {
-        public class ProduccionDetalle
-        {
-            public int Id { get; set; }
+        public int Cantidad { get; set; }
 
-            public int Cantidad { get; set; }
-
-            public int ProduccionId { get; set; }
+        public int ProduccionId { get; set; }
 
         /// <summary>
         /// Producción asociada a este detalle.
