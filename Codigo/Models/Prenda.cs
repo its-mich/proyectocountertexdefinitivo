@@ -29,5 +29,14 @@
         /// Colección de producciones asociadas a esta prenda.
         /// </summary>
         public ICollection<Produccion> Producciones { get; set; }
+
+
+
+        // se agrego esto en una tabla  despues lo comento
+        public string? TipoPrenda { get; set; }
+        public string? EstadoRevision { get; set; }
+        public string? Operador { get; set; }
+
+
     }
 }

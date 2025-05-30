@@ -119,6 +119,11 @@ namespace proyectocountertexdefinitivo.contexto
                 entity.Property(e => e.Nombre).HasMaxLength(100).IsRequired();
                 entity.Property(e => e.Genero).HasMaxLength(20);
                 entity.Property(e => e.Color).HasMaxLength(50);
+
+                //se actualizo la tabla de prenda con nuevas columnas :DDDDDDDDDDDDD
+                entity.Property(e => e.TipoPrenda).HasMaxLength(100);
+                entity.Property(e => e.EstadoRevision).HasMaxLength(100);
+                entity.Property(e => e.Operador).HasMaxLength(100);
             });
 
             // Configuración para la entidad Operacion
