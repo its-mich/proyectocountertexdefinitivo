@@ -19,13 +19,13 @@ namespace proyectocountertexdefinitivo.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ProduccionDetalle>>> GetProduccionDetalles()
         {
-            return await _context.ProduccionDetalle.ToListAsync();
+            return await _context.ProduccionDetalles.ToListAsync();
         }
 
         [HttpPost]
         public async Task<ActionResult<ProduccionDetalle>> PostProduccionDetalle(ProduccionDetalle produccionDetalle)
         {
-            _context.ProduccionDetalle.Add(produccionDetalle);
+            _context.ProduccionDetalles.Add(produccionDetalle);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetProduccionDetalle", new { id = produccionDetalle.Id }, produccionDetalle);
@@ -45,7 +45,7 @@ namespace proyectocountertexdefinitivo.Controllers
 
             detalle.ValorTotal = detalle.Cantidad * operacion.ValorUnitario.Value;
 
-            _context.ProduccionDetalle.Add(detalle);
+            _context.ProduccionDetalles.Add(detalle);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetProduccionDetalles), new { id = detalle.Id }, detalle);
@@ -54,13 +54,13 @@ namespace proyectocountertexdefinitivo.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduccionDetalle(int id)
         {
-            var produccionDetalle = await _context.ProduccionDetalle.FindAsync(id);
+            var produccionDetalle = await _context.ProduccionDetalles.FindAsync(id);
             if (produccionDetalle == null)
             {
                 return NotFound();
             }
 
-            _context.ProduccionDetalle.Remove(produccionDetalle);
+            _context.ProduccionDetalles.Remove(produccionDetalle);
             await _context.SaveChangesAsync();
 
             return NoContent();
