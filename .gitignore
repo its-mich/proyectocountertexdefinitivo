@@ -403,3 +403,11 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+/Codigo/.vs/proyectocountertexdefinitivo/CopilotIndices/17.13.431.34963/CodeChunks.db
+/Codigo/.vs/proyectocountertexdefinitivo/CopilotIndices/17.13.431.34963/CodeChunks.db-wal
+/Codigo/.vs/proyectocountertexdefinitivo/CopilotIndices/17.13.431.34963/SemanticSymbols.db
+/Codigo/.vs/proyectocountertexdefinitivo/CopilotIndices/17.13.431.34963/CodeChunks.db-shm
+/Codigo/.vs/proyectocountertexdefinitivo/CopilotIndices/17.13.431.34963/SemanticSymbols.db-shm
+/Codigo/.vs/proyectocountertexdefinitivo/CopilotIndices/17.13.431.34963/SemanticSymbols.db-wal
+/Codigo/bin/Debug/net7.0/proyectocountertexdefinitivo.dll
+/Codigo/bin/Debug/net7.0/proyectocountertexdefinitivo.exe
