@@ -1,8 +1,12 @@
-﻿namespace proyectocountertexdefinitivo.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
+
+namespace proyectocountertexdefinitivo.Models
 {
     /// <summary>
     /// Representa un detalle específico dentro de una producción, asociado a una operación concreta.
     /// </summary>
+    [Table("ProduccionDetalle")]
     public class ProduccionDetalle
     {
         /// <summary>
@@ -23,6 +27,7 @@
         /// <summary>
         /// Producción asociada a este detalle.
         /// </summary>
+        [JsonIgnore]
         public Produccion Produccion { get; set; }
 
         /// <summary>

@@ -1,4 +1,6 @@
-﻿namespace proyectocountertexdefinitivo.Models
+﻿using System.Text.Json.Serialization;
+
+namespace proyectocountertexdefinitivo.Models
 {
     /// <summary>
     /// Representa una operación que puede estar relacionada con producciones y usuarios.
@@ -23,6 +25,7 @@
         /// <summary>
         /// Detalles de producción relacionados con esta operación.
         /// </summary>
+        [JsonIgnore]
         public ICollection<ProduccionDetalle> ProduccionDetalles { get; set; }
 
         /// <summary>

@@ -38,7 +38,7 @@ namespace proyectocountertexdefinitivo.contexto
         /// <summary>
         /// DbSet de detalles de producción.
         /// </summary>
-        public DbSet<ProduccionDetalle> ProduccionDetalle { get; set; }
+        public DbSet<ProduccionDetalle> ProduccionDetalles { get; set; }
 
         /// <summary>
         /// DbSet de horarios.
@@ -59,6 +59,9 @@ namespace proyectocountertexdefinitivo.contexto
         /// DbSet de contactos.
         /// </summary>
         public DbSet<Contacto> Contacto { get; set; }
+
+        // 👇 Agregado: DbSet para resultados de SP
+        public DbSet<ProduccionMensualResumenDTO> ProduccionMensualResumen { get; set; }
 
         /// <summary>
         /// Configura las entidades, sus propiedades, relaciones y restricciones.
@@ -246,6 +249,19 @@ namespace proyectocountertexdefinitivo.contexto
                 entity.Property(e => e.Correo).HasMaxLength(100);
                 entity.Property(e => e.Observacion);
             });
+
+            // 👇 Agregado: Configuración para DTO del procedimiento almacenado
+            modelBuilder.Entity<ProduccionMensualResumenDTO>().HasNoKey().ToView(null);
+        }
+
+        // 👇 Método para llamar al procedimiento
+        public async Task<ProduccionMensualResumenDTO?> ObtenerResumenMensualAsync(int anio, int mes)
+        {
+            return await this.ProduccionMensualResumen
+                .FromSqlRaw("EXEC sp_ProduccionMensualResumen @Anio = {0}, @Mes = {1}", anio, mes)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
         }
     }
+    
 }

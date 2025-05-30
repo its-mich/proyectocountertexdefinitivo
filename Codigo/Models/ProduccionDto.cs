@@ -3,7 +3,7 @@
     /// <summary>
     /// DTO para transferir información simplificada de una producción.
     /// </summary>
-    public class ProduccionDto
+    public class ProduccionDTO
     {
         /// <summary>
         /// Identificador único de la producción.

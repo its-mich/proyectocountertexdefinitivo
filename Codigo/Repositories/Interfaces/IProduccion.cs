@@ -32,5 +32,7 @@ namespace proyectocountertexdefinitivo.Repositories.Interfaces
         /// </summary>
         /// <param name="id">Identificador de la producción a eliminar.</param>
         Task<bool> DeleteAsync(int id);
+
+        Task<object> ObtenerResumenMensual(int anio, int mes);
     }
 }

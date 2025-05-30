@@ -1,4 +1,6 @@
-﻿namespace proyectocountertexdefinitivo.Models
+﻿using System.Text.Json.Serialization;
+
+namespace proyectocountertexdefinitivo.Models
 {
     /// <summary>
     /// Representa una prenda de vestir dentro del sistema.
@@ -28,6 +30,7 @@
         /// <summary>
         /// Colección de producciones asociadas a esta prenda.
         /// </summary>
+        [JsonIgnore]
         public ICollection<Produccion> Producciones { get; set; }
     }
 }
