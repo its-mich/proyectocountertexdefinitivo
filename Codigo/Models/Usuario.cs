@@ -4,15 +4,30 @@ using System.Text.Json.Serialization;
 
 namespace proyectocountertexdefinitivo.Models
 {
+    /// <summary>
+    /// Representa un usuario del sistema, con información personal, rol y relaciones a operaciones y producciones.
+    /// </summary>
     public class Usuario
     {
+        /// <summary>
+        /// Identificador único del usuario.
+        /// </summary>
         public int Id { get; set; }
 
+        /// <summary>
+        /// Nombre completo del usuario.
+        /// </summary>
         public string Nombre { get; set; }
 
+        /// <summary>
+        /// Documento de identidad del usuario (requerido).
+        /// </summary>
         [Required]
         public string? Documento { get; set; }
 
+        /// <summary>
+        /// Correo electrónico del usuario.
+        /// </summary>
         public string Correo { get; set; }
 
         /// <summary>
@@ -21,6 +36,9 @@ namespace proyectocountertexdefinitivo.Models
         [JsonIgnore]
         public string Contraseña { get; set; }
 
+        /// <summary>
+        /// Rol o perfil del usuario en el sistema.
+        /// </summary>
         public string Rol { get; set; }
 
         /// <summary>
@@ -48,6 +66,9 @@ namespace proyectocountertexdefinitivo.Models
         [JsonIgnore]
         public Operacion? Operacion { get; set; }
 
+        /// <summary>
+        /// Colección de producciones relacionadas con el usuario.
+        /// </summary>
         public ICollection<Produccion> Producciones { get; set; }
 
         /// <summary>

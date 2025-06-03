@@ -8,18 +8,19 @@ using Microsoft.EntityFrameworkCore;
 
 namespace proyectocountertexdefinitivo.Controllers
 {
-    //using Microsoft.AspNetCore.Mvc;
-    //using Microsoft.EntityFrameworkCore;
-    //using CounterTex.Models;
-    //using System.Linq;
-    //using System.Threading.Tasks;
-
+    /// <summary>
+    /// Controlador para gestionar usuarios.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class UsuariosController : ControllerBase
     {
         private readonly CounterTexDBContext _context;
 
+        /// <summary>
+        /// Constructor que recibe el contexto de la base de datos.
+        /// </summary>
+        /// <param name="context">Contexto de base de datos.</param>
         public UsuariosController(CounterTexDBContext context)
         {
             _context = context;
