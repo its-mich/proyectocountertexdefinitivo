@@ -52,21 +52,5 @@ namespace proyectocountertexdefinitivo.Repositories.repositories
 
             return resumen.Any() ? resumen : null;
         }
-        public async Task<object> ObtenerResumenMensual(int anio, int mes)
-        {
-            var resumen = await _context.ProduccionDetalles
-                .Where(d => d.Produccion.Fecha.Year == anio && d.Produccion.Fecha.Month == mes)
-                .GroupBy(d => d.Produccion.Prenda.Nombre)
-                .Select(g => new
-                {
-                    Prenda = g.Key,
-                    Total = g.Sum(d => d.Cantidad)
-                })
-                .ToListAsync();
-
-            return resumen.Any() ? resumen : null;
-        }
     }
-
-
 }

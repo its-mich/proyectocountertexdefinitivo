@@ -26,7 +26,10 @@ namespace proyectocountertexdefinitivo.Controllers
             _context = context;
         }
 
-        // GET: api/Usuarios
+        /// <summary>
+        /// Obtiene todos los usuarios en formato DTO.
+        /// </summary>
+        /// <returns>Lista de usuarios.</returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UsuarioCreateDTO>>> GetUsuarios()
         {
@@ -43,7 +46,11 @@ namespace proyectocountertexdefinitivo.Controllers
             return usuarios;
         }
 
-        // GET: api/Usuarios/5
+        /// <summary>
+        /// Obtiene un usuario por su ID.
+        /// </summary>
+        /// <param name="id">ID del usuario.</param>
+        /// <returns>Usuario en formato DTO.</returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<UsuarioCreateDTO>> GetUsuario(int id)
         {
@@ -67,7 +74,12 @@ namespace proyectocountertexdefinitivo.Controllers
             return Ok(usuarioDTO);
         }
 
-        // PUT: api/Usuarios/5
+        /// <summary>
+        /// Actualiza un usuario existente.
+        /// </summary>
+        /// <param name="id">ID del usuario a actualizar.</param>
+        /// <param name="usuarioDTO">Datos actualizados del usuario.</param>
+        /// <returns>NoContent si la actualización es exitosa.</returns>
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUsuario(int id, UsuarioCreateDTO usuarioDTO)
         {
@@ -88,7 +100,11 @@ namespace proyectocountertexdefinitivo.Controllers
             return NoContent();
         }
 
-        // POST: api/Usuarios
+        /// <summary>
+        /// Crea un nuevo usuario, validando correo y documento únicos, y cifrando la contraseña.
+        /// </summary>
+        /// <param name="usuarioDTO">Datos del usuario a crear.</param>
+        /// <returns>Usuario creado con sus datos públicos.</returns>
         [HttpPost]
         public async Task<ActionResult> PostUsuario(UsuarioCreateDTO usuarioDTO)
         {
@@ -136,8 +152,12 @@ namespace proyectocountertexdefinitivo.Controllers
             });
         }
 
-            // DELETE: api/Usuarios/5
-            [HttpDelete("{id}")]
+        /// <summary>
+        /// Elimina un usuario por ID.
+        /// </summary>
+        /// <param name="id">ID del usuario a eliminar.</param>
+        /// <returns>NoContent si la eliminación es exitosa.</returns>
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUsuario(int id)
         {
             var usuario = await _context.Usuarios.FindAsync(id);
@@ -152,6 +172,11 @@ namespace proyectocountertexdefinitivo.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Verifica si un usuario existe por ID.
+        /// </summary>
+        /// <param name="id">ID del usuario.</param>
+        /// <returns>True si existe, False si no.</returns>
         private bool UsuarioExists(int id)
         {
             return _context.Usuarios.Any(e => e.Id == id);

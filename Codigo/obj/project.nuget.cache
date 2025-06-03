@@ -1,6 +1,10 @@
 {
   "version": 2,
+<<<<<<< Updated upstream
   "dgSpecHash": "7ob2c+8T2XY=",
+=======
+  "dgSpecHash": "BCRT3GA6JVw=",
+>>>>>>> Stashed changes
   "success": true,
   "projectFilePath": "C:\\Users\\Administrador\\Desktop\\ProyectoCounterTex\\BACKEND\\proyectocountertexdefinitivo\\Codigo\\proyectocountertexdefinitivo.csproj",
   "expectedPackageFiles": [
