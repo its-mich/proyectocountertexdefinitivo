@@ -133,7 +133,12 @@ GO
 INSERT INTO Prendas (Nombre, Genero, Color)
 VALUES 
 ('Camisa Clásica', 'Unisex', 'Blanco'),
-('Pantalón Slim', 'Masculino', 'Azul');
+('Pantalón Slim', 'Masculino', 'Azul'),
+('Camisa Crop Top', 'Dama', 'Rosa'),
+('Camiseta Básica', 'Hombre', 'Negro'),
+('Jogger Casual', 'Niño', 'Gris'),
+('Jogger Deportivo', 'Dama', 'Azul'),
+('Leggins Deportivo', 'Juvenil', 'Negro');
 GO
 
 -- Operaciones
