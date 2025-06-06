@@ -17,58 +17,55 @@ namespace proyectocountertexdefinitivo.Models
         /// <summary>
         /// Nombre completo del usuario.
         /// </summary>
+        [Required]
         public string Nombre { get; set; }
 
         /// <summary>
         /// Documento de identidad del usuario (requerido).
         /// </summary>
-        [Required]
         public string? Documento { get; set; }
 
         /// <summary>
         /// Correo electrónico del usuario.
         /// </summary>
+        [Required]
         public string Correo { get; set; }
 
         /// <summary>
         /// Contraseña del usuario para autenticación.
         /// </summary>
-        [JsonIgnore]
+
+        [Required]
         public string Contraseña { get; set; }
 
         /// <summary>
         /// Rol o perfil del usuario en el sistema.
         /// </summary>
-        public string Rol { get; set; }
-
-        /// <summary>
-        /// Identificador de la operación asociada al usuario (opcional).
-        /// </summary>
-        [JsonIgnore]
-        public int? OperacionId { get; set; }
+        public int RolId { get; set; }
 
         /// <summary>
         /// Edad del usuario (opcional).
         /// </summary>
-        [JsonIgnore]
         public int? Edad { get; set; }
 
         /// <summary>
         /// Teléfono de contacto del usuario (opcional).
         /// </summary>
-        [JsonIgnore]
         public string? Telefono { get; set; }
 
         /// <summary>
-        /// Operación asociada al usuario.
+        /// Rol asociado al usuario.
         /// </summary>
-
         [JsonIgnore]
-        public Operacion? Operacion { get; set; }
+        public Rol? Rol { get; set; }
+
+        public string? TokenRecuperacion { get; set; }
+        public DateTime? TokenExpiracion { get; set; }
 
         /// <summary>
         /// Colección de producciones relacionadas con el usuario.
         /// </summary>
+        [JsonIgnore]
         public ICollection<Produccion> Producciones { get; set; }
 
         /// <summary>

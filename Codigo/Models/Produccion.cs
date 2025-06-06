@@ -30,16 +30,16 @@ namespace proyectocountertexdefinitivo.Models
         public int UsuarioId { get; set; }
 
         /// <summary>
-        /// Usuario que realizó la producción.
-        /// </summary>
-        [JsonIgnore]
-        public Usuario Usuario { get; set; }
-
-        /// <summary>
         /// Identificador de la prenda asociada a la producción.
         /// </summary>
         public int PrendaId { get; set; }
 
+
+        /// <summary>
+        /// Usuario que realizó la producción.
+        /// </summary>
+        [JsonIgnore]
+        public Usuario Usuario { get; set; }
         /// <summary>
         /// Prenda asociada a la producción.
         /// </summary>
@@ -48,6 +48,6 @@ namespace proyectocountertexdefinitivo.Models
         /// <summary>
         /// Detalles de la producción que describen las operaciones realizadas.
         /// </summary>
-        public List<ProduccionDetalle> ProduccionDetalles { get; set; }
+        public ICollection<ProduccionDetalle> ProduccionDetalles { get; set; }
     }
 }

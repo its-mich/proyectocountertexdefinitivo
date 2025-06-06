@@ -29,7 +29,7 @@ namespace proyectocountertexdefinitivo.Models
         /// Rol asignado al usuario (por ejemplo, administrador, empleado).
         /// </summary>
         [Required]
-        public string Rol { get; set; }
+        public int RolId { get; set; }
 
         /// <summary>
         /// Correo electrónico del usuario.

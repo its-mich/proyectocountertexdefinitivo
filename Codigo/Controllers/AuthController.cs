@@ -1,12 +1,11 @@
-﻿using proyectocountertexdefinitivo.Models;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using proyectocountertexdefinitivo.contexto;
+using proyectocountertexdefinitivo.Repositories.Interfaces;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using proyectocountertexdefinitivo.contexto;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.IdentityModel.JsonWebTokens;
 
 namespace proyectocountertexdefinitivo.Controllers
 {
@@ -19,16 +18,19 @@ namespace proyectocountertexdefinitivo.Controllers
     {
         private readonly IConfiguration _configuration;
         private readonly CounterTexDBContext _context;
+        private readonly IUsuarios _usuariosRepository;
+        private readonly ILogger<AuthController> _logger;
 
         /// <summary>
         /// Constructor del controlador de autenticación.
         /// </summary>
         /// <param name="configuration">Configuración de la aplicación, utilizada para obtener la clave y datos del JWT.</param>
         /// <param name="context">Contexto de base de datos para acceder a los usuarios.</param>
-        public AuthController(IConfiguration configuration, CounterTexDBContext context)
+        public AuthController(IConfiguration configuration, CounterTexDBContext context, IUsuarios usuariosRepository)
         {
             _configuration = configuration;
             _context = context;
+            _usuariosRepository = usuariosRepository;
         }
 
         /// <summary>
@@ -45,37 +47,57 @@ namespace proyectocountertexdefinitivo.Controllers
         [HttpPost("Login")]
         public IActionResult Login([FromBody] Login login)
         {
-            if (login == null || string.IsNullOrEmpty(login.Correo) || string.IsNullOrEmpty(login.Clave))
+            if (login == null || string.IsNullOrEmpty(login.Correo) || string.IsNullOrEmpty(login.Contraseña))
             {
                 return BadRequest("Petición inválida");
             }
 
-            var usuario = _context.Usuarios.FirstOrDefault(u => u.Correo == login.Correo);
+            var usuario = _context.Usuarios
+                .Include(u => u.Rol)
+                .FirstOrDefault(u => u.Correo == login.Correo);
 
-            if (usuario == null)
+            // Verificar credenciales
+            if (usuario == null || !BCrypt.Net.BCrypt.Verify(login.Contraseña, usuario.Contraseña))
+            {
                 return Unauthorized("Correo o contraseña incorrectos");
+            }
 
-            var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
-            var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
+            // Asegura que el Rol esté asignado
+            var rolNombre = usuario.Rol?.Nombre ?? "SinRol";
+            if (usuario.Rol == null)
+            {
+                // Puedes loguearlo si deseas
+                _logger?.LogWarning($"Usuario con ID {usuario.Id} no tiene un rol asignado.");
+            }
 
+            // Crear claims para el JWT
             var claims = new List<Claim>
-    {
-        new Claim(ClaimTypes.Name, usuario.Correo),
-        new Claim(ClaimTypes.Role, usuario.Rol ?? "SinRol")
-    };
+            {
+                new Claim(ClaimTypes.Name, usuario.Correo),
+                new Claim(ClaimTypes.NameIdentifier, usuario.Id.ToString()),
+                new Claim(ClaimTypes.Role, rolNombre)
+            };
 
+            // Clave secreta y firma
+            var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+            var signingCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
+
+
+            // Configurar el token
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Issuer = _configuration["Jwt:Issuer"],
                 Audience = _configuration["Jwt:Audience"],
                 Subject = new ClaimsIdentity(claims),
                 Expires = DateTime.UtcNow.AddMinutes(30),
-                SigningCredentials = signinCredentials
+                SigningCredentials = signingCredentials
             };
 
-            var handler = new JsonWebTokenHandler();
-            var tokenString = handler.CreateToken(tokenDescriptor);
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            var tokenString = tokenHandler.WriteToken(token);
 
+            // Respuesta con el token y datos básicos del usuario
             return Ok(new
             {
                 Token = tokenString,
@@ -91,14 +113,7 @@ namespace proyectocountertexdefinitivo.Controllers
     /// </summary>
     public class Login
     {
-        /// <summary>
-        /// Correo electrónico del usuario.
-        /// </summary>
         public string Correo { get; set; }
-
-        /// <summary>
-        /// Clave o contraseña del usuario.
-        /// </summary>
-        public string Clave { get; set; }
+        public string Contraseña { get; set; }
     }
 }

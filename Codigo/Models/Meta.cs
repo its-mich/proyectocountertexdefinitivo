@@ -13,7 +13,7 @@
         /// <summary>
         /// Fecha a la que corresponde la meta.
         /// </summary>
-        public DateTime Fecha { get; set; }
+        public DateTime? Fecha { get; set; }
 
         /// <summary>
         /// Meta de corte establecida.
@@ -31,9 +31,15 @@
         public int UsuarioId { get; set; }
 
         /// <summary>
-        /// Usuario asociado a la meta.
+        /// Fecha y hora en que se registró el mensaje o meta.
         /// </summary>
-        public Usuario Usuario { get; set; }
+        public DateTime FechaHora { get; set; }
+
+
+        /// <summary>
+        /// Mensaje o descripción de la meta.
+        /// </summary>
+        public string Mensaje { get; set; }
 
         /// <summary>
         /// Identificador del remitente del mensaje relacionado.
@@ -41,28 +47,23 @@
         public int RemitenteId { get; set; }
 
         /// <summary>
-        /// Usuario remitente del mensaje.
-        /// </summary>
-        public Usuario Remitente { get; set; }
-
-        /// <summary>
         /// Identificador del destinatario del mensaje relacionado.
         /// </summary>
         public int DestinatarioId { get; set; }
 
         /// <summary>
+        /// Usuario asociado a la meta.
+        /// </summary>
+        public Usuario Usuario { get; set; }
+        /// <summary>
+        /// Usuario remitente del mensaje.
+        /// </summary>
+        public Usuario Remitente { get; set; }
+        /// <summary>
         /// Usuario destinatario del mensaje.
         /// </summary>
         public Usuario Destinatario { get; set; }
 
-        /// <summary>
-        /// Fecha y hora en que se registró el mensaje o meta.
-        /// </summary>
-        public DateTime FechaHora { get; set; }
 
-        /// <summary>
-        /// Mensaje o descripción de la meta.
-        /// </summary>
-        public string Mensaje { get; set; }
     }
 }
