@@ -1,5 +1,6 @@
 ﻿using proyectocountertexdefinitivo.Models;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace proyectocountertexdefinitivo.Models
@@ -35,7 +36,7 @@ namespace proyectocountertexdefinitivo.Models
         /// Contraseña del usuario para autenticación.
         /// </summary>
 
-        [Required]
+        [JsonIgnore]
         public string Contraseña { get; set; }
 
         /// <summary>
@@ -59,8 +60,23 @@ namespace proyectocountertexdefinitivo.Models
         [JsonIgnore]
         public Rol? Rol { get; set; }
 
+        [NotMapped]
+        public string RolNombre { get; set; }
+
+        [JsonIgnore]
         public string? TokenRecuperacion { get; set; }
+
+        [JsonIgnore]
         public DateTime? TokenExpiracion { get; set; }
+
+        public Usuario()
+        {
+            Producciones = new List<Produccion>();
+            Horarios = new List<Horario>();
+            Metas = new List<Meta>();
+            MensajesEnviados = new List<MensajeChat>();
+            MensajesRecibidos = new List<MensajeChat>();
+        }
 
         /// <summary>
         /// Colección de producciones relacionadas con el usuario.

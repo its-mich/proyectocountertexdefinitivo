@@ -26,11 +26,12 @@ namespace proyectocountertexdefinitivo.Controllers
         /// </summary>
         /// <param name="configuration">Configuración de la aplicación, utilizada para obtener la clave y datos del JWT.</param>
         /// <param name="context">Contexto de base de datos para acceder a los usuarios.</param>
-        public AuthController(IConfiguration configuration, CounterTexDBContext context, IUsuarios usuariosRepository)
+        public AuthController(IConfiguration configuration, CounterTexDBContext context, IUsuarios usuariosRepository, ILogger<AuthController> logger)
         {
             _configuration = configuration;
             _context = context;
             _usuariosRepository = usuariosRepository;
+            _logger = logger;
         }
 
         /// <summary>

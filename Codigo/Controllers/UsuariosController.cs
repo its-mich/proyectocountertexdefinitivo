@@ -29,6 +29,9 @@ namespace proyectocountertexdefinitivo.Controllers
         /// </summary>
         /// <returns>Lista de usuarios.</returns>
         [HttpGet("GetUsuarios")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetUsuarios()
         {
             try
@@ -74,6 +77,8 @@ namespace proyectocountertexdefinitivo.Controllers
         /// <param name="usuario">Datos del usuario a crear.</param>
         /// <returns>Usuario creado con sus datos públicos.</returns>
         [HttpPost("PostUsuarios")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         //[Authorize] // Requiere autenticación
         [AllowAnonymous]
         public async Task<IActionResult> PostUsuario([FromBody] Usuario usuario)
@@ -112,7 +117,7 @@ namespace proyectocountertexdefinitivo.Controllers
         /// <param name="usuario">Datos actualizados del usuario.</param>
         /// <returns>Un mensaje indicando el resultado de la operación.</returns>
         [HttpPut("{id}")]
-        [Authorize]
+        [Authorize(Roles = "Administrador")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
@@ -148,13 +153,38 @@ namespace proyectocountertexdefinitivo.Controllers
             }
         }
 
+        [HttpPatch("AsignarRol/{id}")]
+        [Authorize(Roles = "Administrador")]
+        public async Task<IActionResult> AsignarRol(int id, [FromBody] int nuevoRolId)
+        {
+            try
+            {
+                var existe = await _usuarios.GetUsuarioByIdAsync(id);
+                if (existe == null)
+                    return NotFound("Usuario no encontrado.");
+
+                var resultado = await _usuarios.AsignarRol(id, nuevoRolId);
+                if (resultado)
+                    return Ok($"Rol actualizado correctamente para el usuario con ID {id}.");
+                else
+                    return StatusCode(500, "Error al asignar el rol.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error al asignar el rol", error = ex.Message });
+            }
+        }
+
         /// <summary>
         /// Elimina un usuario por ID.
         /// </summary>
         /// <param name="id">ID del usuario a eliminar.</param>
         /// <returns>NoContent si la eliminación es exitosa.</returns>
-        [Authorize]
+
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrador")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> DeleteUsuario(int id)
         {
             try

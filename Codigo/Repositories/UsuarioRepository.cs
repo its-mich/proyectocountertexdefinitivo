@@ -35,10 +35,20 @@ namespace proyectocountertexdefinitivo.Repositories
         /// <returns>Una lista de objetos <see cref="Usuario"/>.</returns>
         public async Task<List<Usuario>> GetUsuarios()
         {
-            var data = await _context.Usuarios
-        .Include(u => u.Rol) // <<<< Esto asegura que Rol se cargue
-        .ToListAsync();
-            return data;
+            return await _context.Usuarios
+                .Include(u => u.Rol)
+                .Select(u => new Usuario
+                {
+                    Id = u.Id,
+                    Nombre = u.Nombre,
+                    Correo = u.Correo,
+                    Documento = u.Documento,
+                    RolId = u.RolId,
+                    RolNombre = u.Rol != null ? u.Rol.Nombre : "Sin rol",
+                    Edad = u.Edad,
+                    Telefono = u.Telefono
+                })
+                .ToListAsync();
         }
 
         /// <summary>
@@ -62,7 +72,7 @@ namespace proyectocountertexdefinitivo.Repositories
             if (usuario == null) return false;
 
             usuario.TokenRecuperacion = token;
-            usuario.TokenExpiracion = DateTime.UtcNow.AddMinutes(30);
+            usuario.TokenExpiracion = DateTime.UtcNow.AddMinutes(15);
             return await _context.SaveChangesAsync() > 0;
         }
 
@@ -233,14 +243,28 @@ namespace proyectocountertexdefinitivo.Repositories
 
             existing.Nombre = usuario.Nombre;
             existing.Correo = usuario.Correo;
-            existing.Contraseña = usuario.Contraseña;
             existing.Documento = usuario.Documento;
+            existing.Telefono = usuario.Telefono;
+            existing.Edad = usuario.Edad;
+            existing.RolId = usuario.RolId;
 
-            if (!string.IsNullOrEmpty(usuario.Contraseña))
+            if (!string.IsNullOrEmpty(usuario.Contraseña) &&
+                !BCrypt.Net.BCrypt.Verify(usuario.Contraseña, existing.Contraseña))
             {
                 existing.Contraseña = BCrypt.Net.BCrypt.HashPassword(usuario.Contraseña);
             }
 
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> AsignarRol(int id, int nuevoRolId)
+        {
+            var usuario = await _context.Usuarios.FindAsync(id);
+            if (usuario == null)
+                return false;
+
+            usuario.RolId = nuevoRolId;
             await _context.SaveChangesAsync();
             return true;
         }
