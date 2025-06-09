@@ -102,7 +102,7 @@ namespace proyectocountertexdefinitivo.Controllers
             return Ok(new
             {
                 Token = tokenString,
-                Rol = usuario.Rol,
+                Rol = usuario.Rol?.Nombre,
                 Id = usuario.Id,
                 Nombres = usuario.Nombre
             });

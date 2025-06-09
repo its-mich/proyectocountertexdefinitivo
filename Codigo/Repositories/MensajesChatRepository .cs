@@ -40,6 +40,18 @@ namespace proyectocountertexdefinitivo.Repositories
             return await _context.MensajesChat.FindAsync(id);
         }
 
+        public async Task<IEnumerable<MensajeChat>> ObtenerConversacionAsync(int remitenteId, int destinatarioId)
+        {
+            return await _context.MensajesChat
+    .Include(m => m.Remitente)
+    .Include(m => m.Destinatario)
+    .Where(m =>
+        (m.RemitenteId == remitenteId && m.DestinatarioId == destinatarioId) ||
+        (m.RemitenteId == destinatarioId && m.DestinatarioId == remitenteId))
+    .OrderBy(m => m.FechaHora)
+    .ToListAsync();
+        }
+
         /// <summary>
         /// Obtiene todos los mensajes enviados por un usuario específico.
         /// </summary>
