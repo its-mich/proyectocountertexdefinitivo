@@ -1,4 +1,6 @@
-﻿namespace proyectocountertexdefinitivo.Models
+﻿using System.Text.Json.Serialization;
+
+namespace proyectocountertexdefinitivo.Models
 {
     /// <summary>
     /// Representa un mensaje en el chat entre usuarios.
@@ -33,11 +35,14 @@
         /// <summary>
         /// Usuario remitente del mensaje.
         /// </summary>
-        public Usuario Remitente { get; set; }
+
+        [JsonIgnore]
+        public Usuario? Remitente { get; set; }
         /// <summary>
         /// Usuario destinatario del mensaje.
         /// </summary>
-        public Usuario Destinatario { get; set; }
+        [JsonIgnore]
+        public Usuario? Destinatario { get; set; }
 
     }
 }
