@@ -29,7 +29,7 @@ namespace proyectocountertexdefinitivo.Models
         /// Rol asignado al usuario (por ejemplo, administrador, empleado).
         /// </summary>
         [Required]
-        public string Rol { get; set; }
+        public int RolId { get; set; }
 
         /// <summary>
         /// Correo electrónico del usuario.
@@ -41,7 +41,7 @@ namespace proyectocountertexdefinitivo.Models
         /// <summary>
         /// Contraseña para la autenticación del usuario.
         /// </summary>
-        [Required]
+
         public string Contraseña { get; set; }
 
         /// <summary>
@@ -54,9 +54,5 @@ namespace proyectocountertexdefinitivo.Models
         /// </summary>
         public int? Telefono { get; set; }
 
-        /// <summary>
-        /// Identificador de la operación asociada al usuario (opcional).
-        /// </summary>
-        public int? OperacionId { get; set; }
     }
 }

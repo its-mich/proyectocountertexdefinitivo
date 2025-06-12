@@ -1,9 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using proyectocountertexdefinitivo.Models;
 using proyectocountertexdefinitivo.Repositories.Interfaces;
-using Microsoft.AspNetCore.Authorization;
-using proyectocountertexdefinitivo.contexto;
-using Microsoft.EntityFrameworkCore;
 
 
 namespace proyectocountertexdefinitivo.Controllers
@@ -15,137 +13,166 @@ namespace proyectocountertexdefinitivo.Controllers
     [ApiController]
     public class UsuariosController : ControllerBase
     {
-        private readonly CounterTexDBContext _context;
+        private readonly IUsuarios _usuarios;
 
         /// <summary>
         /// Constructor que recibe el contexto de la base de datos.
         /// </summary>
         /// <param name="context">Contexto de base de datos.</param>
-        public UsuariosController(CounterTexDBContext context)
+        public UsuariosController(IUsuarios usuarios)
         {
-            _context = context;
+            _usuarios = usuarios;
         }
 
         /// <summary>
         /// Obtiene todos los usuarios en formato DTO.
         /// </summary>
         /// <returns>Lista de usuarios.</returns>
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<UsuarioCreateDTO>>> GetUsuarios()
+        [HttpGet("GetUsuarios")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> GetUsuarios()
         {
-            var usuarios = await _context.Usuarios
-                .Select(u => new UsuarioCreateDTO
+            try
+            {
+                var response = await _usuarios.GetUsuarios();
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
                 {
-                    Nombre = u.Nombre,
-                    Correo = u.Correo,
-                    Contraseña = u.Contraseña,
-                    Rol = u.Rol,
-                    Id = u.Id,
-                }).ToListAsync();
-
-            return usuarios;
+                    message = "Error interno al obtener usuarios",
+                    error = ex.Message,
+                    stackTrace = ex.StackTrace
+                });
+            }
         }
 
         /// <summary>
         /// Obtiene un usuario por su ID.
         /// </summary>
         /// <param name="id">ID del usuario.</param>
-        /// <returns>Usuario en formato DTO.</returns>
-        [HttpGet("{id}")]
-        public async Task<ActionResult<UsuarioCreateDTO>> GetUsuario(int id)
+        /// <returns>Usuario.</returns>
+        [HttpGet("GetUsuariosId/{id}")]
+        public async Task<IActionResult> GetUsuarioById(int id)
         {
-            var usuario = await _context.Usuarios.FindAsync(id);
-
-            if (usuario == null)
+            try
             {
-                return NotFound();
+                var usuario = await _usuarios.GetUsuarioByIdAsync(id);
+                if (usuario == null)
+                    return NotFound("Usuario no encontrado.");
+                return Ok(usuario);
             }
-
-            var usuarioDTO = new UsuarioCreateDTO
+            catch (Exception ex)
             {
-                Nombre = usuario.Nombre,
-                Correo = usuario.Correo,
-                Documento = usuario.Documento,
-                Contraseña = usuario.Contraseña,
-                Rol = usuario.Rol,
-                Id = usuario.Id,
-            };
-
-            return Ok(usuarioDTO);
-        }
-
-        /// <summary>
-        /// Actualiza un usuario existente.
-        /// </summary>
-        /// <param name="id">ID del usuario a actualizar.</param>
-        /// <param name="usuarioDTO">Datos actualizados del usuario.</param>
-        /// <returns>NoContent si la actualización es exitosa.</returns>
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutUsuario(int id, UsuarioCreateDTO usuarioDTO)
-        {
-            var usuario = await _context.Usuarios.FindAsync(id);
-            if (usuario == null)
-            {
-                return NotFound();
+                return StatusCode(500, new { message = "Error al buscar el usuario", error = ex.Message });
             }
-
-            usuario.Nombre = usuarioDTO.Nombre;
-            usuario.Documento = usuarioDTO.Documento;
-            usuario.Correo = usuarioDTO.Correo;
-            usuario.Contraseña = usuarioDTO.Contraseña;
-            usuario.Rol = usuarioDTO.Rol;
-            usuario.Id = id;
-
-            await _context.SaveChangesAsync();
-
-            return NoContent();
         }
 
         /// <summary>
         /// Crea un nuevo usuario, validando correo y documento únicos, y cifrando la contraseña.
         /// </summary>
-        /// <param name="usuarioDTO">Datos del usuario a crear.</param>
+        /// <param name="usuario">Datos del usuario a crear.</param>
         /// <returns>Usuario creado con sus datos públicos.</returns>
-        [HttpPost]
-        public async Task<ActionResult> PostUsuario(UsuarioCreateDTO usuarioDTO)
+        [HttpPost("PostUsuarios")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        //[Authorize] // Requiere autenticación
+        [AllowAnonymous]
+        public async Task<IActionResult> PostUsuario([FromBody] Usuario usuario)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return BadRequest(ModelState);
+                // Verificar si el usuario está autenticado y es administrador
+                bool esAdmin = User.Identity?.IsAuthenticated == true && User.IsInRole("Administrador");
+
+                if (!esAdmin)
+                {
+                    // Si no es administrador, forzamos un rol por defecto (ej. Empleado = RolId 2)
+                    usuario.RolId = 2; // Id del rol "Empleado"
+                }
+
+                var response = await _usuarios.PostUsuarios(usuario);
+                if (response)
+                    return Ok("Usuario registrado correctamente.");
+                else
+                    return BadRequest("Ya existe un usuario con ese correo o documento.");
             }
-
-            var correoExistente = await _context.Usuarios.AnyAsync(u => u.Correo == usuarioDTO.Correo);
-            if (correoExistente)
+            catch (Exception ex)
             {
-                return BadRequest(new { mensaje = "El correo ya está registrado." });
+                return StatusCode(500, new { message = "Error al registrar el usuario", error = ex.Message });
             }
+        }
 
-            var documentoExistente = await _context.Usuarios.AnyAsync(u => u.Documento == usuarioDTO.Documento);
-            if (documentoExistente)
+        /// <summary>
+        /// Actualiza los datos de un usuario existente.
+        /// </summary>
+        /// <remarks>
+        /// Solo los administradores pueden modificar el rol del usuario. Si el usuario no es administrador,
+        /// su rol actual se mantiene sin cambios.
+        /// </remarks>
+        /// <param name="id">ID del usuario a actualizar (debe coincidir con el del cuerpo).</param>
+        /// <param name="usuario">Datos actualizados del usuario.</param>
+        /// <returns>Un mensaje indicando el resultado de la operación.</returns>
+        [HttpPut("{id}")]
+        [Authorize(Roles = "Administrador")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(object))]
+        public async Task<IActionResult> PutUsuario(int id, [FromBody] Usuario usuario)
+        {
+            try
             {
-                return BadRequest(new { mensaje = "El documento ya está registrado." });
+                if (id != usuario.Id)
+                    return BadRequest("El ID en la URL y el del cuerpo no coinciden.");
+                
+                var esAdmin = User.IsInRole("Administrador");
+
+                // Si no es admin, evitar que cambie su Rol
+                if (!esAdmin)
+                {
+                    var usuarioActual = await _usuarios.GetUsuarioByIdAsync(id);
+                    if (usuarioActual == null)
+                        return NotFound("Usuario no encontrado.");
+
+                    usuario.RolId = usuarioActual.RolId; // Mantiene el rol original
+                }
+
+                var response = await _usuarios.PutUsuarios(usuario);
+                if (response)
+                    return Ok($"Rol del usuario con ID {id} actualizado correctamente.");
+                else
+                    return NotFound($"No se encontró ningún usuario con el ID {id}.");
             }
-
-            var usuario = new Usuario
+            catch (Exception ex)
             {
-                Nombre = usuarioDTO.Nombre,
-                Documento = usuarioDTO.Documento,
-                Correo = usuarioDTO.Correo,
-                Contraseña = BCrypt.Net.BCrypt.HashPassword(usuarioDTO.Contraseña),
-                Rol = usuarioDTO.Rol
-            };
+                return StatusCode(500, new { message = "Error al actualizar el usuario", error = ex.Message });
+            }
+        }
 
-            _context.Usuarios.Add(usuario);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetUsuario), new { id = usuario.Id }, new
+        [HttpPatch("AsignarRol/{id}")]
+        [Authorize(Roles = "Administrador")]
+        public async Task<IActionResult> AsignarRol(int id, [FromBody] int nuevoRolId)
+        {
+            try
             {
-                usuario.Id,
-                usuario.Nombre,
-                usuario.Documento,
-                usuario.Correo,
-                usuario.Rol
-            });
+                var existe = await _usuarios.GetUsuarioByIdAsync(id);
+                if (existe == null)
+                    return NotFound("Usuario no encontrado.");
+
+                var resultado = await _usuarios.AsignarRol(id, nuevoRolId);
+                if (resultado)
+                    return Ok($"Rol actualizado correctamente para el usuario con ID {id}.");
+                else
+                    return StatusCode(500, "Error al asignar el rol.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error al asignar el rol", error = ex.Message });
+            }
         }
 
         /// <summary>
@@ -153,29 +180,83 @@ namespace proyectocountertexdefinitivo.Controllers
         /// </summary>
         /// <param name="id">ID del usuario a eliminar.</param>
         /// <returns>NoContent si la eliminación es exitosa.</returns>
+
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrador")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> DeleteUsuario(int id)
         {
-            var usuario = await _context.Usuarios.FindAsync(id);
-            if (usuario == null)
+            try
             {
-                return NotFound();
+                var result = await _usuarios.DeleteUsuarios(id);
+                if (result)
+                    return Ok($"Usuario con ID {id} eliminado correctamente.");
+                else
+                    return NotFound($"No se encontró ningún usuario con el ID {id}. Verifique e intente de nuevo.");
             }
-
-            _context.Usuarios.Remove(usuario);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = $"Error al eliminar el usuario con ID {id}.", error = ex.Message });
+            }
         }
 
-        /// <summary>
-        /// Verifica si un usuario existe por ID.
-        /// </summary>
-        /// <param name="id">ID del usuario.</param>
-        /// <returns>True si existe, False si no.</returns>
-        private bool UsuarioExists(int id)
+        // Solicitar recuperación de Contraseña
+        [HttpPost("SolicitarRecuperacion")]
+        [AllowAnonymous]
+        public async Task<IActionResult> SolicitarRecuperacion([FromBody] string correo)
         {
-            return _context.Usuarios.Any(e => e.Id == id);
+            try
+            {
+                var usuario = await _usuarios.GetUsuarioByCorreoAsync(correo);
+                if (usuario == null)
+                    return NotFound("No se encontró un usuario con ese correo.");
+
+                // Generar un código de 6 dígitos
+                var codigo = new Random().Next(100000, 999999).ToString();
+
+                var guardado = await _usuarios.GuardarTokenRecuperacionAsync(usuario.Id, codigo);
+                if (!guardado)
+                    return StatusCode(500, "No se pudo guardar el código de recuperación.");
+
+                // Enviar correo con el código
+                var enviado = await _usuarios.EnviarCorreo(usuario.Correo, codigo);
+                if (!enviado)
+                    return StatusCode(500, "Error al enviar el correo con el código.");
+
+                return Ok("Código de recuperación enviado al correo.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error al generar token de recuperación", error = ex.Message });
+            }
+        }
+
+        // Restablecer contraseña
+        [HttpPost("RestablecerContraseña")]
+        [AllowAnonymous]
+        public async Task<IActionResult> RestablecerContraseña([FromBody] RecuperarContraseña request)
+        {
+            try
+            {
+                var usuario = await _usuarios.GetUsuarioPorTokenAsync(request.Codigo);
+                if (usuario == null)
+                    return BadRequest("Código inválido o expirado.");
+
+                usuario.Contraseña = BCrypt.Net.BCrypt.HashPassword(request.NuevaContraseña);
+
+                var result = await _usuarios.PutUsuarios(usuario);
+                if (!result)
+                    return StatusCode(500, "No se pudo actualizar la contraseña.");
+
+                await _usuarios.LimpiarTokenRecuperacionAsync(usuario.Id);
+
+                return Ok("Contraseña restablecida correctamente.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error al restablecer la contraseña", error = ex.Message });
+            }
         }
     }
 }

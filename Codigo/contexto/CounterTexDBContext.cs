@@ -16,6 +16,10 @@ namespace proyectocountertexdefinitivo.contexto
         public CounterTexDBContext(DbContextOptions<CounterTexDBContext> options) : base(options) { }
 
         /// <summary>
+        /// Rol de usuarios.
+        /// </summary>
+        public DbSet<Rol> Roles { get; set; }
+        /// <summary>
         /// DbSet de usuarios.
         /// </summary>
         public DbSet<Usuario> Usuarios { get; set; }
@@ -58,7 +62,7 @@ namespace proyectocountertexdefinitivo.contexto
         /// <summary>
         /// DbSet de contactos.
         /// </summary>
-        public DbSet<Contacto> Contacto { get; set; }
+        public DbSet<Contacto> Contactos { get; set; }
 
         // 👇 Agregado: DbSet para resultados de SP
         public DbSet<ProduccionMensualResumenDTO> ProduccionMensualResumen { get; set; }
@@ -70,6 +74,19 @@ namespace proyectocountertexdefinitivo.contexto
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            // Configuración para la entidad Rol
+            modelBuilder.Entity<Rol>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Nombre)
+                      .HasMaxLength(50)
+                      .IsRequired();
+
+                entity.HasIndex(e => e.Nombre)
+                      .IsUnique();
+            });
+
 
             // Configuración para la entidad Usuario
             modelBuilder.Entity<Usuario>(entity =>
@@ -98,20 +115,14 @@ namespace proyectocountertexdefinitivo.contexto
                       .HasMaxLength(255)
                       .IsRequired();
 
-                entity.Property(e => e.Rol)
-                      .HasMaxLength(20);
-
                 entity.Property(e => e.Edad);
 
                 entity.Property(e => e.Telefono)
                       .HasMaxLength(20);
 
-                entity.Property(e => e.OperacionId);
-
-                // Relación con Operacion (muchos usuarios pueden estar en una operación)
-                entity.HasOne(e => e.Operacion)
-                      .WithMany(o => o.Usuarios)
-                      .HasForeignKey(e => e.OperacionId)
+                entity.HasOne(e => e.Rol)
+                      .WithMany(r => r.Usuarios)
+                      .HasForeignKey(e => e.RolId)
                       .OnDelete(DeleteBehavior.Restrict);
             });
 
@@ -131,6 +142,7 @@ namespace proyectocountertexdefinitivo.contexto
                 entity.Property(e => e.Nombre).HasMaxLength(100).IsRequired();
                 entity.Property(e => e.ValorUnitario)
                       .HasColumnType("decimal(10,2)")
+                      .HasDefaultValue(0.00m)
                       .IsRequired();
             });
 
@@ -138,6 +150,8 @@ namespace proyectocountertexdefinitivo.contexto
             modelBuilder.Entity<Produccion>(entity =>
             {
                 entity.HasKey(e => e.Id);
+                entity.Property(e => e.Fecha).HasColumnType("date");
+                entity.Property(e => e.TotalValor).HasColumnType("decimal(10,2)");
 
                 entity.HasOne(p => p.Usuario)
                       .WithMany(u => u.Producciones)
@@ -154,7 +168,8 @@ namespace proyectocountertexdefinitivo.contexto
             modelBuilder.Entity<ProduccionDetalle>(entity =>
             {
                 entity.HasKey(e => e.Id);
-                entity.Property(e => e.Cantidad);
+                entity.Property(e => e.Cantidad).IsRequired();
+                entity.Property(e => e.ValorTotal).HasColumnType("decimal(10,2)");
 
                 entity.HasOne(e => e.Produccion)
                       .WithMany(p => p.ProduccionDetalles)
@@ -166,10 +181,7 @@ namespace proyectocountertexdefinitivo.contexto
                       .HasForeignKey(e => e.OperacionId)
                       .OnDelete(DeleteBehavior.Restrict);
 
-                // ValorTotal = Cantidad * ValorUnitario (calculado en BD)
-                entity.Property(e => e.ValorTotal)
-                      .HasColumnType("decimal(10,2)")
-                      .HasComputedColumnSql("[Cantidad] * (SELECT ValorUnitario FROM Operaciones WHERE Operaciones.Id = OperacionId)", stored: true);
+
             });
 
             // Configuración para Horarios
@@ -177,14 +189,14 @@ namespace proyectocountertexdefinitivo.contexto
             {
                 entity.HasKey(e => e.HorarioId);
                 entity.Property(e => e.HorarioId).ValueGeneratedOnAdd();
-                entity.Property(e => e.Fecha).HasColumnType("date");
-                entity.Property(e => e.Hora).HasColumnType("time");
-                entity.Property(e => e.Tipo).IsRequired().HasMaxLength(20);
-                entity.Property(e => e.Observaciones).HasColumnType("nvarchar(255)");
+                entity.Property(e => e.Tipo).HasMaxLength(50).IsRequired();
+                entity.Property(e => e.Hora).HasColumnType("time").IsRequired();
+                entity.Property(e => e.Fecha).HasColumnType("date").IsRequired();
+                entity.Property(e => e.Observaciones).HasColumnType("nvarchar(max)");
 
-                entity.HasOne(h => h.Usuario)
+                entity.HasOne(e => e.Usuario)
                       .WithMany(u => u.Horarios)
-                      .HasForeignKey(h => h.EmpleadoId)
+                      .HasForeignKey(e => e.EmpleadoId)
                       .OnDelete(DeleteBehavior.Restrict);
             });
 
