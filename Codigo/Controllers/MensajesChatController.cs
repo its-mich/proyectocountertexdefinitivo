@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using proyectocountertexdefinitivo.contexto;
 using proyectocountertexdefinitivo.Models;
+using proyectocountertexdefinitivo.Repositories.Interfaces;
 
 namespace proyectocountertexdefinitivo.Controllers
 {
@@ -12,15 +13,15 @@ namespace proyectocountertexdefinitivo.Controllers
     [ApiController]
     public class MensajesChatController : ControllerBase
     {
-        private readonly CounterTexDBContext _context;
+        private readonly IMensajesChat _mensajesChat;
 
         /// <summary>
         /// Constructor que recibe el contexto de la base de datos.
         /// </summary>
         /// <param name="context">Instancia del contexto de base de datos.</param>
-        public MensajesChatController(CounterTexDBContext context)
+        public MensajesChatController(IMensajesChat mensajesChat)
         {
-            _context = context;
+            _mensajesChat = mensajesChat;
         }
 
         /// <summary>
@@ -29,9 +30,22 @@ namespace proyectocountertexdefinitivo.Controllers
         /// <returns>Una lista de objetos <see cref="MensajeChat"/>.</returns>
         /// <response code="200">Lista de mensajes obtenida correctamente.</response>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<MensajeChat>>> GetMensajesChat()
+        public async Task<IActionResult> GetMensajesChat()
         {
-            return await _context.MensajesChat.ToListAsync();
+            try
+            {
+                var response = await _mensajesChat.ObtenerTodosAsync();
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    message = "Error interno al obtener mensajes del chat",
+                    error = ex.Message,
+                    stackTrace = ex.StackTrace
+                });
+            }
         }
 
         /// <summary>
@@ -42,16 +56,33 @@ namespace proyectocountertexdefinitivo.Controllers
         /// <response code="200">Mensaje encontrado correctamente.</response>
         /// <response code="404">Mensaje no encontrado.</response>
         [HttpGet("{id}")]
-        public async Task<ActionResult<MensajeChat>> GetMensajeChat(int id)
+        public async Task<IActionResult> GetMensajesChatById(int id)
         {
-            var mensajeChat = await _context.MensajesChat.FindAsync(id);
-
-            if (mensajeChat == null)
+            try
             {
-                return NotFound();
+                var usuario = await _mensajesChat.ObtenerPorIdAsync(id);
+                if (usuario == null)
+                    return NotFound("Mensaje no encontrado.");
+                return Ok(usuario);
             }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error al buscar el mensaje", error = ex.Message });
+            }
+        }
 
-            return mensajeChat;
+        [HttpGet("Conversacion")]
+        public async Task<IActionResult> ObtenerMensajes([FromQuery] int remitenteId, [FromQuery] int destinatarioId)
+        {
+            try
+            {
+                var mensajes = await _mensajesChat.ObtenerConversacionAsync(remitenteId, destinatarioId);
+                return Ok(mensajes);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error al obtener los mensajes", error = ex.Message });
+            }
         }
 
         /// <summary>
@@ -60,13 +91,25 @@ namespace proyectocountertexdefinitivo.Controllers
         /// <param name="mensajeChat">Objeto <see cref="MensajeChat"/> con los datos del mensaje.</param>
         /// <returns>El mensaje creado junto con su URI de acceso.</returns>
         /// <response code="201">Mensaje creado correctamente.</response>
-        [HttpPost]
-        public async Task<ActionResult<MensajeChat>> PostMensajeChat(MensajeChat mensajeChat)
+        [HttpPost("EnviarMensaje")]
+        public async Task<IActionResult> EnviarMensaje([FromBody] MensajeChat mensajeChat)
         {
-            _context.MensajesChat.Add(mensajeChat);
-            await _context.SaveChangesAsync();
+            try
+            {
+                if (mensajeChat == null || string.IsNullOrEmpty(mensajeChat.Mensaje)
+        || mensajeChat.RemitenteId == 0 || mensajeChat.DestinatarioId == 0)
+                {
+                    return BadRequest("Datos incompletos.");
+                }
 
-            return CreatedAtAction("GetMensajeChat", new { id = mensajeChat.Id }, mensajeChat);
+                mensajeChat.FechaHora = DateTime.Now;
+                await _mensajesChat.AgregarAsync(mensajeChat);
+                return Ok(new { message = "Mensaje enviado correctamente." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error al registrar el mensaje", error = ex.Message });
+            }
         }
 
         /// <summary>
@@ -77,18 +120,21 @@ namespace proyectocountertexdefinitivo.Controllers
         /// <response code="204">Mensaje eliminado correctamente.</response>
         /// <response code="404">Mensaje no encontrado.</response>
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteMensajeChat(int id)
+        public async Task<IActionResult> DeleteMensajesChat(int id)
         {
-            var mensajeChat = await _context.MensajesChat.FindAsync(id);
-            if (mensajeChat == null)
+            try
             {
-                return NotFound();
+                var mensaje = await _mensajesChat.ObtenerPorIdAsync(id);
+                if (mensaje == null)
+                    return NotFound($"No se encontró ningún mensaje con el ID {id}. Verifique e intente de nuevo.");
+
+                await _mensajesChat.EliminarAsync(id);
+                return Ok($"Mensaje con ID {id} eliminado correctamente.");
             }
-
-            _context.MensajesChat.Remove(mensajeChat);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = $"Error al eliminar el mensaje con ID {id}.", error = ex.Message });
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using proyectocountertexdefinitivo.Models;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace proyectocountertexdefinitivo.Models
@@ -17,58 +18,70 @@ namespace proyectocountertexdefinitivo.Models
         /// <summary>
         /// Nombre completo del usuario.
         /// </summary>
+        [Required]
         public string Nombre { get; set; }
 
         /// <summary>
         /// Documento de identidad del usuario (requerido).
         /// </summary>
-        [Required]
         public string? Documento { get; set; }
 
         /// <summary>
         /// Correo electrónico del usuario.
         /// </summary>
+        [Required]
         public string Correo { get; set; }
 
         /// <summary>
         /// Contraseña del usuario para autenticación.
         /// </summary>
+
         [JsonIgnore]
         public string Contraseña { get; set; }
 
         /// <summary>
         /// Rol o perfil del usuario en el sistema.
         /// </summary>
-        public string Rol { get; set; }
-
-        /// <summary>
-        /// Identificador de la operación asociada al usuario (opcional).
-        /// </summary>
-        [JsonIgnore]
-        public int? OperacionId { get; set; }
+        public int RolId { get; set; }
 
         /// <summary>
         /// Edad del usuario (opcional).
         /// </summary>
-        [JsonIgnore]
         public int? Edad { get; set; }
 
         /// <summary>
         /// Teléfono de contacto del usuario (opcional).
         /// </summary>
-        [JsonIgnore]
         public string? Telefono { get; set; }
 
         /// <summary>
-        /// Operación asociada al usuario.
+        /// Rol asociado al usuario.
         /// </summary>
+        [JsonIgnore]
+        public Rol? Rol { get; set; }
+
+        [NotMapped]
+        public string RolNombre { get; set; }
 
         [JsonIgnore]
-        public Operacion? Operacion { get; set; }
+        public string? TokenRecuperacion { get; set; }
+
+        [JsonIgnore]
+        public DateTime? TokenExpiracion { get; set; }
+
+        public Usuario()
+        {
+            Producciones = new List<Produccion>();
+            Horarios = new List<Horario>();
+            Metas = new List<Meta>();
+            MensajesEnviados = new List<MensajeChat>();
+            MensajesRecibidos = new List<MensajeChat>();
+        }
 
         /// <summary>
         /// Colección de producciones relacionadas con el usuario.
         /// </summary>
+        [JsonIgnore]
         public ICollection<Produccion> Producciones { get; set; }
 
         /// <summary>

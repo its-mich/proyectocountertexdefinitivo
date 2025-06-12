@@ -28,9 +28,5 @@ namespace proyectocountertexdefinitivo.Models
         [JsonIgnore]
         public ICollection<ProduccionDetalle> ProduccionDetalles { get; set; }
 
-        /// <summary>
-        /// Usuarios relacionados con esta operación.
-        /// </summary>
-        public ICollection<Usuario> Usuarios { get; set; }
     }
 }
