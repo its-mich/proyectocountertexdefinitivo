@@ -117,7 +117,7 @@ namespace proyectocountertexdefinitivo.Controllers
         /// <param name="usuario">Datos actualizados del usuario.</param>
         /// <returns>Un mensaje indicando el resultado de la operación.</returns>
         [HttpPut("{id}")]
-        [Authorize(Roles = "Administrador")]
+        [Authorize] // <- Permite a todos los autenticados
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
@@ -128,22 +128,20 @@ namespace proyectocountertexdefinitivo.Controllers
             {
                 if (id != usuario.Id)
                     return BadRequest("El ID en la URL y el del cuerpo no coinciden.");
-                
-                var esAdmin = User.IsInRole("Administrador");
 
-                // Si no es admin, evitar que cambie su Rol
-                if (!esAdmin)
+                var usuarioActual = await _usuarios.GetUsuarioByIdAsync(id);
+                if (usuarioActual == null)
+                    return NotFound("Usuario no encontrado.");
+
+                // Si NO es admin, mantener el rol actual (no dejar que lo modifique)
+                if (!User.IsInRole("Administrador"))
                 {
-                    var usuarioActual = await _usuarios.GetUsuarioByIdAsync(id);
-                    if (usuarioActual == null)
-                        return NotFound("Usuario no encontrado.");
-
-                    usuario.RolId = usuarioActual.RolId; // Mantiene el rol original
+                    usuario.RolId = usuarioActual.RolId;
                 }
 
                 var response = await _usuarios.PutUsuarios(usuario);
                 if (response)
-                    return Ok($"Rol del usuario con ID {id} actualizado correctamente.");
+                    return Ok($"Usuario con ID {id} actualizado correctamente.");
                 else
                     return NotFound($"No se encontró ningún usuario con el ID {id}.");
             }
@@ -155,19 +153,19 @@ namespace proyectocountertexdefinitivo.Controllers
 
         [HttpPatch("AsignarRol/{id}")]
         [Authorize(Roles = "Administrador")]
-        public async Task<IActionResult> AsignarRol(int id, [FromBody] int nuevoRolId)
+        public async Task<IActionResult> AsignarRol(int id, [FromBody] AsignarRol request)
         {
             try
             {
-                var existe = await _usuarios.GetUsuarioByIdAsync(id);
-                if (existe == null)
+                var usuario = await _usuarios.AsignarRol(id, request.IdNuevoRol);
+                if (usuario == null)
                     return NotFound("Usuario no encontrado.");
 
-                var resultado = await _usuarios.AsignarRol(id, nuevoRolId);
-                if (resultado)
-                    return Ok($"Rol actualizado correctamente para el usuario con ID {id}.");
-                else
-                    return StatusCode(500, "Error al asignar el rol.");
+                string nombreUsuario = usuario.Nombre;
+                string nombreRol = usuario.Rol?.Nombre ?? "Rol no asignado";
+
+                string mensaje = $"El usuario {nombreUsuario} ahora tiene el rol {nombreRol}.";
+                return Ok(mensaje);
             }
             catch (Exception ex)
             {
@@ -175,13 +173,13 @@ namespace proyectocountertexdefinitivo.Controllers
             }
         }
 
-        /// <summary>
-        /// Elimina un usuario por ID.
-        /// </summary>
-        /// <param name="id">ID del usuario a eliminar.</param>
-        /// <returns>NoContent si la eliminación es exitosa.</returns>
+            /// <summary>
+            /// Elimina un usuario por ID.
+            /// </summary>
+            /// <param name="id">ID del usuario a eliminar.</param>
+            /// <returns>NoContent si la eliminación es exitosa.</returns>
 
-        [HttpDelete("{id}")]
+            [HttpDelete("{id}")]
         [Authorize(Roles = "Administrador")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

@@ -35,8 +35,6 @@ namespace proyectocountertexdefinitivo.Models
         /// <summary>
         /// Contraseña del usuario para autenticación.
         /// </summary>
-
-        [JsonIgnore]
         public string Contraseña { get; set; }
 
         /// <summary>

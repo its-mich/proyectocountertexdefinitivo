@@ -112,8 +112,7 @@ namespace proyectocountertexdefinitivo.contexto
                       .IsUnique(); // Correo único
 
                 entity.Property(e => e.Contraseña)
-                      .HasMaxLength(255)
-                      .IsRequired();
+                      .HasMaxLength(255);
 
                 entity.Property(e => e.Edad);
 
