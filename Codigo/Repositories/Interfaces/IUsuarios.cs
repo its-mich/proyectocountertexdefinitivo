@@ -44,7 +44,7 @@ namespace proyectocountertexdefinitivo.Repositories.Interfaces
         /// <returns>Una tarea asincrónica.</returns>
         Task<bool> PutUsuarios(Usuario usuario);
 
-        Task<bool> AsignarRol(int id, int nuevoRolId);
+        Task<Usuario> AsignarRol(int id, int nuevoRolId);
 
         /// <summary>
         /// Elimina un usuario según su identificador.

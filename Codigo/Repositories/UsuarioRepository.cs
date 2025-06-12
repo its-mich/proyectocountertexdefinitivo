@@ -258,15 +258,21 @@ namespace proyectocountertexdefinitivo.Repositories
             return true;
         }
 
-        public async Task<bool> AsignarRol(int id, int nuevoRolId)
+        public async Task<Usuario> AsignarRol(int id, int nuevoRolId)
         {
-            var usuario = await _context.Usuarios.FindAsync(id);
+            var usuario = await _context.Usuarios
+        .Include(u => u.Rol)
+        .FirstOrDefaultAsync(u => u.Id == id);
+
             if (usuario == null)
-                return false;
+                return null;
 
             usuario.RolId = nuevoRolId;
             await _context.SaveChangesAsync();
-            return true;
+
+            await _context.Entry(usuario).Reference(u => u.Rol).LoadAsync(); // Carga el nuevo rol
+
+            return usuario;
         }
 
         /// <summary>
