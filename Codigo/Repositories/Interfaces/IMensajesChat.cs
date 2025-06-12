@@ -20,6 +20,8 @@ namespace proyectocountertexdefinitivo.Repositories.Interfaces
         /// <returns>El objeto MensajeChat correspondiente al Id proporcionado.</returns>
         Task<MensajeChat> ObtenerPorIdAsync(int id);
 
+        Task<List<MensajeChat>> ObtenerConversacionAsync(int remitenteId, int destinatarioId);
+
         /// <summary>
         /// Obtiene todos los mensajes enviados por un usuario específico.
         /// </summary>

@@ -25,24 +25,26 @@ namespace proyectocountertexdefinitivo.Models
         public int ProduccionId { get; set; }
 
         /// <summary>
+        /// Identificador de la operación realizada en este detalle.
+        /// </summary>
+        public int OperacionId { get; set; }
+
+        /// <summary>
+        /// Valor total calculado para este detalle (Cantidad * ValorUnitario de la operación).
+        /// </summary>
+        public decimal? ValorTotal { get; set; }
+
+        /// <summary>
         /// Producción asociada a este detalle.
         /// </summary>
         [JsonIgnore]
         public Produccion Produccion { get; set; }
 
         /// <summary>
-        /// Identificador de la operación realizada en este detalle.
-        /// </summary>
-        public int OperacionId { get; set; }
-
-        /// <summary>
         /// Operación asociada a este detalle de producción.
         /// </summary>
         public Operacion Operacion { get; set; }
 
-        /// <summary>
-        /// Valor total calculado para este detalle (Cantidad * ValorUnitario de la operación).
-        /// </summary>
-        public decimal? ValorTotal { get; set; }
+
     }
 }

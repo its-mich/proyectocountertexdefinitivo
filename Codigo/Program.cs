@@ -21,13 +21,16 @@ builder.Services.AddDbContext<CounterTexDBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // 🧩 Inyección de dependencias
-builder.Services.AddScoped<Usuario, Usuario>();
+builder.Services.AddScoped<IUsuarios, UsuarioRepository>();
 
 // 🔁 Conversión para TimeSpan en JSON (POST/GET desde Swagger)
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.Converters.Add(new TimeSpanConverter());
+        options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+
     });
 
 // 🔁 También aplica para MVC (Swagger lo requiere)
