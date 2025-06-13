@@ -20,7 +20,7 @@ namespace proyectocountertexdefinitivo.Models
         /// <summary>
         /// Género al que está dirigida la prenda (por ejemplo: masculino, femenino, unisex).
         /// </summary>
-        public string Genero { get; set; } // Puede validarse con enum si se desea
+        public string Genero { get; set; }
 
         /// <summary>
         /// Color predominante de la prenda.
@@ -30,7 +30,7 @@ namespace proyectocountertexdefinitivo.Models
         /// <summary>
         /// Colección de producciones asociadas a esta prenda.
         /// </summary>
-        [JsonIgnore]
-        public ICollection<Produccion> Producciones { get; set; }
+        [JsonIgnore] // Ignora en JSON para evitar errores en Swagger
+        public ICollection<Produccion>? Producciones { get; set; } = new List<Produccion>();
     }
 }
