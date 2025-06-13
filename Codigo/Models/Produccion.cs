@@ -22,7 +22,8 @@ namespace proyectocountertexdefinitivo.Models
         /// <summary>
         /// Valor total acumulado de la producción.
         /// </summary>
-        public decimal TotalValor { get; set; }
+        public decimal? TotalValor { get; set; }
+
 
         /// <summary>
         /// Identificador del usuario que realizó la producción.

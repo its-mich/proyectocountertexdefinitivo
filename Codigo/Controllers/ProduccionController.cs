@@ -72,7 +72,7 @@ namespace proyectocountertexdefinitivo.Controllers
             }
 
             // Ya deberías tener los valores almacenados, pero si quieres recalcular:
-            produccion.TotalValor = produccion.ProduccionDetalles.Sum(d => d.ValorTotal ?? 0);
+            //produccion.TotalValor = produccion.ProduccionDetalles.Sum(d => d.ValorTotal ?? 0);
 
             return Ok(produccion);
         }
@@ -110,6 +110,8 @@ namespace proyectocountertexdefinitivo.Controllers
                 ProduccionDetalles = new List<ProduccionDetalle>()
             };
 
+            decimal totalValor = 0;
+
             foreach (var detalleDto in dto.ProduccionDetalles)
             {
                 var operacion = await _context.Operaciones.FindAsync(detalleDto.OperacionId);
@@ -119,30 +121,33 @@ namespace proyectocountertexdefinitivo.Controllers
                 if (operacion.ValorUnitario == null)
                     return BadRequest($"La operación con Id {detalleDto.OperacionId} no tiene valor unitario asignado.");
 
-                // Calculamos el valor total para evitar confiar en lo que venga del cliente
                 decimal valorTotalCalculado = operacion.ValorUnitario.Value * detalleDto.Cantidad;
+                totalValor += valorTotalCalculado;
 
                 var detalle = new ProduccionDetalle
                 {
                     OperacionId = detalleDto.OperacionId,
                     Cantidad = detalleDto.Cantidad,
-                    ValorTotal = valorTotalCalculado
+                    //ValorTotal = valorTotalCalculado
                 };
 
                 produccion.ProduccionDetalles.Add(detalle);
             }
-            // Calcular el total acumulado de la producción
-            produccion.TotalValor = produccion.ProduccionDetalles.Sum(d => d.ValorTotal ?? 0);
+
+            // Asignar el valor total acumulado
+            produccion.TotalValor = totalValor;
 
             _context.Producciones.Add(produccion);
 
             try
             {
                 await _context.SaveChangesAsync();
+                await _context.Entry(produccion).ReloadAsync(); // opcional si usas triggers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Error al guardar la producción: {ex.Message}");
+                var innerMessage = ex.InnerException?.Message;
+                return StatusCode(500, $"Error al guardar la producción: {ex.Message} | Inner: {innerMessage}");
             }
 
             return Ok(produccion);

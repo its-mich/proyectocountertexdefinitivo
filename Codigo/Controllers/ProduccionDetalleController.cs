@@ -68,6 +68,11 @@ namespace proyectocountertexdefinitivo.Controllers
                 return BadRequest("Operación no encontrada.");
             }
 
+            if (detalle.ProduccionId == 0)
+            {
+                return BadRequest("El campo ProduccionId es obligatorio.");
+            }
+
             detalle.ValorTotal = detalle.Cantidad * operacion.ValorUnitario.GetValueOrDefault();
 
             _context.ProduccionDetalles.Add(detalle);

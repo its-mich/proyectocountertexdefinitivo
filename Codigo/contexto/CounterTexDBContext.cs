@@ -148,9 +148,23 @@ namespace proyectocountertexdefinitivo.contexto
             // Configuración para Produccion y sus relaciones
             modelBuilder.Entity<Produccion>(entity =>
             {
+                entity.ToTable("Produccion", tableBuilder =>
+                {
+                    tableBuilder.HasTrigger("trg_UpdateTotalValorProduccion");
+                });// << Aquí se indica que hay trigger
+
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Fecha).HasColumnType("date");
-                entity.Property(e => e.TotalValor).HasColumnType("decimal(10,2)");
+       
+                entity.Property(e => e.TotalValor)
+                    .HasColumnType("decimal(10,2)")
+                       .IsRequired()
+                    .ValueGeneratedOnAddOrUpdate()
+                    .Metadata.SetAfterSaveBehavior(Microsoft.EntityFrameworkCore.Metadata.PropertySaveBehavior.Ignore);
+
+
+
+
 
                 entity.HasOne(p => p.Usuario)
                       .WithMany(u => u.Producciones)
@@ -161,14 +175,18 @@ namespace proyectocountertexdefinitivo.contexto
                       .WithMany(pr => pr.Producciones)
                       .HasForeignKey(p => p.PrendaId)
                       .OnDelete(DeleteBehavior.Restrict);
+
+
+                     
             });
+
 
             // Configuración para ProduccionDetalle con columna calculada
             modelBuilder.Entity<ProduccionDetalle>(entity =>
             {
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Cantidad).IsRequired();
-                entity.Property(e => e.ValorTotal).HasColumnType("decimal(10,2)");
+                //entity.Property(e => e.ValorTotal).HasColumnType("decimal(10,2)");
 
                 entity.HasOne(e => e.Produccion)
                       .WithMany(p => p.ProduccionDetalles)

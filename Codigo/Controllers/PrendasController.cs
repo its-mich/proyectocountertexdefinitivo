@@ -1,142 +1,117 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using proyectocountertexdefinitivo.Models;
-using Microsoft.EntityFrameworkCore;
-using proyectocountertexdefinitivo.contexto;
+using proyectocountertexdefinitivo.Repositories.Interfaces;
 
 namespace proyectocountertexdefinitivo.Controllers
 {
-    /// <summary>
-    /// Controlador para la gestión de prendas.
-    /// </summary>
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class PrendasController : ControllerBase
     {
-        private readonly CounterTexDBContext _context;
+        private readonly IPrenda _prenda;
 
-        /// <summary>
-        /// Constructor que inyecta el contexto de base de datos.
-        /// </summary>
-        /// <param name="context">Contexto de la base de datos.</param>
-        public PrendasController(CounterTexDBContext context)
+        public PrendasController(IPrenda prenda)
         {
-            _context = context;
+            _prenda = prenda;
         }
 
-        /// <summary>
-        /// Obtiene la lista de todas las prendas.
-        /// </summary>
-        /// <returns>Lista de prendas.</returns>
-        /// <response code="200">Prendas obtenidas correctamente.</response>
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Prenda>>> GetPrendas()
+        [HttpGet("GetPrendas")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetPrendas()
         {
-            return await _context.Prendas.ToListAsync();
-        }
-
-        /// <summary>
-        /// Obtiene una prenda por su ID.
-        /// </summary>
-        /// <param name="id">ID de la prenda.</param>
-        /// <returns>La prenda solicitada.</returns>
-        /// <response code="200">Prenda encontrada.</response>
-        /// <response code="404">No se encontró la prenda.</response>
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Prenda>> GetPrenda(int id)
-        {
-            var prenda = await _context.Prendas.FindAsync(id);
-
-            if (prenda == null)
-            {
-                return NotFound();
-            }
-
-            return prenda;
-        }
-
-        /// <summary>
-        /// Actualiza una prenda existente.
-        /// </summary>
-        /// <param name="id">ID de la prenda.</param>
-        /// <param name="prenda">Objeto prenda con datos actualizados.</param>
-        /// <returns>NoContent si se actualiza correctamente.</returns>
-        /// <response code="204">Actualización exitosa.</response>
-        /// <response code="400">ID de la URL no coincide con el del objeto.</response>
-        /// <response code="404">Prenda no encontrada.</response>
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutPrenda(int id, Prenda prenda)
-        {
-            if (id != prenda.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(prenda).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+                var response = await _prenda.GetAllAsync();
+                return Ok(response);
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception ex)
             {
-                if (!PrendaExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return BadRequest(ex.Message);
             }
-
-            return NoContent();
         }
 
-        /// <summary>
-        /// Crea una nueva prenda.
-        /// </summary>
-        /// <param name="prenda">Objeto prenda a crear.</param>
-        /// <returns>La prenda creada.</returns>
-        /// <response code="201">Prenda creada correctamente.</response>
-        [HttpPost]
-        public async Task<ActionResult<Prenda>> PostPrenda(Prenda prenda)
+        [HttpPost("PostPrenda")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> PostPrenda([FromBody] Prenda prenda)
         {
-            _context.Prendas.Add(prenda);
-            await _context.SaveChangesAsync();
+            try
+            {
+                if (!ModelState.IsValid)
+                    return BadRequest("Datos inválidos.");
 
-            return CreatedAtAction("GetPrenda", new { id = prenda.Id }, prenda);
+                var creada = await _prenda.CreateAsync(prenda);
+                return CreatedAtAction(nameof(GetPrendaById), new { id = creada.Id }, creada);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
-        /// <summary>
-        /// Elimina una prenda por su ID.
-        /// </summary>
-        /// <param name="id">ID de la prenda a eliminar.</param>
-        /// <returns>NoContent si se elimina correctamente.</returns>
-        /// <response code="204">Prenda eliminada correctamente.</response>
-        /// <response code="404">Prenda no encontrada.</response>
-        [HttpDelete("{id}")]
+        [HttpGet("GetPrendaById/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetPrendaById(int id)
+        {
+            try
+            {
+                var prenda = await _prenda.GetByIdAsync(id);
+                if (prenda == null)
+                    return NotFound("No se encontró la prenda con ese ID.");
+
+                return Ok(prenda);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut("UpdatePrenda/{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> UpdatePrenda(int id, [FromBody] Prenda prenda)
+        {
+            try
+            {
+                if (id != prenda.Id)
+                    return BadRequest("El ID no coincide con el del objeto.");
+
+                var existente = await _prenda.GetByIdAsync(id);
+                if (existente == null)
+                    return NotFound("Prenda no encontrada.");
+
+                await _prenda.UpdateAsync(prenda);
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpDelete("DeletePrenda/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> DeletePrenda(int id)
         {
-            var prenda = await _context.Prendas.FindAsync(id);
-            if (prenda == null)
+            try
             {
-                return NotFound();
+                var existente = await _prenda.GetByIdAsync(id);
+                if (existente == null)
+                    return NotFound("Prenda no encontrada.");
+
+                await _prenda.DeleteAsync(id);
+                return Ok("Prenda eliminada correctamente.");
             }
-
-            _context.Prendas.Remove(prenda);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        /// <summary>
-        /// Verifica si una prenda existe en la base de datos.
-        /// </summary>
-        /// <param name="id">ID de la prenda.</param>
-        /// <returns>true si existe, false si no.</returns>
-        private bool PrendaExists(int id)
-        {
-            return _context.Prendas.Any(e => e.Id == id);
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }
