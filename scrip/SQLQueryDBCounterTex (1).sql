@@ -33,7 +33,8 @@ CREATE TABLE Prendas (
     Id INT PRIMARY KEY IDENTITY(1,1),
     Nombre NVARCHAR(100) NOT NULL,
     Genero NVARCHAR(20),
-    Color NVARCHAR(50)
+    Color NVARCHAR(50),
+    CantidadPrendas INT
 );
 GO
 
@@ -150,16 +151,16 @@ VALUES
 GO
 
 -- Prendas
-INSERT INTO Prendas (Nombre, Genero, Color)
+INSERT INTO Prendas (Nombre, Genero, Color, CantidadPrendas)
 VALUES 
-('Camisa Clásica', 'Unisex', 'Blanco'),   --1
-('Pantalón Slim', 'Masculino', 'Azul'),   --2
-('Camisa Crop Top', 'Dama', 'Rosa'),      --3
-('Camiseta Básica', 'Hombre', 'Negro'),   --4
-('Jogger Casual', 'Niño', 'Gris'),        --5
-('Jogger Deportivo', 'Dama', 'Azul'),     --6
-('Leggins Deportivo', 'Juvenil', 'Negro'),--7
-('Falda', 'Femenino', 'Rojo');            --8
+('Camisa Clásica', 'Unisex', 'Blanco', 2000),   --1
+('Pantalón Slim', 'Masculino', 'Azul', 1500),   --2
+('Camisa Crop Top', 'Dama', 'Rosa', 2500),      --3
+('Camiseta Básica', 'Hombre', 'Negro', 2400),   --4
+('Jogger Casual', 'Niño', 'Gris', 1800),        --5
+('Jogger Deportivo', 'Dama', 'Azul', 2000),     --6
+('Leggins Deportivo', 'Juvenil', 'Negro', 2500),--7
+('Falda', 'Femenino', 'Rojo', 1500);            --8
 GO
 
 -- Operaciones
@@ -335,7 +336,7 @@ GO
 
 --Devuelve un detalle diario de producción por usuario para un mes y año específicos.
 CREATE OR ALTER PROCEDURE sp_ProduccionMensual
-    @Anio INT,
+    @Año INT,
     @Mes INT
 AS
 BEGIN
@@ -347,7 +348,7 @@ BEGIN
         SUM(P.TotalValor) AS ProduccionTotal
     FROM Produccion P
     INNER JOIN Usuarios U ON U.Id = P.UsuarioId
-    WHERE MONTH(P.Fecha) = @Mes AND YEAR(P.Fecha) = @Anio
+    WHERE MONTH(P.Fecha) = @Mes AND YEAR(P.Fecha) = @Año
     GROUP BY U.Nombre, P.Fecha
     ORDER BY P.Fecha;
 END;
@@ -355,7 +356,7 @@ GO
 
 --Devuelve un total mensual de producción general
 CREATE OR ALTER PROCEDURE sp_ProduccionMensualResumen
-    @Anio INT,
+    @Año INT,
     @Mes INT
 AS
 BEGIN
@@ -364,32 +365,10 @@ BEGIN
     SELECT 
         SUM(P.TotalValor) AS TotalProduccionMensual
     FROM Produccion P
-    WHERE MONTH(P.Fecha) = @Mes AND YEAR(P.Fecha) = @Anio;
+    WHERE MONTH(P.Fecha) = @Mes AND YEAR(P.Fecha) = @Año;
 END;
 GO
 
-
--- ====================================================================
---  Crear trigger después de insert/update/delete en ProduccionDetalle:
--- ====================================================================
-CREATE OR ALTER TRIGGER trg_UpdateTotalValorProduccion
-ON ProduccionDetalle
-AFTER INSERT, UPDATE, DELETE
-AS
-BEGIN
-    SET NOCOUNT ON;
-
-    -- Actualizar valores recalculando todos los totales agrupados por ProduccionId
-    UPDATE Produccion
-    SET TotalValor = ISNULL(TotalCalculado.Total, 0)
-    FROM Produccion P
-    INNER JOIN (
-        SELECT ProduccionId, SUM(ValorTotal) AS Total
-        FROM ProduccionDetalle
-        GROUP BY ProduccionId
-    ) AS TotalCalculado ON P.Id = TotalCalculado.ProduccionId;
-END;
-GO
 
 
 

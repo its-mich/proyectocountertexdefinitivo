@@ -149,6 +149,8 @@ namespace proyectocountertexdefinitivo.contexto
             modelBuilder.Entity<Produccion>(entity =>
             {
                 entity.HasKey(e => e.Id);
+                entity.Property(e => e.Id).ValueGeneratedOnAdd(); 
+
                 entity.Property(e => e.Fecha).HasColumnType("date");
                 entity.Property(e => e.TotalValor).HasColumnType("decimal(10,2)");
 
@@ -161,26 +163,25 @@ namespace proyectocountertexdefinitivo.contexto
                       .WithMany(pr => pr.Producciones)
                       .HasForeignKey(p => p.PrendaId)
                       .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasMany(p => p.ProduccionDetalles)
+                      .WithOne(d => d.Produccion)
+                      .HasForeignKey(d => d.ProduccionId)
+                      .OnDelete(DeleteBehavior.Cascade);
             });
 
             // Configuración para ProduccionDetalle con columna calculada
             modelBuilder.Entity<ProduccionDetalle>(entity =>
             {
                 entity.HasKey(e => e.Id);
+                entity.Property(e => e.Id).ValueGeneratedOnAdd(); 
                 entity.Property(e => e.Cantidad).IsRequired();
                 entity.Property(e => e.ValorTotal).HasColumnType("decimal(10,2)");
-
-                entity.HasOne(e => e.Produccion)
-                      .WithMany(p => p.ProduccionDetalles)
-                      .HasForeignKey(e => e.ProduccionId)
-                      .OnDelete(DeleteBehavior.Cascade);
 
                 entity.HasOne(e => e.Operacion)
                       .WithMany(o => o.ProduccionDetalles)
                       .HasForeignKey(e => e.OperacionId)
                       .OnDelete(DeleteBehavior.Restrict);
-
-
             });
 
             // Configuración para Horarios

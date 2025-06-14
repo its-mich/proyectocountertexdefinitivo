@@ -51,17 +51,37 @@ namespace proyectocountertexdefinitivo.Controllers
         public async Task<IActionResult> CrearProduccion([FromBody] Produccion produccion)
         {
             if (produccion == null || produccion.ProduccionDetalles == null || !produccion.ProduccionDetalles.Any())
-                return BadRequest("Producción inválida. Asegúrese de enviar detalles.");
+                return BadRequest(new { mensaje = "Producción inválida. Asegúrese de enviar al menos un detalle." });
 
             try
             {
-                produccion.TotalValor = produccion.ProduccionDetalles.Sum(d => d.ValorTotal ?? 0);
-                var creada = await _produccionRepo.CreateAsync(produccion);
-                return CreatedAtAction(nameof(GetProduccion), new { id = creada.Id }, creada);
+                var creada = await _produccionRepo.CrearProduccionConDetallesAsync(produccion);
+                if (creada == null)
+                    return BadRequest(new { mensaje = "Ocurrió un error al procesar la producción. Verifique los datos enviados." });
+
+                return Ok(new
+                {
+                    mensaje = "Producción creada exitosamente.",
+                    produccion = new
+                    {
+                        creada.Id,
+                        creada.Fecha,
+                        creada.TotalValor,
+                        creada.UsuarioId,
+                        creada.PrendaId,
+                        Detalles = creada.ProduccionDetalles.Select(d => new
+                        {
+                            d.Id,
+                            d.Cantidad,
+                            d.OperacionId,
+                            d.ValorTotal
+                        })
+                    }
+                });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Error al crear la producción: {ex.Message}");
+                return StatusCode(500, new { mensaje = "Error inesperado al crear la producción.", detalle = ex.Message });
             }
         }
 

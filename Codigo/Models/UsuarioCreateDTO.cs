@@ -8,51 +8,12 @@ namespace proyectocountertexdefinitivo.Models
     /// </summary>
     public class UsuarioCreateDTO
     {
-        /// <summary>
-        /// Identificador del usuario (generalmente no se asigna en creación, pero está presente).
-        /// </summary>
-        public int Id { get; set; }
-
-        /// <summary>
-        /// Nombre completo del usuario.
-        /// </summary>
-        [Required]
         public string Nombre { get; set; }
-
-        /// <summary>
-        /// Documento de identidad del usuario.
-        /// </summary>
-        [Required]
-        public string? Documento { get; set; }
-
-        /// <summary>
-        /// Rol asignado al usuario (por ejemplo, administrador, empleado).
-        /// </summary>
-        [Required]
-        public int RolId { get; set; }
-
-        /// <summary>
-        /// Correo electrónico del usuario.
-        /// </summary>
-        [Required]
-        [EmailAddress]
+        public string Documento { get; set; }
         public string Correo { get; set; }
-
-        /// <summary>
-        /// Contraseña para la autenticación del usuario.
-        /// </summary>
-
         public string Contraseña { get; set; }
-
-        /// <summary>
-        /// Edad del usuario (opcional).
-        /// </summary>
-        public int? Edad { get; set; }
-
-        /// <summary>
-        /// Teléfono de contacto del usuario (opcional).
-        /// </summary>
-        public int? Telefono { get; set; }
+        public int Edad { get; set; }
+        public string Telefono { get; set; }
 
     }
 }

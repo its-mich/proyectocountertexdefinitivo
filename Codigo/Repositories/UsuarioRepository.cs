@@ -15,24 +15,13 @@ namespace proyectocountertexdefinitivo.Repositories
     /// </summary>
     public class UsuarioRepository : IUsuarios
     {
-        /// <summary>
-        /// Contexto de base de datos utilizado para acceder a las entidades.
-        /// </summary>
         private readonly CounterTexDBContext _context;
 
-        /// <summary>
-        /// Constructor que inicializa el repositorio con el contexto de base de datos.
-        /// </summary>
-        /// <param name="context">Instancia de <see cref="CounterTexDBContext"/>.</param>
         public UsuarioRepository(CounterTexDBContext context)
         {
             _context = context;
         }
 
-        /// <summary>
-        /// Obtiene todos los usuarios registrados en la base de datos.
-        /// </summary>
-        /// <returns>Una lista de objetos <see cref="Usuario"/>.</returns>
         public async Task<List<Usuario>> GetUsuarios()
         {
             return await _context.Usuarios
@@ -51,11 +40,6 @@ namespace proyectocountertexdefinitivo.Repositories
                 .ToListAsync();
         }
 
-        /// <summary>
-        /// Obtiene un usuario por su identificador único.
-        /// </summary>
-        /// <param name="id">Identificador del usuario.</param>
-        /// <returns>El objeto <see cref="Usuario"/> si se encuentra; de lo contrario, null.</returns>
         public async Task<Usuario> GetUsuarioByIdAsync(int id)
         {
             return await _context.Usuarios.FirstOrDefaultAsync(u => u.Id == id);
@@ -96,7 +80,7 @@ namespace proyectocountertexdefinitivo.Repositories
         {
             try
             {
-                var remitente = "tucorreo@example.com"; // Cambia esto
+                var remitente = "tucorreo@example.com";
                 var asunto = "Código de recuperación de contraseña";
 
                 var html = $@"
@@ -181,16 +165,12 @@ namespace proyectocountertexdefinitivo.Repositories
                 message.To.Add(new MailboxAddress("", destino));
                 message.Subject = asunto;
 
-                var builder = new BodyBuilder
-                {
-                    HtmlBody = html
-                };
-
+                var builder = new BodyBuilder { HtmlBody = html };
                 message.Body = builder.ToMessageBody();
 
                 using var client = new SmtpClient();
-                await client.ConnectAsync("smtp.example.com", 587, false); // Cambia host y puerto
-                await client.AuthenticateAsync(remitente, "TU-CONTRASEÑA"); // Cambia esto
+                await client.ConnectAsync("smtp.example.com", 587, false);
+                await client.AuthenticateAsync(remitente, "TU-CONTRASEÑA");
                 await client.SendAsync(message);
                 await client.DisconnectAsync(true);
 
@@ -202,27 +182,26 @@ namespace proyectocountertexdefinitivo.Repositories
             }
         }
 
-        /// <summary>
-        /// Crea un nuevo usuario en la base de datos.
-        /// </summary>
-        /// <param name="usuario">Instancia de <see cref="Usuario"/> a agregar.</param>
-        /// <returns>El objeto <see cref="Usuario"/> creado.</returns>
-
         public async Task<bool> PostUsuarios([FromBody] Usuario usuario)
         {
             try
             {
-                // Validaciones previas (opcional)
-                var correoExistente = await _context.Usuarios.AnyAsync(u => u.Correo == usuario.Correo);
-                var documentoExistente = await _context.Usuarios.AnyAsync(u => u.Documento == usuario.Documento);
+                // Validar duplicados
+                bool correoExiste = await _context.Usuarios.AnyAsync(u => u.Correo == usuario.Correo);
+                bool documentoExiste = await _context.Usuarios.AnyAsync(u => u.Documento == usuario.Documento);
+                bool telefonoExiste = await _context.Usuarios.AnyAsync(u => u.Telefono == usuario.Telefono);
 
-                if (correoExistente || documentoExistente)
+                if (correoExiste || documentoExiste || telefonoExiste)
+                    return false;
+
+                // Validar longitud de teléfono y documento
+                if (usuario.Telefono.Length != 10 || usuario.Documento.Length != 10)
                     return false;
 
                 usuario.Contraseña = BCrypt.Net.BCrypt.HashPassword(usuario.Contraseña);
-
                 _context.Usuarios.Add(usuario);
                 await _context.SaveChangesAsync();
+
                 return true;
             }
             catch
@@ -231,15 +210,10 @@ namespace proyectocountertexdefinitivo.Repositories
             }
         }
 
-        /// <summary>
-        /// Actualiza los datos de un usuario existente.
-        /// </summary>
-        /// <param name="usuario">Instancia de <see cref="Usuario"/> con los nuevos datos.</param>
         public async Task<bool> PutUsuarios(Usuario usuario)
         {
             var existing = await _context.Usuarios.FindAsync(usuario.Id);
-            if (existing == null)
-                return false;
+            if (existing == null) return false;
 
             existing.Nombre = usuario.Nombre;
             existing.Correo = usuario.Correo;
@@ -261,31 +235,22 @@ namespace proyectocountertexdefinitivo.Repositories
         public async Task<Usuario> AsignarRol(int id, int nuevoRolId)
         {
             var usuario = await _context.Usuarios
-        .Include(u => u.Rol)
-        .FirstOrDefaultAsync(u => u.Id == id);
+                .Include(u => u.Rol)
+                .FirstOrDefaultAsync(u => u.Id == id);
 
-            if (usuario == null)
-                return null;
+            if (usuario == null) return null;
 
             usuario.RolId = nuevoRolId;
             await _context.SaveChangesAsync();
-
-            await _context.Entry(usuario).Reference(u => u.Rol).LoadAsync(); // Carga el nuevo rol
+            await _context.Entry(usuario).Reference(u => u.Rol).LoadAsync();
 
             return usuario;
         }
 
-        /// <summary>
-        /// Elimina un usuario de la base de datos por su identificador.
-        /// </summary>
-        /// <param name="id">Identificador del usuario a eliminar.</param>
         public async Task<bool> DeleteUsuarios(int id)
         {
             var usuario = await _context.Usuarios.FindAsync(id);
-            if (usuario == null)
-            {
-                return false;
-            }
+            if (usuario == null) return false;
 
             _context.Usuarios.Remove(usuario);
             await _context.SaveChangesAsync();

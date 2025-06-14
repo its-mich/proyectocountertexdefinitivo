@@ -45,6 +45,11 @@ namespace proyectocountertexdefinitivo.Repositories.repositories
             return await _context.Producciones.FindAsync(id);
         }
 
+        public async Task<Operacion?> ObtenerOperacionPorId(int operacionId)
+        {
+            return await _context.Operaciones.FindAsync(operacionId);
+        }
+
         public async Task<Produccion> CreateAsync(Produccion produccion)
         {
             _context.Producciones.Add(produccion);
@@ -65,13 +70,17 @@ namespace proyectocountertexdefinitivo.Repositories.repositories
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var produccion = await _context.Producciones.FindAsync(id);
-            if (produccion == null)
-            {
-                return false;
-            }
+            var produccion = await _context.Producciones
+                .Include(p => p.ProduccionDetalles)
+                .FirstOrDefaultAsync(p => p.Id == id);
 
+            if (produccion == null)
+                return false;
+
+
+            _context.ProduccionDetalles.RemoveRange(produccion.ProduccionDetalles);
             _context.Producciones.Remove(produccion);
+
             await _context.SaveChangesAsync();
             return true;
         }
@@ -89,6 +98,31 @@ namespace proyectocountertexdefinitivo.Repositories.repositories
                 .ToListAsync();
 
             return resumen.Any() ? resumen : null;
+        }
+        public async Task<Produccion?> CrearProduccionConDetallesAsync(Produccion produccion)
+        {
+            if (produccion == null || produccion.ProduccionDetalles == null || !produccion.ProduccionDetalles.Any())
+                return null;
+
+            decimal totalProduccion = 0;
+
+            foreach (var detalle in produccion.ProduccionDetalles)
+            {
+                var operacion = await _context.Operaciones.FindAsync(detalle.OperacionId);
+                if (operacion == null)
+                    return null;
+
+                detalle.ValorTotal = operacion.ValorUnitario * detalle.Cantidad;
+                totalProduccion += detalle.ValorTotal ?? 0;
+            }
+
+            produccion.TotalValor = totalProduccion;
+
+            // Se agrega la producción con sus detalles en cascada
+            _context.Producciones.Add(produccion);
+            await _context.SaveChangesAsync();
+
+            return produccion;
         }
     }
 }

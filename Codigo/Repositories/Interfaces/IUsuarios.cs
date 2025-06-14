@@ -10,47 +10,80 @@ namespace proyectocountertexdefinitivo.Repositories.Interfaces
         /// <summary>
         /// Obtiene todos los usuarios almacenados.
         /// </summary>
-        /// <returns>Una colección de usuarios.</returns>
+        /// <returns>Una lista de usuarios.</returns>
         Task<List<Usuario>> GetUsuarios();
 
         /// <summary>
-        /// Obtiene un usuario por su identificador único.
+        /// Obtiene un usuario por su ID.
         /// </summary>
-        /// <param name="id">El identificador del usuario.</param>
-        /// <returns>El usuario correspondiente al id proporcionado, o null si no existe.</returns>
-        Task<Usuario> GetUsuarioByIdAsync(int id);
-
-        Task<Usuario?> GetUsuarioByCorreoAsync(string correo);
-
-        Task<bool> GuardarTokenRecuperacionAsync(int usuarioId, string token);
-
-        Task<Usuario?> GetUsuarioPorTokenAsync(string token);
-
-        Task<bool> LimpiarTokenRecuperacionAsync(int usuarioId);
-
-        Task<bool> EnviarCorreo(string destino, string codigo);
+        /// <param name="id">ID del usuario.</param>
+        /// <returns>Usuario si existe, o null.</returns>
+        Task<Usuario?> GetUsuarioByIdAsync(int id);
 
         /// <summary>
-        /// Crea un nuevo usuario y lo almacena.
+        /// Obtiene un usuario por su correo electrónico.
         /// </summary>
-        /// <param name="usuario">El usuario a crear.</param>
-        /// <returns>El usuario creado con sus datos actualizados.</returns>
+        /// <param name="correo">Correo del usuario.</param>
+        /// <returns>Usuario si existe, o null.</returns>
+        Task<Usuario?> GetUsuarioByCorreoAsync(string correo);
+
+        /// <summary>
+        /// Crea un nuevo usuario.
+        /// </summary>
+        /// <param name="usuario">Objeto usuario a registrar.</param>
+        /// <returns>True si se creó correctamente, false si ya existe.</returns>
         Task<bool> PostUsuarios(Usuario usuario);
 
         /// <summary>
-        /// Actualiza la información de un usuario existente.
+        /// Actualiza un usuario existente.
         /// </summary>
-        /// <param name="usuario">El usuario con los datos actualizados.</param>
-        /// <returns>Una tarea asincrónica.</returns>
+        /// <param name="usuario">Usuario con datos actualizados.</param>
+        /// <returns>True si se actualizó, false si no se encontró.</returns>
         Task<bool> PutUsuarios(Usuario usuario);
 
-        Task<Usuario> AsignarRol(int id, int nuevoRolId);
+        /// <summary>
+        /// Elimina un usuario por ID.
+        /// </summary>
+        /// <param name="id">ID del usuario.</param>
+        /// <returns>True si se eliminó, false si no se encontró.</returns>
+        Task<bool> DeleteUsuarios(int id);
 
         /// <summary>
-        /// Elimina un usuario según su identificador.
+        /// Asigna un nuevo rol a un usuario.
         /// </summary>
-        /// <param name="id">El identificador del usuario a eliminar.</param>
-        /// <returns>Una tarea asincrónica.</returns>
-        Task<bool> DeleteUsuarios(int id);
+        /// <param name="id">ID del usuario.</param>
+        /// <param name="nuevoRolId">ID del nuevo rol.</param>
+        /// <returns>Usuario con el nuevo rol asignado.</returns>
+        Task<Usuario?> AsignarRol(int id, int nuevoRolId);
+
+        /// <summary>
+        /// Guarda un token temporal de recuperación de contraseña para un usuario.
+        /// </summary>
+        /// <param name="usuarioId">ID del usuario.</param>
+        /// <param name="token">Código/token a guardar.</param>
+        /// <returns>True si se guardó correctamente.</returns>
+        Task<bool> GuardarTokenRecuperacionAsync(int usuarioId, string token);
+
+        /// <summary>
+        /// Obtiene un usuario a partir de su token de recuperación.
+        /// </summary>
+        /// <param name="token">Token de recuperación.</param>
+        /// <returns>Usuario si el token es válido, o null.</returns>
+        Task<Usuario?> GetUsuarioPorTokenAsync(string token);
+
+        /// <summary>
+        /// Elimina el token de recuperación una vez usado.
+        /// </summary>
+        /// <param name="usuarioId">ID del usuario.</param>
+        /// <returns>True si se eliminó correctamente.</returns>
+        Task<bool> LimpiarTokenRecuperacionAsync(int usuarioId);
+
+        /// <summary>
+        /// Envía un correo con el código de recuperación.
+        /// </summary>
+        /// <param name="destino">Correo del destinatario.</param>
+        /// <param name="codigo">Código que se enviará.</param>
+        /// <returns>True si el correo fue enviado exitosamente.</returns>
+        Task<bool> EnviarCorreo(string destino, string codigo);
     }
 }
