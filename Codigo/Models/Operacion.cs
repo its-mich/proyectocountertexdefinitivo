@@ -26,7 +26,7 @@ namespace proyectocountertexdefinitivo.Models
         /// Detalles de producción relacionados con esta operación.
         /// </summary>
         [JsonIgnore]
-        public ICollection<ProduccionDetalle> ProduccionDetalles { get; set; }
+        public ICollection<ProduccionDetalle>? ProduccionDetalles { get; set; }
 
     }
 }

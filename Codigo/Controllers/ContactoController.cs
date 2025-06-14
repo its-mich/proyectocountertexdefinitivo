@@ -1,95 +1,121 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using proyectocountertexdefinitivo.contexto;
+﻿using Microsoft.AspNetCore.Mvc;
 using proyectocountertexdefinitivo.Models;
+using proyectocountertexdefinitivo.Repositories.Interfaces;
 
 namespace proyectocountertexdefinitivo.Controllers
 {
     /// <summary>
-    /// Controlador que gestiona las operaciones CRUD sobre los contactos.
+    /// Controlador para gestionar los contactos del sistema.
+    /// Permite obtener, crear y eliminar contactos.
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class ContactoController : ControllerBase
     {
-        private readonly CounterTexDBContext _context;
+        private readonly IContacto _contactoRepository;
 
         /// <summary>
-        /// Constructor que recibe el contexto de la base de datos.
+        /// Constructor con inyección del repositorio de contactos.
         /// </summary>
-        /// <param name="context">Contexto de la base de datos de CounterTex.</param>
-        public ContactoController(CounterTexDBContext context)
+        /// <param name="contactoRepository">Repositorio de contactos.</param>
+        public ContactoController(IContacto contactoRepository)
         {
-            _context = context;
+            _contactoRepository = contactoRepository;
         }
 
         /// <summary>
-        /// Obtiene la lista de todos los contactos registrados.
+        /// Obtiene todos los contactos registrados.
         /// </summary>
-        /// <returns>Lista de objetos <see cref="Contacto"/>.</returns>
-        /// <response code="200">Lista de contactos obtenida correctamente.</response>
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Contacto>>> GetContactos()
+        /// <returns>Lista de contactos.</returns>
+        [HttpGet("GetContactos")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetContactos()
         {
-            return await _context.Contactos.ToListAsync();
-        }
-
-        /// <summary>
-        /// Obtiene un contacto específico por su identificador.
-        /// </summary>
-        /// <param name="id">Identificador del contacto.</param>
-        /// <returns>Un objeto <see cref="Contacto"/> si se encuentra; de lo contrario, <see cref="NotFound"/>.</returns>
-        /// <response code="200">Contacto encontrado.</response>
-        /// <response code="404">Contacto no encontrado.</response>
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Contacto>> GetContacto(int id)
-        {
-            var contacto = await _context.Contactos.FindAsync(id);
-
-            if (contacto == null)
+            try
             {
-                return NotFound();
+                var contactos = await _contactoRepository.GetAllAsync();
+                return Ok(contactos);
             }
-
-            return contacto;
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Error al obtener los contactos: {ex.Message}");
+            }
         }
 
         /// <summary>
-        /// Crea un nuevo contacto en la base de datos.
+        /// Obtiene un contacto por su ID.
         /// </summary>
-        /// <param name="contacto">Objeto <see cref="Contacto"/> con los datos del nuevo contacto.</param>
-        /// <returns>El contacto creado con una respuesta 201 y la ubicación del recurso.</returns>
-        /// <response code="201">Contacto creado correctamente.</response>
-        [HttpPost]
-        public async Task<ActionResult<Contacto>> PostContacto(Contacto contacto)
+        /// <param name="id">ID del contacto.</param>
+        /// <returns>Objeto de contacto.</returns>
+        [HttpGet("GetContacto/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetContacto(int id)
         {
-            _context.Contactos.Add(contacto);
-            await _context.SaveChangesAsync();
+            try
+            {
+                var contacto = await _contactoRepository.GetByIdAsync(id);
 
-            return CreatedAtAction("GetContacto", new { id = contacto.Id }, contacto);
+                if (contacto == null)
+                    return NotFound("Contacto no encontrado.");
+
+                return Ok(contacto);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Error al obtener el contacto: {ex.Message}");
+            }
         }
 
         /// <summary>
-        /// Elimina un contacto existente por su identificador.
+        /// Crea un nuevo contacto.
         /// </summary>
-        /// <param name="id">Identificador del contacto a eliminar.</param>
-        /// <returns><see cref="NoContent"/> si se eliminó correctamente; de lo contrario, <see cref="NotFound"/>.</returns>
-        /// <response code="204">Contacto eliminado correctamente.</response>
-        /// <response code="404">Contacto no encontrado.</response>
-        [HttpDelete("{id}")]
+        /// <param name="contacto">Datos del contacto a registrar.</param>
+        /// <returns>Mensaje de éxito o error.</returns>
+        [HttpPost("PostContacto")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> PostContacto([FromBody] Contacto contacto)
+        {
+            try
+            {
+                var nuevoContacto = await _contactoRepository.CreateAsync(contacto);
+                return CreatedAtAction(nameof(GetContacto), new { id = nuevoContacto.Id }, nuevoContacto);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Error al crear el contacto: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Elimina un contacto por su ID.
+        /// </summary>
+        /// <param name="id">ID del contacto.</param>
+        /// <returns>Mensaje de éxito o error.</returns>
+        [HttpDelete("DeleteContacto/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> DeleteContacto(int id)
         {
-            var contacto = await _context.Contactos.FindAsync(id);
-            if (contacto == null)
+            try
             {
-                return NotFound();
+                var existente = await _contactoRepository.GetByIdAsync(id);
+
+                if (existente == null)
+                    return NotFound("Contacto no encontrado.");
+
+                await _contactoRepository.DeleteAsync(id);
+                return Ok("Contacto eliminado correctamente.");
             }
-
-            _context.Contactos.Remove(contacto);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Error al eliminar el contacto: {ex.Message}");
+            }
         }
     }
 }

@@ -1,142 +1,102 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using proyectocountertexdefinitivo.Models;
-using Microsoft.EntityFrameworkCore;
-using proyectocountertexdefinitivo.contexto;
+using proyectocountertexdefinitivo.Repositories.Interfaces;
 
 namespace proyectocountertexdefinitivo.Controllers
 {
-    /// <summary>
-    /// Controlador para la gestión de prendas.
-    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class PrendasController : ControllerBase
     {
-        private readonly CounterTexDBContext _context;
+        private readonly IPrenda _prendaRepository;
 
-        /// <summary>
-        /// Constructor que inyecta el contexto de base de datos.
-        /// </summary>
-        /// <param name="context">Contexto de la base de datos.</param>
-        public PrendasController(CounterTexDBContext context)
+        public PrendasController(IPrenda prendaRepository)
         {
-            _context = context;
+            _prendaRepository = prendaRepository;
         }
 
-        /// <summary>
-        /// Obtiene la lista de todas las prendas.
-        /// </summary>
-        /// <returns>Lista de prendas.</returns>
-        /// <response code="200">Prendas obtenidas correctamente.</response>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Prenda>>> GetPrendas()
         {
-            return await _context.Prendas.ToListAsync();
+            try
+            {
+                var prendas = await _prendaRepository.GetAllAsync();
+                return Ok(prendas);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error al obtener las prendas: {ex.Message}");
+            }
         }
 
-        /// <summary>
-        /// Obtiene una prenda por su ID.
-        /// </summary>
-        /// <param name="id">ID de la prenda.</param>
-        /// <returns>La prenda solicitada.</returns>
-        /// <response code="200">Prenda encontrada.</response>
-        /// <response code="404">No se encontró la prenda.</response>
         [HttpGet("{id}")]
         public async Task<ActionResult<Prenda>> GetPrenda(int id)
         {
-            var prenda = await _context.Prendas.FindAsync(id);
-
-            if (prenda == null)
+            try
             {
-                return NotFound();
-            }
+                var prenda = await _prendaRepository.GetByIdAsync(id);
+                if (prenda == null)
+                    return NotFound($"No se encontró la prenda con ID {id}");
 
-            return prenda;
+                return Ok(prenda);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error al obtener la prenda: {ex.Message}");
+            }
         }
 
-        /// <summary>
-        /// Actualiza una prenda existente.
-        /// </summary>
-        /// <param name="id">ID de la prenda.</param>
-        /// <param name="prenda">Objeto prenda con datos actualizados.</param>
-        /// <returns>NoContent si se actualiza correctamente.</returns>
-        /// <response code="204">Actualización exitosa.</response>
-        /// <response code="400">ID de la URL no coincide con el del objeto.</response>
-        /// <response code="404">Prenda no encontrada.</response>
+        [HttpPost]
+        public async Task<ActionResult<Prenda>> PostPrenda(Prenda prenda)
+        {
+            try
+            {
+                var nuevaPrenda = await _prendaRepository.CreateAsync(prenda);
+                return CreatedAtAction(nameof(GetPrenda), new { id = nuevaPrenda.Id }, nuevaPrenda);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error al crear la prenda: {ex.Message}");
+            }
+        }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> PutPrenda(int id, Prenda prenda)
         {
             if (id != prenda.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(prenda).State = EntityState.Modified;
+                return BadRequest("El ID de la URL no coincide con el ID de la prenda.");
 
             try
             {
-                await _context.SaveChangesAsync();
+                var existente = await _prendaRepository.GetByIdAsync(id);
+                if (existente == null)
+                    return NotFound($"No se encontró la prenda con ID {id}");
+
+                await _prendaRepository.UpdateAsync(prenda);
+                return Ok($"Prenda con ID {id} actualizada correctamente.");
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception ex)
             {
-                if (!PrendaExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return StatusCode(500, $"Error al actualizar la prenda: {ex.Message}");
             }
-
-            return NoContent();
         }
 
-        /// <summary>
-        /// Crea una nueva prenda.
-        /// </summary>
-        /// <param name="prenda">Objeto prenda a crear.</param>
-        /// <returns>La prenda creada.</returns>
-        /// <response code="201">Prenda creada correctamente.</response>
-        [HttpPost]
-        public async Task<ActionResult<Prenda>> PostPrenda(Prenda prenda)
-        {
-            _context.Prendas.Add(prenda);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetPrenda", new { id = prenda.Id }, prenda);
-        }
-
-        /// <summary>
-        /// Elimina una prenda por su ID.
-        /// </summary>
-        /// <param name="id">ID de la prenda a eliminar.</param>
-        /// <returns>NoContent si se elimina correctamente.</returns>
-        /// <response code="204">Prenda eliminada correctamente.</response>
-        /// <response code="404">Prenda no encontrada.</response>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePrenda(int id)
         {
-            var prenda = await _context.Prendas.FindAsync(id);
-            if (prenda == null)
+            try
             {
-                return NotFound();
+                var existente = await _prendaRepository.GetByIdAsync(id);
+                if (existente == null)
+                    return NotFound($"No se encontró la prenda con ID {id}");
+
+                await _prendaRepository.DeleteAsync(id);
+                return Ok($"Prenda con ID {id} eliminada correctamente.");
             }
-
-            _context.Prendas.Remove(prenda);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        /// <summary>
-        /// Verifica si una prenda existe en la base de datos.
-        /// </summary>
-        /// <param name="id">ID de la prenda.</param>
-        /// <returns>true si existe, false si no.</returns>
-        private bool PrendaExists(int id)
-        {
-            return _context.Prendas.Any(e => e.Id == id);
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error al eliminar la prenda: {ex.Message}");
+            }
         }
     }
 }

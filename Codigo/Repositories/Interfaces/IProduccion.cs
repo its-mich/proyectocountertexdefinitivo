@@ -11,7 +11,7 @@ namespace proyectocountertexdefinitivo.Repositories.Interfaces
         /// Obtiene todas las producciones.
         /// </summary>
         /// <returns>Una colección enumerable de objetos Produccion.</returns>
-        Task<IEnumerable<Produccion>> GetAllAsync();
+        Task<IEnumerable<object>> GetAllAsync();
 
         /// <summary>
         /// Obtiene una producción por su identificador.

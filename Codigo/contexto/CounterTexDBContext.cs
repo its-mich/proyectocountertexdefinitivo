@@ -203,26 +203,28 @@ namespace proyectocountertexdefinitivo.contexto
             modelBuilder.Entity<Meta>(entity =>
             {
                 entity.HasKey(e => e.Id);
+
                 entity.Property(e => e.Fecha).HasColumnType("date");
-                entity.Property(e => e.MetaCorte);
-                entity.Property(e => e.ProduccionReal);
                 entity.Property(e => e.FechaHora).HasColumnType("datetime");
                 entity.Property(e => e.Mensaje).HasMaxLength(500);
 
                 entity.HasOne(e => e.Usuario)
-                      .WithMany()
-                      .HasForeignKey(e => e.UsuarioId)
-                      .OnDelete(DeleteBehavior.Restrict);
+                    .WithMany(u => u.MetasAsignadas)
+                    .HasForeignKey(e => e.UsuarioId)
+                    .HasConstraintName("FK_Meta_Usuario_Asignado")
+                    .OnDelete(DeleteBehavior.Restrict);
 
                 entity.HasOne(e => e.Remitente)
-                      .WithMany()
-                      .HasForeignKey(e => e.RemitenteId)
-                      .OnDelete(DeleteBehavior.Restrict);
+                    .WithMany(u => u.MetasEnviadas)
+                    .HasForeignKey(e => e.RemitenteId)
+                    .HasConstraintName("FK_Meta_Usuario_Remitente")
+                    .OnDelete(DeleteBehavior.Restrict);
 
                 entity.HasOne(e => e.Destinatario)
-                      .WithMany()
-                      .HasForeignKey(e => e.DestinatarioId)
-                      .OnDelete(DeleteBehavior.Restrict);
+                    .WithMany(u => u.MetasRecibidas)
+                    .HasForeignKey(e => e.DestinatarioId)
+                    .HasConstraintName("FK_Meta_Usuario_Destinatario")
+                    .OnDelete(DeleteBehavior.Restrict);
             });
 
             // Configuración para Mensajes Chat
@@ -231,12 +233,10 @@ namespace proyectocountertexdefinitivo.contexto
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.FechaHora).HasColumnType("datetime");
                 entity.Property(e => e.Mensaje).IsRequired();
-
                 entity.HasOne(e => e.Remitente)
                       .WithMany(u => u.MensajesEnviados)
                       .HasForeignKey(e => e.RemitenteId)
                       .OnDelete(DeleteBehavior.Restrict);
-
                 entity.HasOne(e => e.Destinatario)
                       .WithMany(u => u.MensajesRecibidos)
                       .HasForeignKey(e => e.DestinatarioId)

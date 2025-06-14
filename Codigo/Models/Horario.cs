@@ -1,4 +1,6 @@
-﻿namespace proyectocountertexdefinitivo.Models
+﻿using System.Text.Json.Serialization;
+
+namespace proyectocountertexdefinitivo.Models
 {
     /// <summary>
     /// Representa un horario registrado para un empleado, indicando tipo, hora y fecha.
@@ -38,6 +40,7 @@
         /// <summary>
         /// Referencia al usuario (empleado) relacionado con este horario.
         /// </summary>
-        public Usuario Usuario { get; set; }
+        [JsonIgnore]
+        public Usuario? Usuario { get; set; }
     }
 }

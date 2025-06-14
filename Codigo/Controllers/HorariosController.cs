@@ -1,148 +1,124 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using proyectocountertexdefinitivo.contexto;
 using proyectocountertexdefinitivo.Models;
 using proyectocountertexdefinitivo.Repositories.Interfaces;
 
 namespace proyectocountertexdefinitivo.Controllers
 {
     /// <summary>
-    /// Controlador que gestiona la asignación y consulta de horarios de los empleados.
+    /// Controlador para gestionar los horarios en el sistema CounterTex.
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class HorariosController : ControllerBase
     {
-        private readonly CounterTexDBContext _context;
+        private readonly IHorario _horarioRepository;
 
         /// <summary>
-        /// Constructor que recibe el contexto de base de datos.
+        /// Constructor que inyecta la interfaz del repositorio de horarios.
         /// </summary>
-        /// <param name="context">Contexto de la base de datos de CounterTex.</param>
-        public HorariosController(CounterTexDBContext context)
+        /// <param name="horarioRepository">Instancia del repositorio IHorario.</param>
+        public HorariosController(IHorario horarioRepository)
         {
-            _context = context;
+            _horarioRepository = horarioRepository;
         }
 
         /// <summary>
-        /// Obtiene la lista de todos los horarios registrados.
+        /// Obtiene todos los horarios.
         /// </summary>
-        /// <returns>Una lista de objetos <see cref="HorarioDTO"/> con información del horario y empleado.</returns>
-        /// <response code="200">Lista obtenida correctamente.</response>
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<HorarioDTO>>> GetHorarios()
+        [HttpGet("GetHorarios")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetHorarios()
         {
-            var horarios = await _context.Horarios
-                .Include(h => h.Usuario)
-                .Select(h => new HorarioDTO
-                {
-                    EmpleadoId = h.EmpleadoId,
-                    NombreEmpleado = h.Usuario.Nombre,
-                    Fecha = h.Fecha,
-                    Tipo = h.Tipo,
-                    Hora = h.Hora,
-                    Observaciones = h.Observaciones
-                })
-                .ToListAsync();
-
-            return Ok(horarios);
+            try
+            {
+                var horarios = await _horarioRepository.GetAllAsync();
+                return Ok(horarios);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
         }
 
         /// <summary>
-        /// Obtiene los detalles de un horario específico por su ID.
+        /// Obtiene un horario por su ID.
         /// </summary>
         /// <param name="id">Identificador del horario.</param>
-        /// <returns>Un objeto <see cref="HorarioDTO"/> si existe, de lo contrario, <see cref="NotFound"/>.</returns>
-        /// <response code="200">Horario encontrado.</response>
-        /// <response code="404">Horario no encontrado.</response>
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetHorarioPorId(int id)
+        [HttpGet("GetHorario/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetHorario(int id)
         {
-            var horario = await _context.Horarios
-                .Include(h => h.Usuario)
-                .FirstOrDefaultAsync(h => h.HorarioId == id);
+            try
+            {
+                var horario = await _horarioRepository.GetByIdAsync(id);
+                if (horario == null)
+                    return NotFound($"No se encontró un horario con el ID {id}");
 
+                return Ok(horario);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Crea un nuevo horario.
+        /// </summary>
+        /// <param name="horario">Objeto Horario a crear.</param>
+        [HttpPost("PostHorario")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> PostHorario([FromBody] Horario horario)
+        {
             if (horario == null)
-                return NotFound();
+                return BadRequest("El objeto horario no puede ser nulo.");
 
-            var horarioDto = new HorarioDTO
+            // Validación mínima para campos requeridos
+            if (horario.EmpleadoId <= 0 || string.IsNullOrWhiteSpace(horario.Tipo))
+                return BadRequest("EmpleadoId y Tipo son obligatorios.");
+
+            try
             {
-                EmpleadoId = horario.EmpleadoId,
-                NombreEmpleado = horario.Usuario?.Nombre,
-                Fecha = horario.Fecha,
-                Tipo = horario.Tipo,
-                Hora = horario.Hora,
-                Observaciones = horario.Observaciones
-            };
+                // IMPORTANTE: Ignorar navegación 'Usuario' si viene en el body
+                horario.Usuario = null;
 
-            return Ok(horarioDto);
+                var creado = await _horarioRepository.CreateAsync(horario);
+                return CreatedAtAction(nameof(GetHorario), new { id = creado.HorarioId }, creado);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Error al crear el horario: {ex.Message}");
+            }
         }
 
         /// <summary>
-        /// Crea un nuevo registro de horario para un empleado.
+        /// Elimina un horario por su ID.
         /// </summary>
-        /// <param name="horarioDto">Objeto <see cref="HorarioDTO"/> con la información del horario.</param>
-        /// <returns>El horario creado.</returns>
-        /// <response code="201">Horario creado correctamente.</response>
-        /// <response code="404">Usuario no encontrado.</response>
-        /// <response code="409">Ya existe un horario para esa fecha, tipo y empleado.</response>
-        [HttpPost]
-        public async Task<ActionResult<HorarioDTO>> PostHorario(HorarioDTO horarioDto)
-        {
-            var usuario = await _context.Usuarios.FindAsync(horarioDto.EmpleadoId);
-            if (usuario == null)
-                return NotFound($"No se encontró un usuario con ID {horarioDto.EmpleadoId}.");
-
-            var horarioExistente = await _context.Horarios.FirstOrDefaultAsync(h =>
-                h.EmpleadoId == horarioDto.EmpleadoId &&
-                h.Fecha.Date == horarioDto.Fecha.Date &&
-                h.Tipo.ToLower() == horarioDto.Tipo.ToLower());
-
-            if (horarioExistente != null)
-                return Conflict("Ya existe un horario para ese empleado, fecha y tipo.");
-
-            var horario = new Horario
-            {
-                EmpleadoId = horarioDto.EmpleadoId,
-                Fecha = horarioDto.Fecha.Date,
-                Tipo = horarioDto.Tipo.ToLower(),
-                Hora = horarioDto.Hora,
-                Observaciones = horarioDto.Observaciones
-            };
-
-            _context.Horarios.Add(horario);
-            await _context.SaveChangesAsync();
-
-            var resultado = new HorarioDTO
-            {
-                EmpleadoId = horario.EmpleadoId,
-                NombreEmpleado = usuario.Nombre,
-                Fecha = horario.Fecha,
-                Tipo = horario.Tipo,
-                Hora = horario.Hora,
-                Observaciones = horario.Observaciones
-            };
-
-            return CreatedAtAction(nameof(GetHorarios), new { id = horario.EmpleadoId }, resultado);
-        }
-
-        /// <summary>
-        /// Elimina un horario existente por su ID.
-        /// </summary>
-        /// <param name="id">Identificador del horario.</param>
-        /// <returns>Respuesta 204 si se eliminó correctamente o 404 si no se encontró.</returns>
-        /// <response code="204">Horario eliminado correctamente.</response>
-        /// <response code="404">Horario no encontrado.</response>
-        [HttpDelete("{id}")]
+        /// <param name="id">Identificador del horario a eliminar.</param>
+        [HttpDelete("DeleteHorario/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> DeleteHorario(int id)
         {
-            var horario = await _context.Horarios.FindAsync(id);
-            if (horario == null)
-                return NotFound();
+            try
+            {
+                var horario = await _horarioRepository.GetByIdAsync(id);
+                if (horario == null)
+                    return NotFound($"No se encontró un horario con el ID {id}");
 
-            _context.Horarios.Remove(horario);
-            await _context.SaveChangesAsync();
-            return NoContent();
+                await _horarioRepository.DeleteAsync(id);
+                return Ok($"Horario con ID {id} eliminado correctamente.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error al eliminar el horario: {ex.Message}");
+            }
         }
     }
 }

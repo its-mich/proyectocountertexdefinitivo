@@ -31,6 +31,6 @@ namespace proyectocountertexdefinitivo.Models
         /// Colección de producciones asociadas a esta prenda.
         /// </summary>
         [JsonIgnore]
-        public ICollection<Produccion> Producciones { get; set; }
+        public ICollection<Produccion>? Producciones { get; set; }
     }
 }

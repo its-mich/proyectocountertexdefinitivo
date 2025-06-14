@@ -20,8 +20,6 @@ builder.Services.AddExternal(builder.Configuration);
 builder.Services.AddDbContext<CounterTexDBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// 🧩 Inyección de dependencias
-builder.Services.AddScoped<IUsuarios, UsuarioRepository>();
 
 // 🔁 Conversión para TimeSpan en JSON (POST/GET desde Swagger)
 builder.Services.AddControllers()

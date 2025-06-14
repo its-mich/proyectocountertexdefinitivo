@@ -114,7 +114,7 @@ CREATE TABLE MensajesChat (
 GO
 
 -- Tabla: Contacto
-CREATE TABLE Contacto (
+CREATE TABLE Contactos (
     Id INT PRIMARY KEY IDENTITY(1,1),
     NombreCompleto NVARCHAR(100),
     Telefono NVARCHAR(20),
@@ -265,7 +265,7 @@ VALUES
 GO
 
 -- Contacto
-INSERT INTO Contacto (NombreCompleto, Telefono, Correo, Observacion)
+INSERT INTO Contactos (NombreCompleto, Telefono, Correo, Observacion)
 VALUES 
 ('Andres López', '3001234567', 'andres.lopez@proveedor.com', 'Posible proveedor de insumos.'),
 ('Maria Torres', '3017654321', 'maria.torres@proveedor.com', 'Contacto para nuevos diseños.'),
