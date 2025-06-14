@@ -132,6 +132,7 @@ namespace proyectocountertexdefinitivo.contexto
                 entity.Property(e => e.Nombre).HasMaxLength(100).IsRequired();
                 entity.Property(e => e.Genero).HasMaxLength(20);
                 entity.Property(e => e.Color).HasMaxLength(50);
+                entity.Property(e => e.CantidadPrendas);
             });
 
             // Configuración para la entidad Operacion

@@ -28,6 +28,11 @@ namespace proyectocountertexdefinitivo.Models
         public string Color { get; set; }
 
         /// <summary>
+        /// Cantidad total disponible o producida de esta prenda.
+        /// </summary>
+        public int CantidadPrendas { get; set; }
+
+        /// <summary>
         /// Colección de producciones asociadas a esta prenda.
         /// </summary>
         [JsonIgnore]

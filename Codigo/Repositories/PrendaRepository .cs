@@ -58,6 +58,7 @@ namespace proyectocountertexdefinitivo.Repositories
                 existente.Nombre = prenda.Nombre;
                 existente.Genero = prenda.Genero;
                 existente.Color = prenda.Color;
+                existente.CantidadPrendas = prenda.CantidadPrendas;
 
                 await _context.SaveChangesAsync();
             }
