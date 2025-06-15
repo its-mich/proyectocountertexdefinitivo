@@ -26,14 +26,14 @@ namespace proyectocountertexdefinitivo.Repositories
         /// Obtiene todos los contactos registrados en la base de datos.
         /// </summary>
         /// <returns>Una colección de objetos <see cref="Contacto"/>.</returns>
-        public async Task<IEnumerable<Contacto>> GetAllAsync() => await _context.Contacto.ToListAsync();
+        public async Task<IEnumerable<Contacto>> GetAllAsync() => await _context.Contactos.ToListAsync();
 
         /// <summary>
         /// Obtiene un contacto por su identificador único.
         /// </summary>
         /// <param name="id">Identificador del contacto a buscar.</param>
         /// <returns>El contacto encontrado o null si no existe.</returns>
-        public async Task<Contacto> GetByIdAsync(int id) => await _context.Contacto.FindAsync(id);
+        public async Task<Contacto> GetByIdAsync(int id) => await _context.Contactos.FindAsync(id);
 
         /// <summary>
         /// Crea un nuevo contacto en la base de datos.
@@ -42,7 +42,7 @@ namespace proyectocountertexdefinitivo.Repositories
         /// <returns>El contacto creado con su Id asignado.</returns>
         public async Task<Contacto> CreateAsync(Contacto contacto)
         {
-            _context.Contacto.Add(contacto);
+            _context.Contactos.Add(contacto);
             await _context.SaveChangesAsync();
             return contacto;
         }
@@ -53,10 +53,10 @@ namespace proyectocountertexdefinitivo.Repositories
         /// <param name="id">Identificador del contacto a eliminar.</param>
         public async Task DeleteAsync(int id)
         {
-            var contacto = await _context.Contacto.FindAsync(id);
+            var contacto = await _context.Contactos.FindAsync(id);
             if (contacto != null)
             {
-                _context.Contacto.Remove(contacto);
+                _context.Contactos.Remove(contacto);
                 await _context.SaveChangesAsync();
             }
         }

@@ -52,8 +52,16 @@ namespace proyectocountertexdefinitivo.Repositories
         /// <param name="prenda">Objeto <see cref="Prenda"/> con los datos actualizados.</param>
         public async Task UpdateAsync(Prenda prenda)
         {
-            _context.Entry(prenda).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
+            var existente = await _context.Prendas.FindAsync(prenda.Id);
+            if (existente != null)
+            {
+                existente.Nombre = prenda.Nombre;
+                existente.Genero = prenda.Genero;
+                existente.Color = prenda.Color;
+                existente.CantidadPrendas = prenda.CantidadPrendas;
+
+                await _context.SaveChangesAsync();
+            }
         }
 
         /// <summary>

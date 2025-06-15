@@ -5,46 +5,51 @@ using proyectocountertexdefinitivo.Repositories.Interfaces;
 
 namespace proyectocountertexdefinitivo.Repositories.repositories
 {
-    /// <summary>
-    /// Repositorio que gestiona las operaciones CRUD para la entidad <see cref="Produccion"/>.
-    /// </summary>
     public class ProduccionRepository : IProduccion
     {
         private readonly CounterTexDBContext _context;
 
-        /// <summary>
-        /// Constructor que recibe el contexto de base de datos.
-        /// </summary>
-        /// <param name="context">Instancia del contexto <see cref="CounterTexDBContext"/>.</param>
         public ProduccionRepository(CounterTexDBContext context)
         {
             _context = context;
         }
 
-        /// <summary>
-        /// Obtiene todas las producciones registradas.
-        /// </summary>
-        /// <returns>Una lista de objetos <see cref="Produccion"/>.</returns>
-        public async Task<IEnumerable<Produccion>> GetAllAsync()
+        public async Task<IEnumerable<object>> GetAllAsync()
         {
-            return await _context.Producciones.ToListAsync();
+            return await _context.Producciones
+                .Include(p => p.Usuario)
+                .Include(p => p.Prenda)
+                .Select(p => new
+                {
+                    p.Id,
+                    p.Fecha,
+                    p.TotalValor,
+                    p.UsuarioId,
+                    Usuario = new
+                    {
+                        p.Usuario.Id,
+                        p.Usuario.Nombre
+                    },
+                    p.PrendaId,
+                    Prenda = new
+                    {
+                        p.Prenda.Id,
+                        p.Prenda.Nombre
+                    }
+                })
+                .ToListAsync();
         }
 
-        /// <summary>
-        /// Obtiene una producción por su identificador.
-        /// </summary>
-        /// <param name="id">Identificador de la producción.</param>
-        /// <returns>El objeto <see cref="Produccion"/> correspondiente o null si no existe.</returns>
         public async Task<Produccion> GetByIdAsync(int id)
         {
             return await _context.Producciones.FindAsync(id);
         }
 
-        /// <summary>
-        /// Crea una nueva producción en la base de datos.
-        /// </summary>
-        /// <param name="produccion">Objeto <see cref="Produccion"/> a registrar.</param>
-        /// <returns>El objeto <see cref="Produccion"/> creado.</returns>
+        public async Task<Operacion?> ObtenerOperacionPorId(int operacionId)
+        {
+            return await _context.Operaciones.FindAsync(operacionId);
+        }
+
         public async Task<Produccion> CreateAsync(Produccion produccion)
         {
             _context.Producciones.Add(produccion);
@@ -52,11 +57,6 @@ namespace proyectocountertexdefinitivo.Repositories.repositories
             return produccion;
         }
 
-        /// <summary>
-        /// Actualiza una producción existente.
-        /// </summary>
-        /// <param name="produccion">Objeto <see cref="Produccion"/> con los datos actualizados.</param>
-        /// <returns>True si la actualización fue exitosa, false en caso contrario.</returns>
         public async Task<bool> UpdateAsync(Produccion produccion)
         {
             var existing = await _context.Producciones.FindAsync(produccion.Id);
@@ -68,23 +68,23 @@ namespace proyectocountertexdefinitivo.Repositories.repositories
             return true;
         }
 
-        /// <summary>
-        /// Elimina una producción por su identificador.
-        /// </summary>
-        /// <param name="id">Identificador de la producción a eliminar.</param>
-        /// <returns>True si la eliminación fue exitosa, false en caso contrario.</returns>
         public async Task<bool> DeleteAsync(int id)
         {
-            var produccion = await _context.Producciones.FindAsync(id);
-            if (produccion == null)
-            {
-                return false;
-            }
+            var produccion = await _context.Producciones
+                .Include(p => p.ProduccionDetalles)
+                .FirstOrDefaultAsync(p => p.Id == id);
 
+            if (produccion == null)
+                return false;
+
+
+            _context.ProduccionDetalles.RemoveRange(produccion.ProduccionDetalles);
             _context.Producciones.Remove(produccion);
+
             await _context.SaveChangesAsync();
             return true;
         }
+
         public async Task<object> ObtenerResumenMensual(int anio, int mes)
         {
             var resumen = await _context.ProduccionDetalles
@@ -98,6 +98,31 @@ namespace proyectocountertexdefinitivo.Repositories.repositories
                 .ToListAsync();
 
             return resumen.Any() ? resumen : null;
+        }
+        public async Task<Produccion?> CrearProduccionConDetallesAsync(Produccion produccion)
+        {
+            if (produccion == null || produccion.ProduccionDetalles == null || !produccion.ProduccionDetalles.Any())
+                return null;
+
+            decimal totalProduccion = 0;
+
+            foreach (var detalle in produccion.ProduccionDetalles)
+            {
+                var operacion = await _context.Operaciones.FindAsync(detalle.OperacionId);
+                if (operacion == null)
+                    return null;
+
+                detalle.ValorTotal = operacion.ValorUnitario * detalle.Cantidad;
+                totalProduccion += detalle.ValorTotal ?? 0;
+            }
+
+            produccion.TotalValor = totalProduccion;
+
+            // Se agrega la producción con sus detalles en cascada
+            _context.Producciones.Add(produccion);
+            await _context.SaveChangesAsync();
+
+            return produccion;
         }
     }
 }

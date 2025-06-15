@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using proyectocountertexdefinitivo.contexto;
 using proyectocountertexdefinitivo.Models;
 using proyectocountertexdefinitivo.Repositories.Interfaces;
 
@@ -13,126 +11,116 @@ namespace proyectocountertexdefinitivo.Controllers
     [ApiController]
     public class OperacionController : ControllerBase
     {
-        private readonly CounterTexDBContext _context;
+        private readonly IOperacion _operacionRepository;
 
         /// <summary>
-        /// Constructor que recibe el contexto de base de datos.
+        /// Constructor con inyección del repositorio de operaciones.
         /// </summary>
-        /// <param name="context">Contexto de base de datos.</param>
-        public OperacionController(CounterTexDBContext context)
+        public OperacionController(IOperacion operacionRepository)
         {
-            _context = context;
+            _operacionRepository = operacionRepository;
         }
 
         /// <summary>
         /// Obtiene todas las operaciones registradas.
         /// </summary>
-        /// <returns>Lista de operaciones.</returns>
-        /// <response code="200">Operaciones obtenidas correctamente.</response>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Operacion>>> GetOperacion()
         {
-            return await _context.Operaciones.ToListAsync();
+            try
+            {
+                var operaciones = await _operacionRepository.GetAllAsync();
+                return Ok(operaciones);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error al obtener las operaciones: {ex.Message}");
+            }
         }
 
         /// <summary>
         /// Obtiene una operación por su ID.
         /// </summary>
-        /// <param name="id">ID de la operación.</param>
-        /// <returns>La operación encontrada o 404 si no existe.</returns>
-        /// <response code="200">Operación encontrada.</response>
-        /// <response code="404">No se encontró la operación.</response>
         [HttpGet("{id}")]
         public async Task<ActionResult<Operacion>> GetOperacion(int id)
         {
-            var operacion = await _context.Operaciones.FindAsync(id);
-
-            if (operacion == null)
+            try
             {
-                return NotFound();
+                var operacion = await _operacionRepository.GetByIdAsync(id);
+                if (operacion == null)
+                    return NotFound($"No se encontró la operación con ID {id}.");
+
+                return Ok(operacion);
             }
-
-            return operacion;
-        }
-
-        /// <summary>
-        /// Actualiza los datos de una operación existente.
-        /// </summary>
-        /// <param name="id">ID de la operación a actualizar.</param>
-        /// <param name="dto">Datos actualizados de la operación.</param>
-        /// <returns>NoContent si se actualiza correctamente.</returns>
-        /// <response code="204">Actualización exitosa.</response>
-        /// <response code="400">El ID no coincide con el DTO.</response>
-        /// <response code="404">Operación no encontrada.</response>
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutOperacion(int id, OperacionUpdateDTO dto)
-        {
-            if (id != dto.Id)
-                return BadRequest();
-
-            var operacion = await _context.Operaciones.FindAsync(id);
-            if (operacion == null)
-                return NotFound();
-
-            operacion.Nombre = dto.Nombre;
-            operacion.ValorUnitario = dto.ValorUnitario;
-
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error al obtener la operación: {ex.Message}");
+            }
         }
 
         /// <summary>
         /// Crea una nueva operación.
         /// </summary>
-        /// <param name="dto">Datos de la operación a crear.</param>
-        /// <returns>La operación creada.</returns>
-        /// <response code="201">Operación creada exitosamente.</response>
         [HttpPost]
-        public async Task<IActionResult> PostOperacion(OperacionCreateDTO dto)
+        public async Task<IActionResult> PostOperacion(Operacion operacion)
         {
-            var operacion = new Operacion
+            try
             {
-                Nombre = dto.Nombre,
-                ValorUnitario = dto.ValorUnitario
-            };
+                var operacionCreada = await _operacionRepository.CreateAsync(operacion);
+                return CreatedAtAction(nameof(GetOperacion), new { id = operacionCreada.Id }, operacionCreada);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error al crear la operación: {ex.Message}");
+            }
+        }
 
-            _context.Operaciones.Add(operacion);
-            await _context.SaveChangesAsync();
+        /// <summary>
+        /// Actualiza los datos de una operación existente.
+        /// </summary>
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutOperacion(int id, Operacion operacion)
+        {
+            if (id != operacion.Id)
+                return BadRequest("El ID de la operación no coincide con el proporcionado en la ruta.");
 
-            return CreatedAtAction(nameof(GetOperacion), new { id = operacion.Id }, operacion);
+            try
+            {
+                var existente = await _operacionRepository.GetByIdAsync(id);
+                if (existente == null)
+                    return NotFound($"No se encontró la operación con ID {id}.");
+
+                existente.Nombre = operacion.Nombre;
+                existente.ValorUnitario = operacion.ValorUnitario;
+
+                await _operacionRepository.UpdateAsync(existente);
+                return Ok("Operación actualizada correctamente.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error al actualizar la operación: {ex.Message}");
+            }
         }
 
         /// <summary>
         /// Elimina una operación por su ID.
         /// </summary>
-        /// <param name="id">ID de la operación a eliminar.</param>
-        /// <returns>NoContent si se elimina correctamente.</returns>
-        /// <response code="204">Operación eliminada correctamente.</response>
-        /// <response code="404">Operación no encontrada.</response>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteOperacion(int id)
         {
-            var operacion = await _context.Operaciones.FindAsync(id);
-            if (operacion == null)
+            try
             {
-                return NotFound();
+                var operacion = await _operacionRepository.GetByIdAsync(id);
+                if (operacion == null)
+                    return NotFound($"No se encontró la operación con ID {id}.");
+
+                await _operacionRepository.DeleteAsync(id);
+                return Ok($"Operación con ID {id} eliminada correctamente.");
             }
-
-            _context.Operaciones.Remove(operacion);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        /// <summary>
-        /// Verifica si una operación existe por su ID.
-        /// </summary>
-        /// <param name="id">ID de la operación.</param>
-        /// <returns>true si existe; false en caso contrario.</returns>
-        private bool OperacionExists(int id)
-        {
-            return _context.Operaciones.Any(e => e.Id == id);
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error al eliminar la operación: {ex.Message}");
+            }
         }
     }
 }
