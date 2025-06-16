@@ -85,5 +85,7 @@ namespace proyectocountertexdefinitivo.Repositories.Interfaces
         /// <param name="codigo">Código que se enviará.</param>
         /// <returns>True si el correo fue enviado exitosamente.</returns>
         Task<bool> EnviarCorreo(string destino, string codigo);
+        Task<List<Rol>> GetRolesAsync();
+
     }
 }

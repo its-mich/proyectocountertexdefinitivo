@@ -35,14 +35,30 @@ namespace proyectocountertexdefinitivo.Repositories
                     RolId = u.RolId,
                     RolNombre = u.Rol != null ? u.Rol.Nombre : "Sin rol",
                     Edad = u.Edad,
-                    Telefono = u.Telefono
+                    Telefono = u.Telefono,
+                    Contraseña = ""
                 })
                 .ToListAsync();
         }
 
         public async Task<Usuario> GetUsuarioByIdAsync(int id)
         {
-            return await _context.Usuarios.FirstOrDefaultAsync(u => u.Id == id);
+            return await _context.Usuarios
+                .Include(u => u.Rol)
+                .Where(u => u.Id == id)
+                .Select(u => new Usuario
+                {
+                    Id = u.Id,
+                    Nombre = u.Nombre,
+                    Correo = u.Correo,
+                    Documento = u.Documento,
+                    RolId = u.RolId,
+                    RolNombre = u.Rol != null ? u.Rol.Nombre : "Sin rol",
+                    Edad = u.Edad,
+                    Telefono = u.Telefono,
+                    Contraseña = ""
+                })
+                .FirstOrDefaultAsync();
         }
 
         public async Task<Usuario?> GetUsuarioByCorreoAsync(string correo)
@@ -255,6 +271,16 @@ namespace proyectocountertexdefinitivo.Repositories
             _context.Usuarios.Remove(usuario);
             await _context.SaveChangesAsync();
             return true;
+        }
+        public async Task<List<Rol>> GetRolesAsync()
+        {
+            return await _context.Roles
+                .Select(r => new Rol
+                {
+                    Id = r.Id,
+                    Nombre = r.Nombre
+                })
+                .ToListAsync();
         }
     }
 }

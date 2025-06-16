@@ -255,5 +255,23 @@ namespace proyectocountertexdefinitivo.Controllers
                 return StatusCode(500, new { message = "Error al restablecer la contraseña", error = ex.Message });
             }
         }
+
+        /// <summary>Obtiene todos los roles disponibles.</summary>
+        [HttpGet("GetRoles")]
+        [Authorize(Roles = "Administrador")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetRoles()
+        {
+            try
+            {
+                var roles = await _usuarios.GetRolesAsync();
+                return Ok(roles);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error al obtener los roles", error = ex.Message });
+            }
+        }
     }
 }
