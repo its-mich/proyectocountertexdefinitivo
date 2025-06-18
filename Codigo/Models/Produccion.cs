@@ -14,7 +14,7 @@ namespace proyectocountertexdefinitivo.Models
         public decimal TotalValor { get; set; }
         public int UsuarioId { get; set; }
         public int PrendaId { get; set; }
-
+        
         [JsonIgnore]
         public Usuario? Usuario { get; set; }
 
