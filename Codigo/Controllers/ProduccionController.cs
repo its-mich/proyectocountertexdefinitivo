@@ -118,5 +118,21 @@ namespace proyectocountertexdefinitivo.Controllers
                 return StatusCode(500, $"Error al obtener el resumen mensual: {ex.Message}");
             }
         }
+
+        /// <summary>
+        /// Obtiene todas las producciones registradas por un empleado específico.
+        /// </summary>
+        /// <param name="id">ID del empleado (usuario logueado)</param>
+        /// <returns>Lista de producciones asociadas a ese empleado</returns>
+        [HttpGet("empleado/{id}")]
+        public async Task<ActionResult<IEnumerable<Produccion>>> GetProduccionPorEmpleado(int id)
+        {
+            // Llama al método del repositorio que filtra por el usuarioId (empleado)
+            var producciones = await _produccionRepo.ObtenerProduccionesPorEmpleadoAsync(id);
+
+            // Retorna las producciones en formato JSON con estado 200 OK
+            return Ok(producciones);
+        }
+
     }
 }

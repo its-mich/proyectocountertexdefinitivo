@@ -32,5 +32,8 @@ namespace proyectocountertexdefinitivo.Repositories.Interfaces
         /// </summary>
         /// <param name="id">Identificador del horario a eliminar.</param>
         Task DeleteAsync(int id);
+
+        Task<List<Horario>> ObtenerHorariosPorEmpleadoAsync(int empleadoId);
+
     }
 }

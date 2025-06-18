@@ -120,5 +120,26 @@ namespace proyectocountertexdefinitivo.Controllers
                 return StatusCode(500, $"Error al eliminar el horario: {ex.Message}");
             }
         }
+
+
+             /// <summary>
+        /// Obtiene los horarios de un empleado por su ID.
+        /// </summary>
+        /// <param name="empleadoId">ID del empleado</param>
+        /// <returns>Lista de horarios</returns>
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Horario>>> GetHorariosPorEmpleado([FromQuery] int empleadoId)
+        {
+            if (empleadoId <= 0)
+                return BadRequest("ID de empleado inválido");
+
+            var horarios = await _horarioRepository.ObtenerHorariosPorEmpleadoAsync(empleadoId);
+
+            if (horarios == null || !horarios.Any())
+                return NotFound("No se encontraron horarios para el empleado.");
+
+            return Ok(horarios);
+        }
     }
 }
+

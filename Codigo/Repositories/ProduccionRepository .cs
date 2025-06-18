@@ -124,5 +124,27 @@ namespace proyectocountertexdefinitivo.Repositories.repositories
 
             return produccion;
         }
+
+
+        public async Task<List<Produccion>> ObtenerProduccionesPorEmpleadoAsync(int empleadoId)
+        {
+            return await _context.Producciones
+                .Include(p => p.Usuario)
+                .Include(p => p.Prenda)
+                .Where(p => p.UsuarioId == empleadoId)
+                .ToListAsync();
+        }
+
+        public async Task<Produccion?> ObtenerProduccionPorIdAsync(int id)
+        {
+            return await _context.Producciones
+                .Include(p => p.Usuario)
+                .Include(p => p.Prenda)
+                .FirstOrDefaultAsync(p => p.Id == id);
+        }
+
+
+
+
     }
 }

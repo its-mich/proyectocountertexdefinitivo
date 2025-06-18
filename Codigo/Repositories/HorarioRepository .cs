@@ -59,5 +59,14 @@ namespace proyectocountertexdefinitivo.Repositories
                 await _context.SaveChangesAsync();
             }
         }
+
+        public async Task<List<Horario>> ObtenerHorariosPorEmpleadoAsync(int empleadoId)
+        {
+            return await _context.Horarios
+                .Where(h => h.EmpleadoId == empleadoId)
+                .OrderBy(h => h.Fecha)
+                .ThenBy(h => h.Hora)
+                .ToListAsync();
+        }
     }
 }

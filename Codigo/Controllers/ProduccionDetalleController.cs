@@ -79,5 +79,18 @@ namespace proyectocountertexdefinitivo.Controllers
                 return StatusCode(500, new { mensaje = "Error al eliminar el detalle de producción.", error = ex.Message });
             }
         }
+
+
+        /// <summary>
+        /// Obtiene los detalles de producción de un empleado específico.
+        /// </summary>
+        /// <param name="usuarioId">ID del usuario (empleado)</param>
+        /// <returns>Lista de ProduccionDetalle</returns>
+        [HttpGet("empleado/{usuarioId}")]
+        public async Task<ActionResult<IEnumerable<ProduccionDetalle>>> GetDetallesPorEmpleado(int usuarioId)
+        {
+            var detalles = await _produccionDetalleService.ObtenerDetallesPorEmpleadoAsync(usuarioId);
+            return Ok(detalles);
+        }
     }
 }
