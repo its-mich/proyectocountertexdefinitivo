@@ -200,8 +200,9 @@ namespace proyectocountertexdefinitivo.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> SolicitarRecuperacion([FromBody] string correo)
+        public async Task<IActionResult> SolicitarRecuperacion([FromBody] SolicitudRecuperacion solicitud)
         {
+            var correo = solicitud.Correo;
             try
             {
                 var usuario = await _usuarios.GetUsuarioByCorreoAsync(correo);
@@ -227,7 +228,7 @@ namespace proyectocountertexdefinitivo.Controllers
         }
 
         /// <summary>Restablece la contraseña usando el código de recuperación.</summary>
-        [HttpPost("RestablecerContraseña")]
+        [HttpPost("RestablecerContrasena")]
         [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

@@ -6,6 +6,7 @@ using proyectocountertexdefinitivo.Models;
 using proyectocountertexdefinitivo.Repositories.Interfaces;
 using MailKit.Net.Smtp;
 using MimeKit;
+using MailKit.Security;
 
 namespace proyectocountertexdefinitivo.Repositories
 {
@@ -96,15 +97,15 @@ namespace proyectocountertexdefinitivo.Repositories
         {
             try
             {
-                var remitente = "tucorreo@example.com";
-                var asunto = "Código de recuperación de contraseña";
+                var remitente = "soyproxgames@gmail.com";
+                var asunto = "Recuperación de contraseña - CounterTex";
 
                 var html = $@"
 <!DOCTYPE html>
 <html lang='es'>
 <head>
-  <meta charset='UTF-8' />
-  <title>Código de recuperación</title>
+  <meta charset='UTF-8'>
+  <title>Recuperación de contraseña</title>
   <style>
     body {{
       font-family: 'Segoe UI', sans-serif;
@@ -113,11 +114,11 @@ namespace proyectocountertexdefinitivo.Repositories
       padding: 0;
     }}
     .container {{
-      max-width: 500px;
+      max-width: 520px;
       margin: 40px auto;
-      background-color: white;
+      background-color: #ffffff;
       border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       overflow: hidden;
     }}
     .header {{
@@ -127,15 +128,12 @@ namespace proyectocountertexdefinitivo.Repositories
       padding: 20px;
     }}
     .header img {{
-      width: 100px;
+      width: 80px;
       margin-bottom: 10px;
     }}
     .content {{
       padding: 30px;
       color: #333;
-    }}
-    .content h2 {{
-      color: #2c3e50;
     }}
     .code-box {{
       font-size: 28px;
@@ -160,17 +158,19 @@ namespace proyectocountertexdefinitivo.Repositories
 <body>
   <div class='container'>
     <div class='header'>
-      <img src='https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Logo_OpenAI.svg/320px-Logo_OpenAI.svg.png' alt='Logo' />
-      <h1>Recuperación de Contraseña</h1>
+      <img src='https://countertex.com/images/logoredondo.png' alt='Logo' />
+      <h1>Recuperación de contraseña</h1>
     </div>
     <div class='content'>
-      <h2>Hola,</h2>
-      <p>Hemos recibido una solicitud para restablecer tu contraseña. Usa el siguiente código para continuar:</p>
+      <p>Hola,</p>
+      <p>Hemos recibido una solicitud para restablecer tu contraseña en <strong>CounterTex</strong>.</p>
+      <p>Tu código de verificación es:</p>
       <div class='code-box'>{codigo}</div>
-      <p>Este código es válido por 15 minutos. Si no solicitaste este cambio, puedes ignorar este mensaje.</p>
+      <p>Este código es válido por <strong>15 minutos</strong>.</p>
+      <p>Si no solicitaste este cambio, puedes ignorar este mensaje.</p>
     </div>
     <div class='footer'>
-      © 2025 motorX. Todos los derechos reservados.
+      © 2025 CounterTex · Todos los derechos reservados.
     </div>
   </div>
 </body>
@@ -185,18 +185,20 @@ namespace proyectocountertexdefinitivo.Repositories
                 message.Body = builder.ToMessageBody();
 
                 using var client = new SmtpClient();
-                await client.ConnectAsync("smtp.example.com", 587, false);
-                await client.AuthenticateAsync(remitente, "TU-CONTRASEÑA");
+                await client.ConnectAsync("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
+                await client.AuthenticateAsync(remitente, "m s w g q t u a n n t i b o a r"); // Usa tu app password
                 await client.SendAsync(message);
                 await client.DisconnectAsync(true);
 
                 return true;
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine("Error al enviar correo: " + ex.Message);
                 return false;
             }
         }
+
 
         public async Task<bool> PostUsuarios([FromBody] Usuario usuario)
         {
@@ -238,8 +240,7 @@ namespace proyectocountertexdefinitivo.Repositories
             existing.Edad = usuario.Edad;
             existing.RolId = usuario.RolId;
 
-            if (!string.IsNullOrEmpty(usuario.Contraseña) &&
-                !BCrypt.Net.BCrypt.Verify(usuario.Contraseña, existing.Contraseña))
+            if (!string.IsNullOrEmpty(usuario.Contraseña))
             {
                 existing.Contraseña = BCrypt.Net.BCrypt.HashPassword(usuario.Contraseña);
             }
@@ -281,6 +282,25 @@ namespace proyectocountertexdefinitivo.Repositories
                     Nombre = r.Nombre
                 })
                 .ToListAsync();
+        }
+
+        public async Task<bool> RestablecerContrasena(string correo, string codigo, string nuevaContrasena)
+        {
+            var usuario = await _context.Usuarios
+                .FirstOrDefaultAsync(u => u.Correo == correo &&
+                                          u.TokenRecuperacion == codigo &&
+                                          u.TokenExpiracion > DateTime.UtcNow);
+
+            if (usuario == null)
+                return false;
+
+            // Encripta directamente la nueva contraseña
+            usuario.Contraseña = BCrypt.Net.BCrypt.HashPassword(nuevaContrasena);
+            usuario.TokenRecuperacion = null;
+            usuario.TokenExpiracion = null;
+
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }
