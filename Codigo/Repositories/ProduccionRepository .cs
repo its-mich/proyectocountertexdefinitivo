@@ -19,23 +19,27 @@ namespace proyectocountertexdefinitivo.Repositories.repositories
             return await _context.Producciones
                 .Include(p => p.Usuario)
                 .Include(p => p.Prenda)
+                .Include(p => p.ProduccionDetalles)
+                    .ThenInclude(d => d.Operacion)
                 .Select(p => new
                 {
                     p.Id,
                     p.Fecha,
                     p.TotalValor,
                     p.UsuarioId,
-                    Usuario = new
-                    {
-                        p.Usuario.Id,
-                        p.Usuario.Nombre
-                    },
                     p.PrendaId,
-                    Prenda = new
+                    NombreUsuario = p.Usuario.Nombre,
+                    NombrePrenda = p.Prenda.Nombre,
+                    ProduccionDetalles = p.ProduccionDetalles.Select(d => new
                     {
-                        p.Prenda.Id,
-                        p.Prenda.Nombre
-                    }
+                        d.Id,
+                        d.ProduccionId,
+                        d.Cantidad,
+                        d.OperacionId,
+                        d.ValorTotal,
+                        NombreOperacion = d.Operacion.Nombre,
+                        ValorOperacion = d.ValorTotal
+                    }).ToList()
                 })
                 .ToListAsync();
         }
