@@ -15,10 +15,10 @@ namespace proyectocountertexdefinitivo.Models
         public int UsuarioId { get; set; }
         public int PrendaId { get; set; }
         
-        [JsonIgnore]
+        //[JsonIgnore]
         public Usuario? Usuario { get; set; }
 
-        [JsonIgnore]
+        //[JsonIgnore]
         public Prenda? Prenda { get; set; }
 
 

@@ -42,8 +42,11 @@ namespace proyectocountertexdefinitivo.Repositories.repositories
 
         public async Task<Produccion> GetByIdAsync(int id)
         {
-            return await _context.Producciones.FindAsync(id);
+            return await _context.Producciones
+                .Include(p => p.ProduccionDetalles) // Incluye los detalles
+                .FirstOrDefaultAsync(p => p.Id == id);
         }
+
 
         public async Task<Operacion?> ObtenerOperacionPorId(int operacionId)
         {
@@ -125,12 +128,12 @@ namespace proyectocountertexdefinitivo.Repositories.repositories
             return produccion;
         }
 
-
         public async Task<List<Produccion>> ObtenerProduccionesPorEmpleadoAsync(int empleadoId)
         {
             return await _context.Producciones
                 .Include(p => p.Usuario)
                 .Include(p => p.Prenda)
+                .Include(p => p.ProduccionDetalles) // 👈 Esto es clave
                 .Where(p => p.UsuarioId == empleadoId)
                 .ToListAsync();
         }
@@ -141,6 +144,61 @@ namespace proyectocountertexdefinitivo.Repositories.repositories
                 .Include(p => p.Usuario)
                 .Include(p => p.Prenda)
                 .FirstOrDefaultAsync(p => p.Id == id);
+        }
+
+
+        //se agrego put con su respectiva logica
+
+        public async Task<bool> ActualizarProduccionConDetallesAsync(Produccion produccion)
+        {
+            // Obtener la producción original con sus detalles
+            var produccionExistente = await _context.Producciones
+                .Include(p => p.ProduccionDetalles)
+                .FirstOrDefaultAsync(p => p.Id == produccion.Id);
+
+            if (produccionExistente == null)
+                return false;
+
+            // Actualiza propiedades principales
+            produccionExistente.Fecha = produccion.Fecha;
+            produccionExistente.TotalValor = produccion.TotalValor;
+            produccionExistente.UsuarioId = produccion.UsuarioId;
+            produccionExistente.PrendaId = produccion.PrendaId;
+
+            // Elimina detalles que ya no están
+            var detallesAEliminar = produccionExistente.ProduccionDetalles
+                .Where(d => !produccion.ProduccionDetalles.Any(pd => pd.Id == d.Id))
+                .ToList();
+
+            _context.ProduccionDetalles.RemoveRange(detallesAEliminar);
+
+            // Actualiza o agrega los detalles
+            foreach (var detalle in produccion.ProduccionDetalles)
+            {
+                var detalleExistente = produccionExistente.ProduccionDetalles
+                    .FirstOrDefault(d => d.Id == detalle.Id);
+
+                if (detalleExistente != null)
+                {
+                    // Actualizar campos del detalle
+                    detalleExistente.Cantidad = detalle.Cantidad;
+                    detalleExistente.OperacionId = detalle.OperacionId;
+                    detalleExistente.ValorTotal = detalle.ValorTotal;
+                }
+                else
+                {
+                    // Nuevo detalle
+                    produccionExistente.ProduccionDetalles.Add(new ProduccionDetalle
+                    {
+                        Cantidad = detalle.Cantidad,
+                        OperacionId = detalle.OperacionId,
+                        ValorTotal = detalle.ValorTotal
+                    });
+                }
+            }
+
+            await _context.SaveChangesAsync();
+            return true;
         }
 
 

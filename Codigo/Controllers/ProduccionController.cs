@@ -134,5 +134,28 @@ namespace proyectocountertexdefinitivo.Controllers
             return Ok(producciones);
         }
 
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> ActualizarProduccion(int id, [FromBody] Produccion produccion)
+        {
+            if (id != produccion.Id)
+                return BadRequest("El ID proporcionado no coincide con la producción.");
+
+            try
+            {
+                var actualizado = await _produccionRepo.ActualizarProduccionConDetallesAsync(produccion);
+                if (!actualizado)
+                    return NotFound($"Producción con ID {id} no encontrada.");
+
+                return Ok(new { mensaje = "Producción actualizada correctamente." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error al actualizar la producción: {ex.Message}");
+            }
+        }
+
+
+
     }
 }

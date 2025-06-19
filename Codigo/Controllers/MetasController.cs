@@ -80,5 +80,16 @@ namespace proyectocountertexdefinitivo.Controllers
                 return StatusCode(500, new { mensaje = $"Error al eliminar la meta: {ex.Message}" });
             }
         }
+        [HttpGet("PorUsuario/{usuarioId}")]
+        public async Task<IActionResult> GetMetasPorUsuario(int usuarioId)
+        {
+            var metas = await _metaRepository.GetAllAsync();
+
+            // Filtrar metas por UsuarioId
+            var filtradas = metas.Where(m => m.UsuarioId == usuarioId);
+
+            return Ok(filtradas);
+        }
+
     }
 }

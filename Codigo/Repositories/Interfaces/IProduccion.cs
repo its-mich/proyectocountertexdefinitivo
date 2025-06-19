@@ -55,5 +55,6 @@ namespace proyectocountertexdefinitivo.Repositories.Interfaces
 
         Task<List<Produccion>> ObtenerProduccionesPorEmpleadoAsync(int empleadoId);
         Task<Produccion?> ObtenerProduccionPorIdAsync(int id);
+        Task<bool> ActualizarProduccionConDetallesAsync(Produccion produccion);
     }
 }

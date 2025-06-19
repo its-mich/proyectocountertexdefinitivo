@@ -32,5 +32,9 @@ namespace proyectocountertexdefinitivo.Repositories.Interfaces
         /// </summary>
         /// <param name="id">Identificador de la meta a eliminar.</param>
         Task DeleteAsync(int id);
+
+
+        Task<IEnumerable<Meta>> GetByUsuarioIdAsync(int usuarioId);
+
     }
 }

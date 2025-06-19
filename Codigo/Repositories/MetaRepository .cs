@@ -59,5 +59,15 @@ namespace proyectocountertexdefinitivo.Repositories
                 await _context.SaveChangesAsync();
             }
         }
+
+
+        public async Task<IEnumerable<Meta>> GetByUsuarioIdAsync(int usuarioId)
+        {
+            // Asumiendo que usas EF Core y tienes un _context del tipo DbContext
+            return await _context.Metas
+                                 .Where(m => m.UsuarioId == usuarioId)
+                                 .ToListAsync();
+        }
+
     }
 }
