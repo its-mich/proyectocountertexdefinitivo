@@ -29,7 +29,7 @@ namespace proyectocountertexdefinitivo.Controllers
             }
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("GetMeta/{id}")]
         public async Task<ActionResult<Meta>> GetMeta(int id)
         {
             try
@@ -46,7 +46,7 @@ namespace proyectocountertexdefinitivo.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpPost("PostMetas")]
         public async Task<ActionResult<Meta>> PostMeta(Meta meta)
         {
             try

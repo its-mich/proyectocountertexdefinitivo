@@ -18,7 +18,7 @@ namespace proyectocountertexdefinitivo.Repositories.Interfaces
         /// </summary>
         /// <param name="id">Identificador del horario.</param>
         /// <returns>El objeto Horario correspondiente al Id proporcionado.</returns>
-        Task<Horario> GetByIdAsync(int id);
+        Task <List<Horario>> GetByIdAsync(int id);
 
         /// <summary>
         /// Crea un nuevo horario.
