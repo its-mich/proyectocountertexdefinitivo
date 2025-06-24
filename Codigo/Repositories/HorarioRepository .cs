@@ -27,6 +27,14 @@ namespace proyectocountertexdefinitivo.Repositories
         /// <returns>Una colección de objetos <see cref="Horario"/>.</returns>
         public async Task<IEnumerable<Horario>> GetAllAsync() => await _context.Horarios.ToListAsync();
 
+
+        public async Task<IEnumerable<Horario>> GetByFechaAsync(DateTime fecha)
+        {
+            return await _context.Horarios
+                .Where(h => h.Fecha.Date == fecha.Date)
+                .ToListAsync();
+        }
+
         /// <summary>
         /// Obtiene un horario específico por su identificador.
         /// </summary>
