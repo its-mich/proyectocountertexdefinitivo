@@ -52,5 +52,8 @@ namespace proyectocountertexdefinitivo.Repositories.Interfaces
         /// <param name="mes">Mes del resumen.</param>
         /// <returns>Un objeto con el resumen o null si no hay datos.</returns>
         Task<object> ObtenerResumenMensual(int anio, int mes);
+
+        Task<IEnumerable<Produccion>> GetProduccionesPorUsuarioIdAsync(int usuarioId);
+
     }
 }

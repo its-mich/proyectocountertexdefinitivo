@@ -118,5 +118,24 @@ namespace proyectocountertexdefinitivo.Controllers
                 return StatusCode(500, $"Error al obtener el resumen mensual: {ex.Message}");
             }
         }
+
+        [HttpGet("empleado/{usuarioId}")]
+        public async Task<IActionResult> GetProduccionesPorUsuario(int usuarioId)
+        {
+            try
+            {
+                var producciones = await _produccionRepo.GetProduccionesPorUsuarioIdAsync(usuarioId);
+
+                if (producciones == null || !producciones.Any())
+                    return NotFound("No hay registros de producción para este usuario.");
+
+                return Ok(producciones);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error al obtener producciones por usuario: {ex.Message}");
+            }
+        }
+
     }
 }

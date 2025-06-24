@@ -79,5 +79,20 @@ namespace proyectocountertexdefinitivo.Controllers
                 return StatusCode(500, new { mensaje = "Error al eliminar el detalle de producción.", error = ex.Message });
             }
         }
+
+        [HttpGet("por-usuario/{usuarioId}")]
+        public async Task<IActionResult> GetDetallesPorUsuario(int usuarioId)
+        {
+            try
+            {
+                var detalles = await _produccionDetalleService.GetDetallesPorUsuarioIdAsync(usuarioId);
+                return Ok(detalles);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { mensaje = "Error al obtener los detalles por usuario.", error = ex.Message });
+            }
+        }
+
     }
 }

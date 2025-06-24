@@ -18,5 +18,10 @@ namespace proyectocountertexdefinitivo.Repositories.Interfaces
         /// <param name="detalle">Detalle de producción con OperacionId y Cantidad.</param>
         /// <returns>Detalle de producción creado con el ValorTotal calculado o null si ocurre un error.</returns>
         Task<ProduccionDetalle?> CrearConCalculoAsync(ProduccionDetalle detalle);
+
+        Task<IEnumerable<ProduccionDetalle>> GetDetallesPorUsuarioIdAsync(int usuarioId);
+
     }
+
+
 }
