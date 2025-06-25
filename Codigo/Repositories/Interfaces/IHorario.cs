@@ -20,6 +20,9 @@ namespace proyectocountertexdefinitivo.Repositories.Interfaces
         /// <returns>El objeto Horario correspondiente al Id proporcionado.</returns>
         Task <List<Horario>> GetByIdAsync(int id);
 
+
+        Task<IEnumerable<Horario>> GetByFechaAsync(DateTime fecha);
+
         /// <summary>
         /// Crea un nuevo horario.
         /// </summary>

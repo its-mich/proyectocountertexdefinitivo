@@ -65,6 +65,26 @@ namespace proyectocountertexdefinitivo.Controllers
             }
         }
 
+
+
+
+        [HttpGet("GetHorariosPorFecha")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetHorariosPorFecha([FromQuery] DateTime fecha)
+        {
+            try
+            {
+                var horarios = await _horarioRepository.GetByFechaAsync(fecha);
+                return Ok(horarios);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
+        }
+
         /// <summary>
         /// Crea un nuevo horario.
         /// </summary>
