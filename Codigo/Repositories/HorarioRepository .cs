@@ -40,7 +40,13 @@ namespace proyectocountertexdefinitivo.Repositories
         /// </summary>
         /// <param name="id">Identificador del horario.</param>
         /// <returns>El objeto <see cref="Horario"/> encontrado o null si no existe.</returns>
-        public async Task<Horario> GetByIdAsync(int id) => await _context.Horarios.FindAsync(id);
+        public async Task<List<Horario>> GetByIdAsync(int Id)
+        {
+            return await _context.Horarios
+                .Where(m => m.HorarioId == Id)
+                .ToListAsync();
+        }
+
 
         /// <summary>
         /// Crea un nuevo horario en la base de datos.

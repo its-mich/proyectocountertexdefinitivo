@@ -18,7 +18,7 @@ namespace proyectocountertexdefinitivo.Repositories.Interfaces
         /// </summary>
         /// <param name="id">Identificador de la meta.</param>
         /// <returns>El objeto Meta correspondiente al Id proporcionado.</returns>
-        Task<Meta> GetByIdAsync(int id);
+        Task <List<Meta>> GetByIdAsync(int id);
 
         /// <summary>
         /// Crea una nueva meta.

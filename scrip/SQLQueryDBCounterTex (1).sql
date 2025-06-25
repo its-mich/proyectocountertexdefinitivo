@@ -94,11 +94,7 @@ CREATE TABLE Metas (
     UsuarioId INT,
     FechaHora DATETIME,
     Mensaje NVARCHAR(500),
-    RemitenteId INT,
-    DestinatarioId INT,
 	CONSTRAINT FK_Meta_Usuario FOREIGN KEY (UsuarioId) REFERENCES Usuarios(Id),
-    CONSTRAINT FK_Meta_Remitente FOREIGN KEY (RemitenteId) REFERENCES Usuarios(Id),
-    CONSTRAINT FK_Meta_Destinatario FOREIGN KEY (DestinatarioId) REFERENCES Usuarios(Id)
 );
 GO
 
@@ -167,18 +163,18 @@ GO
 INSERT INTO Operaciones (Nombre, ValorUnitario)
 VALUES 
 ('Corte', 500.00),              --1
-('Costura', 700.00),			--2
-('Revisión', 300.00),			--3
-('Pegar Cuello', 800.00),		--4
-('Pegar Manga', 700.00),		--5
-('Unir Hombros', 600.00),		--6
-('Cerrar Camiseta', 750.00),	--7
-('Centrar Cuello', 650.00),		--8
+('Costura', 400.00),			--2
+('Revisión', 200.00),			--3
+('Pegar Cuello', 300.00),		--4
+('Pegar Manga', 100.00),		--5
+('Unir Hombros', 200.00),		--6
+('Cerrar Camiseta', 300.00),	--7
+('Centrar Cuello', 400.00),		--8
 ('Dobladillo Mangas', 500.00),	--9
-('Dobladillo Ruedo', 550.00),	--10
-('Camiseta Dama', 2000.00),		--11		
-('Camiseta Hombre', 2200.00),	--12
-('Planchado', 1.00);			--13
+('Dobladillo Ruedo', 200.00),	--10
+('Camiseta Dama', 200.00),		--11		
+('Camiseta Hombre', 200.00),	--12
+('Planchado', 100.00);			--13
 GO
 
 -- Produccion
@@ -251,11 +247,11 @@ VALUES
 GO
 
 -- Metas
-INSERT INTO Metas (Fecha, MetaCorte, ProduccionReal, UsuarioId, FechaHora, Mensaje, RemitenteId, DestinatarioId)
+INSERT INTO Metas (Fecha, MetaCorte, ProduccionReal, UsuarioId, FechaHora, Mensaje)
 VALUES 
-('2025-04-19', 50, 45, 6, GETDATE(), 'Buena producción, pero faltaron 5 unidades', 1, 2),
-('2025-04-18', 60, 62, 1, GETDATE(), 'Excelente trabajo', 1, 1),
-('2025-06-01', 30, 28, 5, GETDATE(), 'Buena producción, pero faltaron 2 unidades', 2, 5);
+('2025-04-19', 50, 45, 6, GETDATE(), 'Buena producción, pero faltaron 5 unidades'),
+('2025-04-18', 60, 62, 1, GETDATE(), 'Excelente trabajo'),
+('2025-06-01', 30, 28, 5, GETDATE(), 'Buena producción, pero faltaron 2 unidades');
 GO
 
 -- MensajesChat
@@ -305,7 +301,7 @@ JOIN Usuarios u2 ON u2.Id = m.DestinatarioId;
 -- PROCEDIMIENTOS ALMACENADOS (sp)
 -- ===========================
 
-
+GO
 --Este procedimiento devuelve todas las producciones de un usuario específico
 CREATE OR ALTER PROCEDURE sp_DetalleProduccionUsuario
     @UsuarioId INT

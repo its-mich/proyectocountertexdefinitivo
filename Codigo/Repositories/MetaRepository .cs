@@ -32,7 +32,13 @@ namespace proyectocountertexdefinitivo.Repositories
         /// </summary>
         /// <param name="id">Identificador único de la meta.</param>
         /// <returns>Objeto <see cref="Meta"/> correspondiente o null si no se encuentra.</returns>
-        public async Task<Meta> GetByIdAsync(int id) => await _context.Metas.FindAsync(id);
+        public async Task<List<Meta>> GetByIdAsync(int usuarioId)
+        {
+            return await _context.Metas
+                .Where(m => m.UsuarioId == usuarioId)
+                .ToListAsync();
+        }
+
 
         /// <summary>
         /// Crea una nueva meta en la base de datos.
