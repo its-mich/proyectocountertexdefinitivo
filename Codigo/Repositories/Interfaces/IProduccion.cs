@@ -55,5 +55,9 @@ namespace proyectocountertexdefinitivo.Repositories.Interfaces
 
         Task<IEnumerable<Produccion>> GetProduccionesPorUsuarioIdAsync(int usuarioId);
 
+
+        Task<decimal> CalcularPagoQuincenalAsync(int usuarioId, int año, int mes, int quincena);
+
     }
 }
+

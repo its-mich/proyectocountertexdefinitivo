@@ -78,7 +78,8 @@ namespace proyectocountertexdefinitivo.Controllers
 
             try
             {
-                bool esAdmin = User.Identity?.IsAuthenticated == true && User.IsInRole("Administrador");
+                if (usuarioDto.RolId <= 0)
+                    return BadRequest("RolId inválido.");
 
                 var usuario = new Usuario
                 {
@@ -88,7 +89,7 @@ namespace proyectocountertexdefinitivo.Controllers
                     Contraseña = usuarioDto.Contraseña,
                     Edad = usuarioDto.Edad,
                     Telefono = usuarioDto.Telefono,
-                    RolId = esAdmin ? 1 : 2 // 1 = Admin, 2 = Empleado
+                    RolId = usuarioDto.RolId // ✅ Usar el rol enviado
                 };
 
                 var resultado = await _usuarios.PostUsuarios(usuario);

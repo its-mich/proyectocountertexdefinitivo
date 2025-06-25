@@ -140,5 +140,29 @@ namespace proyectocountertexdefinitivo.Repositories.repositories
                 .ToListAsync();
         }
 
+
+        public async Task<decimal> CalcularPagoQuincenalAsync(int usuarioId, int año, int mes, int quincena)
+        {
+            DateTime fechaInicio = quincena == 1
+                ? new DateTime(año, mes, 1)
+                : new DateTime(año, mes, 16);
+
+            DateTime fechaFin = quincena == 1
+                ? new DateTime(año, mes, 15)
+                : new DateTime(año, mes, DateTime.DaysInMonth(año, mes));
+
+            var totalPago = await _context.ProduccionDetalles
+                .Include(pd => pd.Produccion)
+                .Where(pd =>
+                    pd.Produccion.UsuarioId == usuarioId &&
+                    pd.Produccion.Fecha >= fechaInicio &&
+                    pd.Produccion.Fecha <= fechaFin)
+                .SumAsync(pd => pd.Cantidad * pd.Operacion.ValorUnitario.GetValueOrDefault());
+
+            return totalPago;
+        }
+
+
+
     }
 }

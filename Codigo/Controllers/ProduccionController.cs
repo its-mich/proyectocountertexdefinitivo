@@ -137,5 +137,37 @@ namespace proyectocountertexdefinitivo.Controllers
             }
         }
 
+
+        /// <summary>
+        /// Calcula el total ganado por un usuario en una quincena (rango de fechas).
+        /// </summary>
+        /// <param name="usuarioId">ID del usuario</param>
+        /// <param name="fechaInicio">Fecha de inicio</param>
+        /// <param name="fechaFin">Fecha de fin</param>
+        /// <returns>Total ganado</returns>
+        [HttpGet("PagoQuincenal")]
+        public async Task<IActionResult> CalcularPagoQuincenal(int usuarioId, int año, int mes, int quincena)
+        {
+            var pago = await _produccionRepo.CalcularPagoQuincenalAsync(usuarioId, año, mes, quincena);
+
+            DateTime inicio = (quincena == 1)
+                ? new DateTime(año, mes, 1)
+                : new DateTime(año, mes, 16);
+
+            DateTime fin = (quincena == 1)
+                ? new DateTime(año, mes, 15)
+                : new DateTime(año, mes, DateTime.DaysInMonth(año, mes));
+
+            return Ok(new
+            {
+                UsuarioId = usuarioId,
+                Año = año,
+                Mes = mes,
+                Quincena = quincena,
+                Rango = $"{inicio:yyyy-MM-dd} a {fin:yyyy-MM-dd}",
+                PagoTotalQuincenal = pago
+            });
+        }
+
     }
 }
