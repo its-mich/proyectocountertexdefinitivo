@@ -216,17 +216,6 @@ namespace proyectocountertexdefinitivo.contexto
                     .HasConstraintName("FK_Meta_Usuario_Asignado")
                     .OnDelete(DeleteBehavior.Restrict);
 
-                entity.HasOne(e => e.Remitente)
-                    .WithMany(u => u.MetasEnviadas)
-                    .HasForeignKey(e => e.RemitenteId)
-                    .HasConstraintName("FK_Meta_Usuario_Remitente")
-                    .OnDelete(DeleteBehavior.Restrict);
-
-                entity.HasOne(e => e.Destinatario)
-                    .WithMany(u => u.MetasRecibidas)
-                    .HasForeignKey(e => e.DestinatarioId)
-                    .HasConstraintName("FK_Meta_Usuario_Destinatario")
-                    .OnDelete(DeleteBehavior.Restrict);
             });
 
             // Configuración para Mensajes Chat

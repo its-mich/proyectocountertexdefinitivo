@@ -241,7 +241,7 @@ namespace proyectocountertexdefinitivo.Controllers
                 if (usuario == null)
                     return BadRequest("Código inválido o expirado.");
 
-                usuario.Contraseña = BCrypt.Net.BCrypt.HashPassword(request.NuevaContraseña);
+                usuario.Contraseña = request.NuevaContraseña;
 
                 var actualizado = await _usuarios.PutUsuarios(usuario);
                 if (!actualizado)
