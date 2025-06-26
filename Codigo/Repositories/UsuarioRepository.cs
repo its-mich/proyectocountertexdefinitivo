@@ -266,13 +266,29 @@ namespace proyectocountertexdefinitivo.Repositories
 
         public async Task<bool> DeleteUsuarios(int id)
         {
-            var usuario = await _context.Usuarios.FindAsync(id);
-            if (usuario == null) return false;
+            try
+            {
+                // 1. Buscar usuario con las relaciones mínimas necesarias
+                var usuario = await _context.Usuarios.FindAsync(id);
+                if (usuario == null)
+                    return false;
 
-            _context.Usuarios.Remove(usuario);
-            await _context.SaveChangesAsync();
-            return true;
+                // 2. Eliminar solo el usuario
+                _context.Usuarios.Remove(usuario);
+
+                // 3. Guardar cambios: las relaciones se eliminan automáticamente por Cascade
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al eliminar el usuario con ID {id}: {ex.Message}");
+                return false;
+            }
         }
+
+
         public async Task<List<Rol>> GetRolesAsync()
         {
             return await _context.Roles

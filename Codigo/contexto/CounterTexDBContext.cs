@@ -122,7 +122,7 @@ namespace proyectocountertexdefinitivo.contexto
                 entity.HasOne(e => e.Rol)
                       .WithMany(r => r.Usuarios)
                       .HasForeignKey(e => e.RolId)
-                      .OnDelete(DeleteBehavior.Restrict);
+                      .OnDelete(DeleteBehavior.Cascade);
             });
 
             // Configuración para la entidad Prenda
@@ -182,7 +182,7 @@ namespace proyectocountertexdefinitivo.contexto
                 entity.HasOne(e => e.Operacion)
                       .WithMany(o => o.ProduccionDetalles)
                       .HasForeignKey(e => e.OperacionId)
-                      .OnDelete(DeleteBehavior.Restrict);
+                      .OnDelete(DeleteBehavior.Cascade);
             });
 
             // Configuración para Horarios
@@ -213,9 +213,8 @@ namespace proyectocountertexdefinitivo.contexto
                 entity.HasOne(e => e.Usuario)
                     .WithMany(u => u.MetasAsignadas)
                     .HasForeignKey(e => e.UsuarioId)
-                    .HasConstraintName("FK_Meta_Usuario_Asignado")
-                    .OnDelete(DeleteBehavior.Cascade);
-
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_Meta_Usuario_Asignado");
             });
 
             // Configuración para Mensajes Chat
@@ -224,14 +223,18 @@ namespace proyectocountertexdefinitivo.contexto
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.FechaHora).HasColumnType("datetime");
                 entity.Property(e => e.Mensaje).IsRequired();
+
                 entity.HasOne(e => e.Remitente)
                       .WithMany(u => u.MensajesEnviados)
                       .HasForeignKey(e => e.RemitenteId)
-                      .OnDelete(DeleteBehavior.Cascade);
+                      .OnDelete(DeleteBehavior.Cascade)
+                      .HasConstraintName("FK_MensajeChat_Remitente");
+
                 entity.HasOne(e => e.Destinatario)
                       .WithMany(u => u.MensajesRecibidos)
                       .HasForeignKey(e => e.DestinatarioId)
-                      .OnDelete(DeleteBehavior.Cascade);
+                      .OnDelete(DeleteBehavior.Cascade)
+                      .HasConstraintName("FK_MensajeChat_Destinatario");
             });
 
             // Token (no persistido en la base de datos)
