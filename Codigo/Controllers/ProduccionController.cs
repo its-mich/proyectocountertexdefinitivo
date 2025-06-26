@@ -103,12 +103,13 @@ namespace proyectocountertexdefinitivo.Controllers
         }
 
         [HttpGet("GetResumenMensual")]
-        public async Task<IActionResult> GetResumenMensual(int anio, int mes)
+        public async Task<IActionResult> GetResumenMensual(int anio, int mes, int? usuarioId = null, string tipoPrenda = null)
         {
             try
             {
-                var resumen = await _produccionRepo.ObtenerResumenMensual(anio, mes);
-                if (resumen == null)
+                var resumen = await _produccionRepo.ObtenerResumenMensual(anio, mes, usuarioId, tipoPrenda);
+                var resumenList = resumen as IEnumerable<object>;
+                if (resumenList == null || !resumenList.Any())
                     return NotFound("No se encontraron datos para el resumen mensual.");
 
                 return Ok(resumen);
@@ -116,6 +117,21 @@ namespace proyectocountertexdefinitivo.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, $"Error al obtener el resumen mensual: {ex.Message}");
+            }
+        }
+
+        // ✅ Endpoint adicional para obtener tipos de prenda únicos
+        [HttpGet("GetTiposPrenda")]
+        public async Task<IActionResult> GetTiposPrenda()
+        {
+            try
+            {
+                var tipos = await _produccionRepo.ObtenerTiposPrendaAsync();
+                return Ok(tipos);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error al obtener tipos de prenda: {ex.Message}");
             }
         }
     }

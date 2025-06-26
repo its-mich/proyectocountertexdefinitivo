@@ -51,6 +51,7 @@ namespace proyectocountertexdefinitivo.Repositories.Interfaces
         /// <param name="anio">Año del resumen.</param>
         /// <param name="mes">Mes del resumen.</param>
         /// <returns>Un objeto con el resumen o null si no hay datos.</returns>
-        Task<object> ObtenerResumenMensual(int anio, int mes);
+        Task<object> ObtenerResumenMensual(int anio, int mes, int? usuarioId = null, string tipoPrenda = null);
+        Task<List<string>> ObtenerTiposPrendaAsync();
     }
 }

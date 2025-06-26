@@ -81,28 +81,49 @@ namespace proyectocountertexdefinitivo.Repositories.repositories
             if (produccion == null)
                 return false;
 
-
             _context.ProduccionDetalles.RemoveRange(produccion.ProduccionDetalles);
             _context.Producciones.Remove(produccion);
-
             await _context.SaveChangesAsync();
+
             return true;
         }
 
-        public async Task<object> ObtenerResumenMensual(int anio, int mes)
+        // ✅ Método modificado con filtros opcionales por usuario y tipo de prenda
+        public async Task<object> ObtenerResumenMensual(int anio, int mes, int? usuarioId = null, string tipoPrenda = null)
         {
-            var resumen = await _context.ProduccionDetalles
-                .Where(d => d.Produccion.Fecha.Year == anio && d.Produccion.Fecha.Month == mes)
+            var query = _context.ProduccionDetalles
+                .Include(d => d.Produccion)
+                    .ThenInclude(p => p.Prenda)
+                .Where(d => d.Produccion.Fecha.Year == anio && d.Produccion.Fecha.Month == mes);
+
+            if (usuarioId.HasValue)
+                query = query.Where(d => d.Produccion.UsuarioId == usuarioId.Value);
+
+            if (!string.IsNullOrEmpty(tipoPrenda))
+                query = query.Where(d => d.Produccion.Prenda.Nombre == tipoPrenda);
+
+            var resumen = await query
                 .GroupBy(d => d.Produccion.Prenda.Nombre)
                 .Select(g => new
                 {
-                    Prenda = g.Key,
-                    Total = g.Sum(d => d.Cantidad)
+                    prenda = g.Key,
+                    total = g.Sum(d => d.Cantidad)
                 })
                 .ToListAsync();
 
             return resumen.Any() ? resumen : null;
         }
+
+        // ✅ Nuevo método para obtener los tipos únicos de prenda
+        public async Task<List<string>> ObtenerTiposPrendaAsync()
+        {
+            return await _context.Prendas
+                .Select(p => p.Nombre)
+                .Distinct()
+                .OrderBy(n => n)
+                .ToListAsync();
+        }
+
         public async Task<Produccion?> CrearProduccionConDetallesAsync(Produccion produccion)
         {
             if (produccion == null || produccion.ProduccionDetalles == null || !produccion.ProduccionDetalles.Any())
@@ -122,7 +143,6 @@ namespace proyectocountertexdefinitivo.Repositories.repositories
 
             produccion.TotalValor = totalProduccion;
 
-            // Se agrega la producción con sus detalles en cascada
             _context.Producciones.Add(produccion);
             await _context.SaveChangesAsync();
 
