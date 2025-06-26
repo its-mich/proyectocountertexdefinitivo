@@ -28,6 +28,7 @@ CREATE TABLE Usuarios (
 );
 GO
 
+
 -- Tabla: Prendas
 CREATE TABLE Prendas (
     Id INT PRIMARY KEY IDENTITY(1,1),
@@ -66,22 +67,20 @@ CREATE TABLE ProduccionDetalle (
     ProduccionId INT NOT NULL,
     OperacionId INT NOT NULL,
     ValorTotal DECIMAL(10, 2) NULL,
-    FOREIGN KEY (ProduccionId) REFERENCES Produccion(Id),
+    FOREIGN KEY (ProduccionId) REFERENCES Produccion(Id) ON DELETE CASCADE,
     FOREIGN KEY (OperacionId) REFERENCES Operaciones(Id)
 );
 GO
 
 -- Tabla: Horarios
-CREATE TABLE Horarios
-(
+CREATE TABLE Horarios (
     HorarioId INT IDENTITY(1,1) NOT NULL PRIMARY KEY,  
-    EmpleadoId INT NOT NULL,                           -- FK hacia Usuarios.Id
+    EmpleadoId INT NOT NULL,
     Tipo NVARCHAR(50) NOT NULL,
     Hora TIME NOT NULL,
     Fecha DATE NOT NULL,
     Observaciones NVARCHAR(MAX) NULL,
-
-    CONSTRAINT FK_Horarios_Usuarios FOREIGN KEY (EmpleadoId) REFERENCES Usuarios(Id)
+    CONSTRAINT FK_Horarios_Usuarios FOREIGN KEY (EmpleadoId) REFERENCES Usuarios(Id) ON DELETE CASCADE
 );
 GO
 
@@ -94,7 +93,7 @@ CREATE TABLE Metas (
     UsuarioId INT,
     FechaHora DATETIME,
     Mensaje NVARCHAR(500),
-	CONSTRAINT FK_Meta_Usuario FOREIGN KEY (UsuarioId) REFERENCES Usuarios(Id),
+    CONSTRAINT FK_Meta_Usuario FOREIGN KEY (UsuarioId) REFERENCES Usuarios(Id) ON DELETE CASCADE
 );
 GO
 
@@ -105,8 +104,8 @@ CREATE TABLE MensajesChat (
     Mensaje NVARCHAR(MAX),
     RemitenteId INT NOT NULL,
     DestinatarioId INT NOT NULL,
-    CONSTRAINT FK_Chat_Remitente FOREIGN KEY (RemitenteId) REFERENCES Usuarios(Id),
-    CONSTRAINT FK_Chat_Destinatario FOREIGN KEY (DestinatarioId) REFERENCES Usuarios(Id)
+    CONSTRAINT FK_Chat_Remitente FOREIGN KEY (RemitenteId) REFERENCES Usuarios(Id) ON DELETE CASCADE,
+    CONSTRAINT FK_Chat_Destinatario FOREIGN KEY (DestinatarioId) REFERENCES Usuarios(Id) ON DELETE CASCADE
 );
 GO
 
@@ -127,7 +126,6 @@ GO
 INSERT INTO Roles (Nombre) VALUES 
 ('Administrador'),
 ('Empleado'),
-('Supervisor'),
 ('Proveedor');
 GO
 -- Usuarios
