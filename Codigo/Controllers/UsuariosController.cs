@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using proyectocountertexdefinitivo.Models;
 using proyectocountertexdefinitivo.Repositories.Interfaces;
 
+
+
 namespace proyectocountertexdefinitivo.Controllers
 {
     [Route("api/[controller]")]
@@ -76,7 +78,8 @@ namespace proyectocountertexdefinitivo.Controllers
 
             try
             {
-                bool esAdmin = User.Identity?.IsAuthenticated == true && User.IsInRole("Administrador");
+                if (usuarioDto.RolId <= 0)
+                    return BadRequest("RolId inválido.");
 
                 var usuario = new Usuario
                 {
@@ -86,7 +89,7 @@ namespace proyectocountertexdefinitivo.Controllers
                     Contraseña = usuarioDto.Contraseña,
                     Edad = usuarioDto.Edad,
                     Telefono = usuarioDto.Telefono,
-                    RolId = esAdmin ? 1 : 2 // 1 = Admin, 2 = Empleado
+                    RolId = usuarioDto.RolId // ✅ Usar el rol enviado
                 };
 
                 var resultado = await _usuarios.PostUsuarios(usuario);
@@ -274,5 +277,19 @@ namespace proyectocountertexdefinitivo.Controllers
                 return StatusCode(500, new { message = "Error al obtener los roles", error = ex.Message });
             }
         }
+
+        [HttpPut("ActualizarNombre/{id}")]
+        public async Task<IActionResult> ActualizarNombre(int id, [FromBody] ActualizarNombreDto model)
+        {
+            var usuario = await _usuarios.GetByIdAsync(id);
+            if (usuario == null)
+                return NotFound("Usuario no encontrado.");
+
+            usuario.Nombre = model.Nombre;
+            await _usuarios.UpdateAsync(usuario);
+
+            return Ok(new { mensaje = "Nombre actualizado correctamente." });
+        }
+
     }
 }

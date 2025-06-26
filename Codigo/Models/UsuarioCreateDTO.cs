@@ -15,5 +15,7 @@ namespace proyectocountertexdefinitivo.Models
         public int Edad { get; set; }
         public string Telefono { get; set; }
 
+        public int RolId { get; set; }
+
     }
 }

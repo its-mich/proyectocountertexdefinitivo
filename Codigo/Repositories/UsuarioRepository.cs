@@ -318,5 +318,17 @@ namespace proyectocountertexdefinitivo.Repositories
             await _context.SaveChangesAsync();
             return true;
         }
+
+
+        public async Task<Usuario> GetByIdAsync(int id)
+        {
+            return await _context.Usuarios.FindAsync(id);
+        }
+
+        public async Task UpdateAsync(Usuario usuario)
+        {
+            _context.Entry(usuario).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+        }
     }
 }

@@ -68,5 +68,16 @@ namespace proyectocountertexdefinitivo.Repositories.repositories
 
             return detalle;
         }
+
+        public async Task<IEnumerable<ProduccionDetalle>> GetDetallesPorUsuarioIdAsync(int usuarioId)
+        {
+            return await _context.ProduccionDetalles
+                .Where(d => d.Produccion.UsuarioId == usuarioId)
+                .Include(d => d.Operacion)
+                .Include(d => d.Produccion)
+                    .ThenInclude(p => p.Prenda)
+                .ToListAsync();
+        }
+
     }
 }

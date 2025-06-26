@@ -87,5 +87,8 @@ namespace proyectocountertexdefinitivo.Repositories.Interfaces
         Task<bool> EnviarCorreo(string destino, string codigo);
         Task<List<Rol>> GetRolesAsync();
 
+        Task<Usuario> GetByIdAsync(int id);
+        Task UpdateAsync(Usuario usuario);
+
     }
 }
