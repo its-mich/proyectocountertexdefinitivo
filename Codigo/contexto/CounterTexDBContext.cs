@@ -198,7 +198,7 @@ namespace proyectocountertexdefinitivo.contexto
                 entity.HasOne(e => e.Usuario)
                       .WithMany(u => u.Horarios)
                       .HasForeignKey(e => e.EmpleadoId)
-                      .OnDelete(DeleteBehavior.Restrict);
+                      .OnDelete(DeleteBehavior.Cascade);
             });
 
             // Configuración para Metas
@@ -214,7 +214,7 @@ namespace proyectocountertexdefinitivo.contexto
                     .WithMany(u => u.MetasAsignadas)
                     .HasForeignKey(e => e.UsuarioId)
                     .HasConstraintName("FK_Meta_Usuario_Asignado")
-                    .OnDelete(DeleteBehavior.Restrict);
+                    .OnDelete(DeleteBehavior.Cascade);
 
             });
 
