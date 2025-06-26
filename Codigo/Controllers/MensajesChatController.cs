@@ -106,9 +106,13 @@ namespace proyectocountertexdefinitivo.Controllers
                 await _mensajesChat.AgregarAsync(mensajeChat);
                 return Ok(new { message = "Mensaje enviado correctamente." });
             }
-            catch (Exception ex)
+            catch (DbUpdateException ex)
             {
-                return StatusCode(500, new { message = "Error al registrar el mensaje", error = ex.Message });
+                return StatusCode(500, new
+                {
+                    message = "Error al registrar el mensaje",
+                    error = ex.InnerException?.Message ?? ex.Message
+                });
             }
         }
 

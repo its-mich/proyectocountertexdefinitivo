@@ -105,9 +105,9 @@ CREATE TABLE MensajesChat (
     RemitenteId INT NOT NULL,
     DestinatarioId INT NOT NULL,
     CONSTRAINT FK_Chat_Remitente FOREIGN KEY (RemitenteId) REFERENCES Usuarios(Id) ON DELETE CASCADE,
-    CONSTRAINT FK_Chat_Destinatario FOREIGN KEY (DestinatarioId) REFERENCES Usuarios(Id) ON DELETE CASCADE
+    CONSTRAINT FK_Chat_Destinatario FOREIGN KEY (DestinatarioId) REFERENCES Usuarios(Id) ON DELETE NO ACTION
 );
-GO
+
 
 -- Tabla: Contacto
 CREATE TABLE Contactos (
