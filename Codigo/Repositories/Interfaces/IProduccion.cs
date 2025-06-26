@@ -45,13 +45,11 @@ namespace proyectocountertexdefinitivo.Repositories.Interfaces
         /// <param name="id">Identificador de la producción a eliminar.</param>
         Task<bool> DeleteAsync(int id);
 
-        /// <summary>
-        /// Obtiene un resumen mensual de producción agrupado por prenda.
-        /// </summary>
-        /// <param name="anio">Año del resumen.</param>
-        /// <param name="mes">Mes del resumen.</param>
-        /// <returns>Un objeto con el resumen o null si no hay datos.</returns>
+        Task<IEnumerable<Produccion>> GetProduccionesPorUsuarioIdAsync(int usuarioId);
+
         Task<object> ObtenerResumenMensual(int anio, int mes, int? usuarioId = null, string tipoPrenda = null);
+      
         Task<List<string>> ObtenerTiposPrendaAsync();
     }
 }
+

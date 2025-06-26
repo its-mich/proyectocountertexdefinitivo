@@ -77,5 +77,17 @@ namespace proyectocountertexdefinitivo.Repositories
                 await _context.SaveChangesAsync();
             }
         }
+
+        // En ProduccionRepository.cs
+        public async Task<IEnumerable<Produccion>> GetProduccionesPorUsuarioIdAsync(int usuarioId)
+        {
+            return await _context.Producciones
+                .Where(p => p.UsuarioId == usuarioId)
+                .Include(p => p.Prenda)
+                .Include(p => p.ProduccionDetalles)
+                    .ThenInclude(d => d.Operacion)
+                .ToListAsync();
+        }
+
     }
 }

@@ -120,6 +120,24 @@ namespace proyectocountertexdefinitivo.Controllers
             }
         }
 
+        [HttpGet("empleado/{usuarioId}")]
+        public async Task<IActionResult> GetProduccionesPorUsuario(int usuarioId)
+        {
+            try
+            {
+                var producciones = await _produccionRepo.GetProduccionesPorUsuarioIdAsync(usuarioId);
+
+                if (producciones == null || !producciones.Any())
+                    return NotFound("No hay registros de producción para este usuario.");
+
+                return Ok(producciones);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error al obtener producciones por usuario: {ex.Message}");
+            }
+        }
+
         // ✅ Endpoint adicional para obtener tipos de prenda únicos
         [HttpGet("GetTiposPrenda")]
         public async Task<IActionResult> GetTiposPrenda()
