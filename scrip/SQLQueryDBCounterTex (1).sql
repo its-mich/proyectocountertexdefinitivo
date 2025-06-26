@@ -109,7 +109,7 @@ CREATE TABLE MensajesChat (
 );
 
 
--- Tabla: Contacto
+-- Tabla: Contactos
 CREATE TABLE Contactos (
     Id INT PRIMARY KEY IDENTITY(1,1),
     NombreCompleto NVARCHAR(100),
@@ -119,6 +119,7 @@ CREATE TABLE Contactos (
 );
 GO
 
+-- Tabla: Pagos
 CREATE TABLE Pagos (
     Id INT PRIMARY KEY IDENTITY(1,1),
     UsuarioId INT NOT NULL,
@@ -128,6 +129,19 @@ CREATE TABLE Pagos (
     FechaPago DATETIME DEFAULT GETDATE(),
     Observaciones NVARCHAR(MAX),
     CONSTRAINT FK_Pagos_Usuario FOREIGN KEY (UsuarioId) REFERENCES Usuarios(Id) ON DELETE CASCADE
+);
+
+
+-- Tabla: PagosProveedor
+CREATE TABLE PagosProveedor (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    ProveedorId INT NOT NULL,
+    CantidadPrendas INT NOT NULL,
+    PrecioUnitario DECIMAL(10, 2) NOT NULL,
+    TotalPagado DECIMAL(12, 2) NOT NULL,
+    FechaRegistro DATETIME NOT NULL DEFAULT GETDATE(),
+    Observaciones NVARCHAR(500),
+    FOREIGN KEY (ProveedorId) REFERENCES Usuarios(Id)
 );
 
 -- ===========================
@@ -282,6 +296,11 @@ GO
 INSERT INTO Pagos (UsuarioId, FechaInicio, FechaFin, TotalPagado, Observaciones)
 VALUES 
 (1, '2025-06-01', '2025-06-15', 85000.00, 'Pago quincenal basado en producción de junio');
+
+-- PagosProveedor
+INSERT INTO PagosProveedor (ProveedorId, CantidadPrendas, PrecioUnitario, TotalPagado, Observaciones)
+VALUES (2, 100, 500, 50000, 'Pago por lote entregado el 25 de junio');
+
 
 -- ===========================
 -- Consultar producción y detalles:

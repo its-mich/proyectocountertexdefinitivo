@@ -58,6 +58,8 @@ namespace proyectocountertexdefinitivo.Models
         [JsonIgnore]
         public virtual ICollection<Pago> Pagos { get; set; }
 
+        public ICollection<PagoProveedor> PagosProveedor { get; set; }
+
         public Usuario()
         {
             Producciones = new List<Produccion>();

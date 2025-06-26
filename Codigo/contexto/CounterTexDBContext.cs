@@ -69,6 +69,8 @@ namespace proyectocountertexdefinitivo.contexto
 
         public DbSet<Pago> Pagos { get; set; }
 
+        public DbSet<PagoProveedor> PagosProveedor { get; set; }
+
         /// <summary>
         /// Configura las entidades, sus propiedades, relaciones y restricciones.
         /// </summary>
@@ -269,6 +271,22 @@ namespace proyectocountertexdefinitivo.contexto
                 entity.HasOne(e => e.Usuario)
                       .WithMany(u => u.Pagos)
                       .HasForeignKey(e => e.UsuarioId)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            // Configuración para PagoProveedor (módulo de pagos de proveedor)
+            modelBuilder.Entity<PagoProveedor>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.CantidadPrendas).IsRequired();
+                entity.Property(e => e.PrecioUnitario).HasColumnType("decimal(10,2)").IsRequired();
+                entity.Property(e => e.TotalPagado).HasColumnType("decimal(12,2)").IsRequired();
+                entity.Property(e => e.FechaRegistro).HasColumnType("datetime").IsRequired();
+                entity.Property(e => e.Observaciones).HasMaxLength(500);
+
+                entity.HasOne(e => e.Proveedor)
+                      .WithMany(u => u.PagosProveedor)
+                      .HasForeignKey(e => e.ProveedorId)
                       .OnDelete(DeleteBehavior.Cascade);
             });
 
