@@ -21,15 +21,4 @@ public class Meta
     [JsonIgnore]
     public Usuario? Usuario { get; set; }
 
-    // Relación con Remitente
-    public int RemitenteId { get; set; }
-
-    [JsonIgnore]
-    public Usuario? Remitente { get; set; }
-
-    // Relación con Destinatario
-    public int DestinatarioId { get; set; }
-
-    [JsonIgnore]
-    public Usuario? Destinatario { get; set; }
 }

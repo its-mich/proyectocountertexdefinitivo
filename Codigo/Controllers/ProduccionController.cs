@@ -103,12 +103,13 @@ namespace proyectocountertexdefinitivo.Controllers
         }
 
         [HttpGet("GetResumenMensual")]
-        public async Task<IActionResult> GetResumenMensual(int anio, int mes)
+        public async Task<IActionResult> GetResumenMensual(int anio, int mes, int? usuarioId = null, string tipoPrenda = null)
         {
             try
             {
-                var resumen = await _produccionRepo.ObtenerResumenMensual(anio, mes);
-                if (resumen == null)
+                var resumen = await _produccionRepo.ObtenerResumenMensual(anio, mes, usuarioId, tipoPrenda);
+                var resumenList = resumen as IEnumerable<object>;
+                if (resumenList == null || !resumenList.Any())
                     return NotFound("No se encontraron datos para el resumen mensual.");
 
                 return Ok(resumen);
@@ -137,37 +138,19 @@ namespace proyectocountertexdefinitivo.Controllers
             }
         }
 
-
-        /// <summary>
-        /// Calcula el total ganado por un usuario en una quincena (rango de fechas).
-        /// </summary>
-        /// <param name="usuarioId">ID del usuario</param>
-        /// <param name="fechaInicio">Fecha de inicio</param>
-        /// <param name="fechaFin">Fecha de fin</param>
-        /// <returns>Total ganado</returns>
-        [HttpGet("PagoQuincenal")]
-        public async Task<IActionResult> CalcularPagoQuincenal(int usuarioId, int año, int mes, int quincena)
+        // ✅ Endpoint adicional para obtener tipos de prenda únicos
+        [HttpGet("GetTiposPrenda")]
+        public async Task<IActionResult> GetTiposPrenda()
         {
-            var pago = await _produccionRepo.CalcularPagoQuincenalAsync(usuarioId, año, mes, quincena);
-
-            DateTime inicio = (quincena == 1)
-                ? new DateTime(año, mes, 1)
-                : new DateTime(año, mes, 16);
-
-            DateTime fin = (quincena == 1)
-                ? new DateTime(año, mes, 15)
-                : new DateTime(año, mes, DateTime.DaysInMonth(año, mes));
-
-            return Ok(new
+            try
             {
-                UsuarioId = usuarioId,
-                Año = año,
-                Mes = mes,
-                Quincena = quincena,
-                Rango = $"{inicio:yyyy-MM-dd} a {fin:yyyy-MM-dd}",
-                PagoTotalQuincenal = pago
-            });
+                var tipos = await _produccionRepo.ObtenerTiposPrendaAsync();
+                return Ok(tipos);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error al obtener tipos de prenda: {ex.Message}");
+            }
         }
-
     }
 }
