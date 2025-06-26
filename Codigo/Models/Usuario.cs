@@ -38,7 +38,7 @@ namespace proyectocountertexdefinitivo.Models
         [JsonIgnore]
         public DateTime? TokenExpiracion { get; set; }
 
-        // Relaciones corregidas
+        
         [JsonIgnore]
         public ICollection<Produccion> Producciones { get; set; }
 
@@ -55,6 +55,9 @@ namespace proyectocountertexdefinitivo.Models
         [JsonIgnore]
         public ICollection<MensajeChat> MensajesRecibidos { get; set; }
 
+        [JsonIgnore]
+        public virtual ICollection<Pago> Pagos { get; set; }
+
         public Usuario()
         {
             Producciones = new List<Produccion>();
@@ -62,6 +65,7 @@ namespace proyectocountertexdefinitivo.Models
             MetasAsignadas = new List<Meta>();
             MensajesEnviados = new List<MensajeChat>();
             MensajesRecibidos = new List<MensajeChat>();
+            Pagos = new List<Pago>();
         }
     }
 }

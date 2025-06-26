@@ -28,6 +28,7 @@ namespace proyectocountertexdefinitivo
             services.AddScoped<IMeta, MetaRepository>();
             services.AddScoped<IMensajesChat, MensajesChatRepository>();
             services.AddScoped<IContacto, ContactoRepository>();
+            services.AddScoped<IPagoRepository, PagoRepository>();
 
             return services;
         }

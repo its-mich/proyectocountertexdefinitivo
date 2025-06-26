@@ -119,6 +119,17 @@ CREATE TABLE Contactos (
 );
 GO
 
+CREATE TABLE Pagos (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    UsuarioId INT NOT NULL,
+    FechaInicio DATE NOT NULL,
+    FechaFin DATE NOT NULL,
+    TotalPagado DECIMAL(10,2) NOT NULL,
+    FechaPago DATETIME DEFAULT GETDATE(),
+    Observaciones NVARCHAR(MAX),
+    CONSTRAINT FK_Pagos_Usuario FOREIGN KEY (UsuarioId) REFERENCES Usuarios(Id) ON DELETE CASCADE
+);
+
 -- ===========================
 -- DATOS DE PRUEBA (INSERTs)
 -- ===========================
@@ -267,6 +278,11 @@ VALUES
 ('Javier Martínez', '600998877', 'javier@proveedor.com', 'Proveedor de telas de algodón');
 GO
 
+-- Pagos
+INSERT INTO Pagos (UsuarioId, FechaInicio, FechaFin, TotalPagado, Observaciones)
+VALUES 
+(1, '2025-06-01', '2025-06-15', 85000.00, 'Pago quincenal basado en producción de junio');
+
 -- ===========================
 -- Consultar producción y detalles:
 -- ===========================
@@ -362,6 +378,29 @@ BEGIN
     WHERE MONTH(P.Fecha) = @Mes AND YEAR(P.Fecha) = @Año;
 END;
 GO
+
+--Devuelve un total de pago quincenal de los empleados
+CREATE OR ALTER PROCEDURE sp_GenerarPagoQuincenal
+    @FechaInicio DATE,
+    @FechaFin DATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    INSERT INTO Pagos (UsuarioId, FechaInicio, FechaFin, TotalPagado, Observaciones)
+SELECT 
+    P.UsuarioId,
+    @FechaInicio,
+    @FechaFin,
+    SUM(PD.Cantidad * O.ValorUnitario),
+    CONCAT('Pago del ', CONVERT(varchar, @FechaInicio, 103), ' al ', CONVERT(varchar, @FechaFin, 103), ' generado automáticamente el ', CONVERT(varchar, GETDATE(), 103))
+    FROM ProduccionDetalle PD
+    INNER JOIN Produccion P ON P.Id = PD.ProduccionId
+    INNER JOIN Operaciones O ON O.Id = PD.OperacionId
+    WHERE P.Fecha BETWEEN @FechaInicio AND @FechaFin
+    GROUP BY P.UsuarioId;
+END;
+
 
 
 

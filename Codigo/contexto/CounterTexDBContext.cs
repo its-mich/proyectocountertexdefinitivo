@@ -67,6 +67,8 @@ namespace proyectocountertexdefinitivo.contexto
         // 👇 Agregado: DbSet para resultados de SP
         public DbSet<ProduccionMensualResumenDTO> ProduccionMensualResumen { get; set; }
 
+        public DbSet<Pago> Pagos { get; set; }
+
         /// <summary>
         /// Configura las entidades, sus propiedades, relaciones y restricciones.
         /// </summary>
@@ -254,6 +256,22 @@ namespace proyectocountertexdefinitivo.contexto
                 entity.Property(e => e.Correo).HasMaxLength(100);
                 entity.Property(e => e.Observacion);
             });
+
+            // Configuración para Pago
+            modelBuilder.Entity<Pago>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.FechaInicio).HasColumnType("date");
+                entity.Property(e => e.FechaFin).HasColumnType("date");
+                entity.Property(e => e.FechaPago).HasColumnType("datetime");
+                entity.Property(e => e.TotalPagado).HasColumnType("decimal(10,2)");
+
+                entity.HasOne(e => e.Usuario)
+                      .WithMany(u => u.Pagos)
+                      .HasForeignKey(e => e.UsuarioId)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
+
 
             // 👇 Agregado: Configuración para DTO del procedimiento almacenado
             modelBuilder.Entity<ProduccionMensualResumenDTO>().HasNoKey().ToView(null);
