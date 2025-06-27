@@ -119,8 +119,7 @@ namespace proyectocountertexdefinitivo.Controllers
                 return StatusCode(500, $"Error al obtener el resumen mensual: {ex.Message}");
             }
         }
-
-        [HttpGet("empleado/{usuarioId}")]
+          [HttpGet("empleado/{usuarioId}")]
         public async Task<IActionResult> GetProduccionesPorUsuario(int usuarioId)
         {
             try
@@ -130,13 +129,29 @@ namespace proyectocountertexdefinitivo.Controllers
                 if (producciones == null || !producciones.Any())
                     return NotFound("No hay registros de producción para este usuario.");
 
-                return Ok(producciones);
+                var resultado = producciones.Select(p => new ProduccionApiDto
+                {
+                    Id = p.Id,
+                    Fecha = p.Fecha,
+                    PrendaId = p.PrendaId,
+                    PrendaNombre = p.Prenda?.Nombre ?? "N/A",
+                    TotalValor = p.TotalValor,
+                    ProduccionDetalles = p.ProduccionDetalles.Select(d => new ProduccionDetalleDto
+                    {
+                        OperacionId = d.OperacionId,
+                        Cantidad = d.Cantidad
+                    }).ToList()
+                });
+
+                return Ok(resultado);
             }
             catch (Exception ex)
             {
                 return StatusCode(500, $"Error al obtener producciones por usuario: {ex.Message}");
             }
         }
+
+       
 
         // ✅ Endpoint adicional para obtener tipos de prenda únicos
         [HttpGet("GetTiposPrenda")]
