@@ -228,6 +228,14 @@ namespace proyectocountertexdefinitivo.Repositories
             }
         }
 
+        public async Task<int> ObtenerRolIdPorNombreAsync(string nombreRol)
+        {
+            var rol = await _context.Roles.FirstOrDefaultAsync(r => r.Nombre.ToLower() == nombreRol.ToLower());
+            if (rol == null)
+                throw new Exception($"Rol '{nombreRol}' no encontrado.");
+            return rol.Id;
+        }
+
         public async Task<bool> PutUsuarios(Usuario usuario)
         {
             var existing = await _context.Usuarios.FindAsync(usuario.Id);

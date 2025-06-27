@@ -63,9 +63,6 @@ namespace proyectocountertexdefinitivo.Controllers
             }
         }
 
-        // ===================== CREAR USUARIO =====================
-
-        /// <summary>Crea un nuevo usuario.</summary>
         [HttpPost("PostUsuarios")]
         [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status201Created)]
@@ -78,8 +75,11 @@ namespace proyectocountertexdefinitivo.Controllers
 
             try
             {
+                // Asignar automáticamente el RolId si no se envía o es inválido
                 if (usuarioDto.RolId <= 0)
-                    return BadRequest("RolId inválido.");
+                {
+                    usuarioDto.RolId = await _usuarios.ObtenerRolIdPorNombreAsync("Empleado");
+                }
 
                 var usuario = new Usuario
                 {
@@ -89,7 +89,7 @@ namespace proyectocountertexdefinitivo.Controllers
                     Contraseña = usuarioDto.Contraseña,
                     Edad = usuarioDto.Edad,
                     Telefono = usuarioDto.Telefono,
-                    RolId = usuarioDto.RolId // ✅ Usar el rol enviado
+                    RolId = usuarioDto.RolId
                 };
 
                 var resultado = await _usuarios.PostUsuarios(usuario);
@@ -97,7 +97,7 @@ namespace proyectocountertexdefinitivo.Controllers
                 return resultado switch
                 {
                     true => Ok("Usuario registrado correctamente."),
-                    false => BadRequest("Ya existe un usuario con ese correo, documento o teléfono.")
+                    false => BadRequest("Ya existe un usuario con ese correo, documento o teléfono o los datos son inválidos.")
                 };
             }
             catch (Exception ex)

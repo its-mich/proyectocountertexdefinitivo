@@ -18,7 +18,7 @@ namespace proyectocountertexdefinitivo.Models
         [Required]
         public string Correo { get; set; }
 
-        public string Contraseña { get; set; }
+        public string? Contraseña { get; set; }
 
         public int RolId { get; set; }
 
@@ -58,7 +58,8 @@ namespace proyectocountertexdefinitivo.Models
         [JsonIgnore]
         public virtual ICollection<Pago> Pagos { get; set; }
 
-        public ICollection<PagoProveedor> PagosProveedor { get; set; }
+        [JsonIgnore]
+        public ICollection<PagoProveedor>? PagosProveedor { get; set; }
 
         public Usuario()
         {

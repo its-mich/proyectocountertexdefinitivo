@@ -104,7 +104,13 @@ namespace proyectocountertexdefinitivo.Controllers
                 Token = tokenString,
                 Rol = usuario.Rol?.Nombre,
                 Id = usuario.Id,
-                Nombres = usuario.Nombre
+                Nombres = usuario.Nombre,
+                Correo = usuario.Correo,
+                Telefono = usuario.Telefono,
+                Edad = usuario.Edad,
+                RolId = usuario.RolId,
+                RolNombre = usuario.Rol?.Nombre,
+                Documento = usuario.Documento
             });
         }
     }

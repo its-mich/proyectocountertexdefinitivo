@@ -34,6 +34,8 @@ namespace proyectocountertexdefinitivo.Repositories.Interfaces
         /// <returns>True si se creó correctamente, false si ya existe.</returns>
         Task<bool> PostUsuarios(Usuario usuario);
 
+        Task<int> ObtenerRolIdPorNombreAsync(string nombreRol);
+
         /// <summary>
         /// Actualiza un usuario existente.
         /// </summary>
