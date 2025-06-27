@@ -3,10 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 using proyectocountertexdefinitivo.Models;
 using proyectocountertexdefinitivo.Repositories.Interfaces;
 
-
-
 namespace proyectocountertexdefinitivo.Controllers
 {
+    /// <summary>
+    /// Controlador para operaciones relacionadas con usuarios.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class UsuariosController : ControllerBase
@@ -17,8 +18,6 @@ namespace proyectocountertexdefinitivo.Controllers
         {
             _usuarios = usuarios;
         }
-
-        // ===================== OBTENER USUARIOS =====================
 
         /// <summary>Obtiene todos los usuarios.</summary>
         [HttpGet("GetUsuarios")]
@@ -63,6 +62,7 @@ namespace proyectocountertexdefinitivo.Controllers
             }
         }
 
+        /// <summary>Registra un nuevo usuario.</summary>
         [HttpPost("PostUsuarios")]
         [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status201Created)]
@@ -75,11 +75,8 @@ namespace proyectocountertexdefinitivo.Controllers
 
             try
             {
-                // Asignar automáticamente el RolId si no se envía o es inválido
                 if (usuarioDto.RolId <= 0)
-                {
                     usuarioDto.RolId = await _usuarios.ObtenerRolIdPorNombreAsync("Empleado");
-                }
 
                 var usuario = new Usuario
                 {
@@ -106,9 +103,6 @@ namespace proyectocountertexdefinitivo.Controllers
             }
         }
 
-
-        // ===================== ACTUALIZAR USUARIO =====================
-
         /// <summary>Actualiza los datos de un usuario existente.</summary>
         [HttpPut("{id}")]
         [Authorize]
@@ -128,23 +122,18 @@ namespace proyectocountertexdefinitivo.Controllers
                     return NotFound("Usuario no encontrado.");
 
                 if (!User.IsInRole("Administrador"))
-                {
                     usuario.RolId = usuarioActual.RolId;
-                }
 
                 var response = await _usuarios.PutUsuarios(usuario);
-                if (response)
-                    return Ok($"Usuario con ID {id} actualizado correctamente.");
-
-                return NotFound($"No se encontró ningún usuario con el ID {id}.");
+                return response
+                    ? Ok($"Usuario con ID {id} actualizado correctamente.")
+                    : NotFound($"No se encontró ningún usuario con el ID {id}.");
             }
             catch (Exception ex)
             {
                 return StatusCode(500, new { message = "Error al actualizar el usuario", error = ex.Message });
             }
         }
-
-        // ===================== ASIGNAR ROL =====================
 
         /// <summary>Asigna un nuevo rol a un usuario (solo administradores).</summary>
         [HttpPatch("AsignarRol/{id}")]
@@ -160,18 +149,13 @@ namespace proyectocountertexdefinitivo.Controllers
                 if (usuario == null)
                     return NotFound("Usuario no encontrado.");
 
-                var nombreUsuario = usuario.Nombre;
-                var nombreRol = usuario.Rol?.Nombre ?? "Rol no asignado";
-
-                return Ok($"El usuario {nombreUsuario} ahora tiene el rol {nombreRol}.");
+                return Ok($"El usuario {usuario.Nombre} ahora tiene el rol {usuario.Rol?.Nombre ?? "Desconocido"}.");
             }
             catch (Exception ex)
             {
                 return StatusCode(500, new { message = "Error al asignar el rol", error = ex.Message });
             }
         }
-
-        // ===================== ELIMINAR USUARIO =====================
 
         /// <summary>Elimina un usuario por ID (solo administradores).</summary>
         [HttpDelete("{id}")]
@@ -184,18 +168,15 @@ namespace proyectocountertexdefinitivo.Controllers
             try
             {
                 var eliminado = await _usuarios.DeleteUsuarios(id);
-                if (eliminado)
-                    return Ok($"Usuario con ID {id} eliminado correctamente.");
-
-                return NotFound($"No se encontró ningún usuario con el ID {id}.");
+                return eliminado
+                    ? Ok($"Usuario con ID {id} eliminado correctamente.")
+                    : NotFound($"No se encontró ningún usuario con el ID {id}.");
             }
             catch (Exception ex)
             {
                 return StatusCode(500, new { message = $"Error al eliminar el usuario con ID {id}.", error = ex.Message });
             }
         }
-
-        // ===================== RECUPERAR CONTRASEÑA =====================
 
         /// <summary>Solicita un código de recuperación de contraseña.</summary>
         [HttpPost("SolicitarRecuperacion")]
@@ -205,16 +186,14 @@ namespace proyectocountertexdefinitivo.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> SolicitarRecuperacion([FromBody] SolicitudRecuperacion solicitud)
         {
-            var correo = solicitud.Correo;
             try
             {
-                var usuario = await _usuarios.GetUsuarioByCorreoAsync(correo);
+                var usuario = await _usuarios.GetUsuarioByCorreoAsync(solicitud.Correo);
                 if (usuario == null)
                     return NotFound("No se encontró un usuario con ese correo.");
 
                 var codigo = new Random().Next(100000, 999999).ToString();
                 var guardado = await _usuarios.GuardarTokenRecuperacionAsync(usuario.Id, codigo);
-
                 if (!guardado)
                     return StatusCode(500, "No se pudo guardar el código de recuperación.");
 
@@ -278,7 +257,12 @@ namespace proyectocountertexdefinitivo.Controllers
             }
         }
 
+        /// <summary>Actualiza el nombre de un usuario.</summary>
+        /// <param name="id">ID del usuario.</param>
+        /// <param name="model">Modelo con el nuevo nombre.</param>
         [HttpPut("ActualizarNombre/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> ActualizarNombre(int id, [FromBody] ActualizarNombreDto model)
         {
             var usuario = await _usuarios.GetByIdAsync(id);
@@ -290,6 +274,5 @@ namespace proyectocountertexdefinitivo.Controllers
 
             return Ok(new { mensaje = "Nombre actualizado correctamente." });
         }
-
     }
 }

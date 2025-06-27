@@ -4,6 +4,9 @@ using proyectocountertexdefinitivo.Repositories.Interfaces;
 
 namespace proyectocountertexdefinitivo.Controllers
 {
+    /// <summary>
+    /// Controlador para la gestión de registros de producción.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     [IgnoreAntiforgeryToken]
@@ -11,11 +14,19 @@ namespace proyectocountertexdefinitivo.Controllers
     {
         private readonly IProduccion _produccionRepo;
 
+        /// <summary>
+        /// Constructor que inyecta el repositorio de producción.
+        /// </summary>
+        /// <param name="produccionRepo">Repositorio de producción.</param>
         public ProduccionController(IProduccion produccionRepo)
         {
             _produccionRepo = produccionRepo;
         }
 
+        /// <summary>
+        /// Obtiene todas las producciones registradas.
+        /// </summary>
+        /// <returns>Lista de producciones.</returns>
         [HttpGet]
         public async Task<IActionResult> GetProducciones()
         {
@@ -30,6 +41,11 @@ namespace proyectocountertexdefinitivo.Controllers
             }
         }
 
+        /// <summary>
+        /// Obtiene una producción por su ID.
+        /// </summary>
+        /// <param name="id">ID de la producción.</param>
+        /// <returns>Producción encontrada o mensaje de error.</returns>
         [HttpGet("{id}")]
         public async Task<IActionResult> GetProduccion(int id)
         {
@@ -47,6 +63,11 @@ namespace proyectocountertexdefinitivo.Controllers
             }
         }
 
+        /// <summary>
+        /// Crea una nueva producción con sus detalles.
+        /// </summary>
+        /// <param name="produccion">Objeto Produccion con detalles incluidos.</param>
+        /// <returns>Producción creada o mensaje de error.</returns>
         [HttpPost]
         public async Task<IActionResult> CrearProduccion([FromBody] Produccion produccion)
         {
@@ -85,6 +106,11 @@ namespace proyectocountertexdefinitivo.Controllers
             }
         }
 
+        /// <summary>
+        /// Elimina una producción por su ID.
+        /// </summary>
+        /// <param name="id">ID de la producción.</param>
+        /// <returns>Resultado de la eliminación.</returns>
         [HttpDelete("{id}")]
         public async Task<IActionResult> EliminarProduccion(int id)
         {
@@ -102,6 +128,14 @@ namespace proyectocountertexdefinitivo.Controllers
             }
         }
 
+        /// <summary>
+        /// Obtiene el resumen mensual de producción por año, mes y filtros opcionales.
+        /// </summary>
+        /// <param name="anio">Año del resumen.</param>
+        /// <param name="mes">Mes del resumen.</param>
+        /// <param name="usuarioId">ID del usuario (opcional).</param>
+        /// <param name="tipoPrenda">Tipo de prenda (opcional).</param>
+        /// <returns>Resumen mensual de producción.</returns>
         [HttpGet("GetResumenMensual")]
         public async Task<IActionResult> GetResumenMensual(int anio, int mes, int? usuarioId = null, string tipoPrenda = null)
         {
@@ -119,7 +153,13 @@ namespace proyectocountertexdefinitivo.Controllers
                 return StatusCode(500, $"Error al obtener el resumen mensual: {ex.Message}");
             }
         }
-          [HttpGet("empleado/{usuarioId}")]
+
+        /// <summary>
+        /// Obtiene las producciones realizadas por un usuario específico.
+        /// </summary>
+        /// <param name="usuarioId">ID del usuario.</param>
+        /// <returns>Lista de producciones realizadas por el usuario.</returns>
+        [HttpGet("empleado/{usuarioId}")]
         public async Task<IActionResult> GetProduccionesPorUsuario(int usuarioId)
         {
             try
@@ -151,9 +191,10 @@ namespace proyectocountertexdefinitivo.Controllers
             }
         }
 
-       
-
-        // ✅ Endpoint adicional para obtener tipos de prenda únicos
+        /// <summary>
+        /// Obtiene la lista de tipos de prenda únicos registrados.
+        /// </summary>
+        /// <returns>Lista de tipos de prenda.</returns>
         [HttpGet("GetTiposPrenda")]
         public async Task<IActionResult> GetTiposPrenda()
         {

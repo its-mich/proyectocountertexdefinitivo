@@ -4,17 +4,28 @@ using proyectocountertexdefinitivo.Repositories.Interfaces;
 
 namespace proyectocountertexdefinitivo.Controllers
 {
+    /// <summary>
+    /// Controlador para gestionar las prendas del sistema.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class PrendasController : ControllerBase
     {
         private readonly IPrenda _prendaRepository;
 
+        /// <summary>
+        /// Constructor que inyecta el repositorio de prendas.
+        /// </summary>
+        /// <param name="prendaRepository">Repositorio de prendas.</param>
         public PrendasController(IPrenda prendaRepository)
         {
             _prendaRepository = prendaRepository;
         }
 
+        /// <summary>
+        /// Obtiene todas las prendas registradas.
+        /// </summary>
+        /// <returns>Lista de prendas.</returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Prenda>>> GetPrendas()
         {
@@ -29,6 +40,11 @@ namespace proyectocountertexdefinitivo.Controllers
             }
         }
 
+        /// <summary>
+        /// Obtiene una prenda por su ID.
+        /// </summary>
+        /// <param name="id">ID de la prenda.</param>
+        /// <returns>La prenda correspondiente o un error si no se encuentra.</returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<Prenda>> GetPrenda(int id)
         {
@@ -46,6 +62,11 @@ namespace proyectocountertexdefinitivo.Controllers
             }
         }
 
+        /// <summary>
+        /// Crea una nueva prenda.
+        /// </summary>
+        /// <param name="prenda">Objeto prenda a crear.</param>
+        /// <returns>La prenda creada con su ID.</returns>
         [HttpPost]
         public async Task<ActionResult<Prenda>> PostPrenda(Prenda prenda)
         {
@@ -60,6 +81,12 @@ namespace proyectocountertexdefinitivo.Controllers
             }
         }
 
+        /// <summary>
+        /// Actualiza una prenda existente.
+        /// </summary>
+        /// <param name="id">ID de la prenda a actualizar.</param>
+        /// <param name="prenda">Datos de la prenda actualizada.</param>
+        /// <returns>Resultado de la operación.</returns>
         [HttpPut("{id}")]
         public async Task<IActionResult> PutPrenda(int id, Prenda prenda)
         {
@@ -81,6 +108,11 @@ namespace proyectocountertexdefinitivo.Controllers
             }
         }
 
+        /// <summary>
+        /// Elimina una prenda por su ID.
+        /// </summary>
+        /// <param name="id">ID de la prenda a eliminar.</param>
+        /// <returns>Resultado de la operación.</returns>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePrenda(int id)
         {

@@ -5,15 +5,24 @@ using proyectocountertexdefinitivo.Repositories.Interfaces;
 
 namespace proyectocountertexdefinitivo.Repositories.repositories
 {
+    /// <summary>
+    /// Repositorio para manejar operaciones relacionadas con producciones.
+    /// </summary>
     public class ProduccionRepository : IProduccion
     {
         private readonly CounterTexDBContext _context;
 
+        /// <summary>
+        /// Constructor que inyecta el contexto de la base de datos.
+        /// </summary>
         public ProduccionRepository(CounterTexDBContext context)
         {
             _context = context;
         }
 
+        /// <summary>
+        /// Obtiene todas las producciones con detalles, usuario, prenda y operación.
+        /// </summary>
         public async Task<IEnumerable<object>> GetAllAsync()
         {
             return await _context.Producciones
@@ -44,16 +53,25 @@ namespace proyectocountertexdefinitivo.Repositories.repositories
                 .ToListAsync();
         }
 
+        /// <summary>
+        /// Obtiene una producción por su ID.
+        /// </summary>
         public async Task<Produccion> GetByIdAsync(int id)
         {
             return await _context.Producciones.FindAsync(id);
         }
 
+        /// <summary>
+        /// Obtiene una operación por su ID.
+        /// </summary>
         public async Task<Operacion?> ObtenerOperacionPorId(int operacionId)
         {
             return await _context.Operaciones.FindAsync(operacionId);
         }
 
+        /// <summary>
+        /// Crea una nueva producción en la base de datos.
+        /// </summary>
         public async Task<Produccion> CreateAsync(Produccion produccion)
         {
             _context.Producciones.Add(produccion);
@@ -61,6 +79,9 @@ namespace proyectocountertexdefinitivo.Repositories.repositories
             return produccion;
         }
 
+        /// <summary>
+        /// Actualiza una producción existente.
+        /// </summary>
         public async Task<bool> UpdateAsync(Produccion produccion)
         {
             var existing = await _context.Producciones.FindAsync(produccion.Id);
@@ -72,6 +93,9 @@ namespace proyectocountertexdefinitivo.Repositories.repositories
             return true;
         }
 
+        /// <summary>
+        /// Elimina una producción junto con sus detalles.
+        /// </summary>
         public async Task<bool> DeleteAsync(int id)
         {
             var produccion = await _context.Producciones
@@ -88,7 +112,9 @@ namespace proyectocountertexdefinitivo.Repositories.repositories
             return true;
         }
 
-        // ✅ Método modificado con filtros opcionales por usuario y tipo de prenda
+        /// <summary>
+        /// Obtiene un resumen mensual de la producción con filtros opcionales por usuario o tipo de prenda.
+        /// </summary>
         public async Task<object> ObtenerResumenMensual(int anio, int mes, int? usuarioId = null, string tipoPrenda = null)
         {
             var query = _context.ProduccionDetalles
@@ -114,7 +140,9 @@ namespace proyectocountertexdefinitivo.Repositories.repositories
             return resumen.Any() ? resumen : null;
         }
 
-        // ✅ Nuevo método para obtener los tipos únicos de prenda
+        /// <summary>
+        /// Obtiene los nombres únicos de tipos de prendas registradas.
+        /// </summary>
         public async Task<List<string>> ObtenerTiposPrendaAsync()
         {
             return await _context.Prendas
@@ -124,6 +152,9 @@ namespace proyectocountertexdefinitivo.Repositories.repositories
                 .ToListAsync();
         }
 
+        /// <summary>
+        /// Crea una producción con detalles, calculando automáticamente el valor total.
+        /// </summary>
         public async Task<Produccion?> CrearProduccionConDetallesAsync(Produccion produccion)
         {
             if (produccion == null || produccion.ProduccionDetalles == null || !produccion.ProduccionDetalles.Any())
@@ -149,7 +180,9 @@ namespace proyectocountertexdefinitivo.Repositories.repositories
             return produccion;
         }
 
-        // En ProduccionRepository.cs
+        /// <summary>
+        /// Obtiene las producciones realizadas por un usuario específico.
+        /// </summary>
         public async Task<IEnumerable<Produccion>> GetProduccionesPorUsuarioIdAsync(int usuarioId)
         {
             return await _context.Producciones
@@ -160,7 +193,9 @@ namespace proyectocountertexdefinitivo.Repositories.repositories
                 .ToListAsync();
         }
 
-
+        /// <summary>
+        /// Calcula el total del pago quincenal de un usuario según el mes, año y quincena.
+        /// </summary>
         public async Task<decimal> CalcularPagoQuincenalAsync(int usuarioId, int año, int mes, int quincena)
         {
             DateTime fechaInicio = quincena == 1
@@ -181,8 +216,5 @@ namespace proyectocountertexdefinitivo.Repositories.repositories
 
             return totalPago;
         }
-
-
-
     }
 }

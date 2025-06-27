@@ -4,6 +4,9 @@ using proyectocountertexdefinitivo.Repositories.Interfaces;
 
 namespace proyectocountertexdefinitivo.Controllers
 {
+    /// <summary>
+    /// Controlador para gestionar los detalles de producción.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     [IgnoreAntiforgeryToken]
@@ -11,11 +14,19 @@ namespace proyectocountertexdefinitivo.Controllers
     {
         private readonly IProduccionDetalle _produccionDetalleService;
 
+        /// <summary>
+        /// Constructor que inyecta el servicio de detalles de producción.
+        /// </summary>
+        /// <param name="produccionDetalleService">Interfaz de servicio de ProducciónDetalle.</param>
         public ProduccionDetalleController(IProduccionDetalle produccionDetalleService)
         {
             _produccionDetalleService = produccionDetalleService;
         }
 
+        /// <summary>
+        /// Obtiene todos los detalles de producción registrados.
+        /// </summary>
+        /// <returns>Lista de detalles de producción.</returns>
         [HttpGet]
         public async Task<IActionResult> GetProduccionDetalles()
         {
@@ -30,6 +41,11 @@ namespace proyectocountertexdefinitivo.Controllers
             }
         }
 
+        /// <summary>
+        /// Crea un nuevo detalle de producción y calcula su valor total automáticamente.
+        /// </summary>
+        /// <param name="detalle">Objeto detalle de producción.</param>
+        /// <returns>Detalle creado con su valor total calculado.</returns>
         [HttpPost("crear-con-calculo")]
         public async Task<IActionResult> CrearDetalleConValorTotal([FromBody] ProduccionDetalle detalle)
         {
@@ -62,6 +78,11 @@ namespace proyectocountertexdefinitivo.Controllers
             }
         }
 
+        /// <summary>
+        /// Elimina un detalle de producción por su ID.
+        /// </summary>
+        /// <param name="id">ID del detalle de producción.</param>
+        /// <returns>Resultado de la operación.</returns>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduccionDetalle(int id)
         {
@@ -80,6 +101,11 @@ namespace proyectocountertexdefinitivo.Controllers
             }
         }
 
+        /// <summary>
+        /// Obtiene los detalles de producción filtrados por ID de usuario.
+        /// </summary>
+        /// <param name="usuarioId">ID del usuario.</param>
+        /// <returns>Lista de detalles de producción del usuario.</returns>
         [HttpGet("por-usuario/{usuarioId}")]
         public async Task<IActionResult> GetDetallesPorUsuario(int usuarioId)
         {
@@ -93,6 +119,5 @@ namespace proyectocountertexdefinitivo.Controllers
                 return StatusCode(500, new { mensaje = "Error al obtener los detalles por usuario.", error = ex.Message });
             }
         }
-
     }
 }
