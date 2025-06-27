@@ -21,6 +21,8 @@ namespace proyectocountertexdefinitivo.Repositories.Interfaces
 
         Task<IEnumerable<ProduccionDetalle>> GetDetallesPorUsuarioIdAsync(int usuarioId);
 
+
+
     }
 
 

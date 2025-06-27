@@ -111,7 +111,7 @@ namespace proyectocountertexdefinitivo.Controllers
 
         /// <summary>Actualiza los datos de un usuario existente.</summary>
         [HttpPut("{id}")]
-        [Authorize]
+        //[Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -278,18 +278,7 @@ namespace proyectocountertexdefinitivo.Controllers
             }
         }
 
-        [HttpPut("ActualizarNombre/{id}")]
-        public async Task<IActionResult> ActualizarNombre(int id, [FromBody] ActualizarNombreDto model)
-        {
-            var usuario = await _usuarios.GetByIdAsync(id);
-            if (usuario == null)
-                return NotFound("Usuario no encontrado.");
-
-            usuario.Nombre = model.Nombre;
-            await _usuarios.UpdateAsync(usuario);
-
-            return Ok(new { mensaje = "Nombre actualizado correctamente." });
-        }
+      
 
     }
 }

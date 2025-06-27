@@ -10,12 +10,12 @@ namespace proyectocountertexdefinitivo.Models
     {
         public int Id { get; set; }
 
-        [Required]
+        //[Required]
         public string Nombre { get; set; }
 
         public string? Documento { get; set; }
 
-        [Required]
+        //[Required]
         public string Correo { get; set; }
 
         public string Contraseña { get; set; }
