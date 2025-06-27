@@ -158,7 +158,7 @@ INSERT INTO Usuarios (Nombre, Documento, Correo, Contraseña, RolId, Edad, Telef
 VALUES 
 ('Juan Pérez', '123456789', 'juan.perez@example.com', 'hashed_password_1', 2, 30, '3001234567'),
 ('María Gómez', '987654321', 'maria.gomez@example.com', 'hashed_password_2', 1, 40, '3007654321'),
-('Carlos López', '456789123', 'carlos.lopez@example.com', 'hashed_password_3', 4, 25, '3005551234'),
+('Carlos López', '456789123', 'carlos.lopez@example.com', 'hashed_password_3', 3, 25, '3005551234'),
 ('Yessica Franco', '111222333', 'yessica.franco@example.com', 'hashed_password_4', 2, 28, '3001112223'),
 ('Viviana Sanchez', '222333444', 'viviana.sanchez@example.com', 'hashed_password_5', 2, 34, '3002223334'),
 ('Camilo Perez', '333444555', 'camilo.perez@example.com', 'hashed_password_6', 2, 29, '3003334445'),
